@@ -103,6 +103,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showRegistroForm() {
+        // Limpiar el formulario de registro
+        const regForm = document.getElementById('registroForm');
+        if (regForm) regForm.reset();
+        document.getElementById('reg-email').value = '';
+        document.getElementById('reg-password').value = '';
+        document.getElementById('reg-confirm-password').value = '';
         document.getElementById('registro-form').classList.remove('d-none');
         document.getElementById('registro-form').classList.add('fade-in');
         setTimeout(() => document.getElementById('registro-form').classList.remove('fade-in'), 700);
