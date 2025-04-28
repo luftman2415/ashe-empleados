@@ -102,16 +102,24 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoginForm();
     }
 
+    function fadeInSection(element) {
+        if (!element) return;
+        element.classList.remove('fade-in');
+        void element.offsetWidth; // Trigger reflow
+        element.classList.add('fade-in');
+        setTimeout(() => element.classList.remove('fade-in'), 700);
+    }
+
     function showRegistroForm() {
+        const el = document.getElementById('registro-form');
         // Limpiar el formulario de registro
         const regForm = document.getElementById('registroForm');
         if (regForm) regForm.reset();
         document.getElementById('reg-email').value = '';
         document.getElementById('reg-password').value = '';
         document.getElementById('reg-confirm-password').value = '';
-        document.getElementById('registro-form').classList.remove('d-none');
-        document.getElementById('registro-form').classList.add('fade-in');
-        setTimeout(() => document.getElementById('registro-form').classList.remove('fade-in'), 700);
+        el.classList.remove('d-none');
+        fadeInSection(el);
         document.getElementById('login-form').classList.add('d-none');
         empleadosList.classList.add('d-none');
         empleadoForm.classList.add('d-none');
@@ -145,9 +153,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showLoginForm() {
-        document.getElementById('login-form').classList.remove('d-none');
-        document.getElementById('login-form').classList.add('fade-in');
-        setTimeout(() => document.getElementById('login-form').classList.remove('fade-in'), 700);
+        const el = document.getElementById('login-form');
+        el.classList.remove('d-none');
+        fadeInSection(el);
         document.getElementById('registro-form').classList.add('d-none');
         empleadosList.classList.add('d-none');
         empleadoForm.classList.add('d-none');
@@ -198,8 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         empleadosList.classList.remove('d-none');
-        empleadosList.classList.add('fade-in');
-        setTimeout(() => empleadosList.classList.remove('fade-in'), 700);
+        fadeInSection(empleadosList);
         empleadoForm.classList.add('d-none');
         cumpleanosList.classList.add('d-none');
         document.getElementById('dashboard').classList.add('d-none');
@@ -214,8 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
         campos.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
         if (form) form.removeAttribute('data-edit-id');
         empleadoForm.classList.remove('d-none');
-        empleadoForm.classList.add('fade-in');
-        setTimeout(() => empleadoForm.classList.remove('fade-in'), 700);
+        fadeInSection(empleadoForm);
         empleadosList.classList.add('d-none');
         cumpleanosList.classList.add('d-none');
         document.getElementById('dashboard').classList.add('d-none');
@@ -259,8 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         cumpleanosList.classList.remove('d-none');
-        cumpleanosList.classList.add('fade-in');
-        setTimeout(() => cumpleanosList.classList.remove('fade-in'), 700);
+        fadeInSection(cumpleanosList);
         empleadosList.classList.add('d-none');
         empleadoForm.classList.add('d-none');
         document.getElementById('dashboard').classList.add('d-none');
@@ -340,9 +345,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Mostrar dashboard tras login
     function showDashboard() {
-        document.getElementById('dashboard').classList.remove('d-none');
-        document.getElementById('dashboard').classList.add('fade-in');
-        setTimeout(() => document.getElementById('dashboard').classList.remove('fade-in'), 700);
+        const el = document.getElementById('dashboard');
+        el.classList.remove('d-none');
+        fadeInSection(el);
         empleadosList.classList.add('d-none');
         empleadoForm.classList.add('d-none');
         cumpleanosList.classList.add('d-none');
