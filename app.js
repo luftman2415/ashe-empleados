@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
         input.click();
     }
 
-    // Guardar cambios de un empleado
+    // Corregir y mejorar guardarEmpleado para guardar siempre y mostrar alerta
     window.guardarEmpleado = function(id) {
         // Buscar el empleado en el array
         const empleado = empleados.find(e => e.id === id);
@@ -445,28 +445,28 @@ document.addEventListener('DOMContentLoaded', function() {
             mostrarAlerta('Empleado no encontrado.', 'danger');
             return;
         }
-        // Si el formulario está en modo edición de este empleado, actualiza los datos
-        if (document.getElementById('empleadoForm').getAttribute('data-edit-id') == id) {
-            empleado.nombres = document.getElementById('nombres').value;
-            empleado.apellidos = document.getElementById('apellidos').value;
-            empleado.cedula = document.getElementById('cedula').value;
-            empleado.telefono = document.getElementById('telefono').value;
-            empleado.email = document.getElementById('email-empleado').value;
-            empleado.fechaNacimiento = document.getElementById('fecha-nacimiento').value;
-            empleado.fechaIngreso = document.getElementById('fecha-ingreso').value;
-            empleado.contactoEmergencia = {
-                nombre: document.getElementById('contacto-nombre').value,
-                telefono: document.getElementById('contacto-telefono').value,
-                parentesco: document.getElementById('contacto-parentesco').value
-            };
-            localStorage.setItem('empleados', JSON.stringify(empleados));
-            renderEmpleados();
-            hideEmpleadoForm();
-            mostrarAlerta('Empleado guardado correctamente.', 'success');
-        } else {
-            mostrarAlerta('Debes editar el empleado antes de guardar.', 'danger');
-        }
+        // Actualizar los datos del empleado con los valores actuales del formulario
+        empleado.nombres = document.getElementById('nombres').value;
+        empleado.apellidos = document.getElementById('apellidos').value;
+        empleado.cedula = document.getElementById('cedula').value;
+        empleado.telefono = document.getElementById('telefono').value;
+        empleado.email = document.getElementById('email-empleado').value;
+        empleado.fechaNacimiento = document.getElementById('fecha-nacimiento').value;
+        empleado.fechaIngreso = document.getElementById('fecha-ingreso').value;
+        empleado.contactoEmergencia = {
+            nombre: document.getElementById('contacto-nombre').value,
+            telefono: document.getElementById('contacto-telefono').value,
+            parentesco: document.getElementById('contacto-parentesco').value
+        };
+        localStorage.setItem('empleados', JSON.stringify(empleados));
+        renderEmpleados();
+        hideEmpleadoForm();
+        mostrarAlerta('Empleado guardado correctamente.', 'success');
     }
+
+    // Refuerza el event listener del botón cerrar sesión en el formulario de empleado
+    const btnEmpleadoFormLogout = document.getElementById('btn-empleadoform-logout');
+    if (btnEmpleadoFormLogout) btnEmpleadoFormLogout.onclick = handleLogout;
 
     // Event listener para el botón de logout en el dashboard
     const btnDashboardLogout = document.getElementById('btn-dashboard-logout');
