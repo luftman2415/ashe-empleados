@@ -208,30 +208,31 @@ body {
     background: #fff;
     border-radius: 18px;
     box-shadow: 0 2px 16px #0001;
-    padding: 2rem 1.5rem;
-    margin: 2rem auto 1.5rem auto;
-    max-width: 700px;
+    padding: 1.2rem 1rem;
+    margin: 1.2rem auto 1rem auto;
+    max-width: 420px;
     border-left: 6px solid #0056b3;
 }
 
 .section-nosotros h2, .section-productos h2 {
     color: #0056b3;
     font-weight: 700;
-    margin-bottom: 1rem;
+    margin-bottom: 0.7rem;
+    font-size: 1.3rem;
 }
 
 .section-nosotros p, .section-productos ul {
     color: #333;
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 .section-productos ul {
-    padding-left: 1.2rem;
+    padding-left: 1.1rem;
 }
 
 .section-productos li {
-    margin-bottom: 0.5rem;
-    font-size: 1.05rem;
+    margin-bottom: 0.3rem;
+    font-size: 0.98rem;
 }
 
 .fade-in {
