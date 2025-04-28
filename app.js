@@ -36,15 +36,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event Listeners
     if (loginForm) loginForm.addEventListener('submit', handleLogin);
     if (registroForm) registroForm.addEventListener('submit', handleRegistro);
-    if (btnNuevoEmpleado) btnNuevoEmpleado.addEventListener('click', showEmpleadoForm);
-    if (btnCancelar) btnCancelar.addEventListener('click', hideEmpleadoForm);
-    if (btnRegistro) btnRegistro.addEventListener('click', showRegistroForm);
-    if (btnCancelarRegistro) btnCancelarRegistro.addEventListener('click', hideRegistroForm);
-    if (navEmpleados) navEmpleados.addEventListener('click', showEmpleadosList);
-    if (navCumpleanos) navCumpleanos.addEventListener('click', showCumpleanosList);
-    if (btnLogin) btnLogin.addEventListener('click', showLoginForm);
-    if (btnLogout) btnLogout.addEventListener('click', handleLogout);
-    if (btnSalir) btnSalir.addEventListener('click', handleSalir);
+    if (btnNuevoEmpleado) btnNuevoEmpleado.onclick = showEmpleadoForm;
+    if (btnCancelar) btnCancelar.onclick = hideEmpleadoForm;
+    if (btnRegistro) btnRegistro.onclick = showRegistroForm;
+    if (btnCancelarRegistro) btnCancelarRegistro.onclick = hideRegistroForm;
+    if (navEmpleados) navEmpleados.onclick = showEmpleadosList;
+    if (navCumpleanos) navCumpleanos.onclick = showCumpleanosList;
+    if (btnLogin) btnLogin.onclick = showLoginForm;
+    if (btnLogout) btnLogout.onclick = handleLogout;
+    if (btnSalir) btnSalir.onclick = handleSalir;
 
     // Toggle de contraseña
     if (togglePassword) {
@@ -104,10 +104,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function showRegistroForm() {
         document.getElementById('registro-form').classList.remove('d-none');
+        document.getElementById('registro-form').classList.add('fade-in');
+        setTimeout(() => document.getElementById('registro-form').classList.remove('fade-in'), 700);
         document.getElementById('login-form').classList.add('d-none');
         empleadosList.classList.add('d-none');
         empleadoForm.classList.add('d-none');
         cumpleanosList.classList.add('d-none');
+        document.getElementById('dashboard').classList.add('d-none');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function hideRegistroForm() {
@@ -128,8 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (btnLogout) btnLogout.style.display = 'block';
             if (btnLogin) btnLogin.style.display = 'none';
             if (btnRegistro) btnRegistro.style.display = 'none';
-            showEmpleadosList();
-            hideLoginForm();
+            showDashboard();
         } else {
             alert('Credenciales incorrectas');
         }
@@ -137,10 +140,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function showLoginForm() {
         document.getElementById('login-form').classList.remove('d-none');
+        document.getElementById('login-form').classList.add('fade-in');
+        setTimeout(() => document.getElementById('login-form').classList.remove('fade-in'), 700);
         document.getElementById('registro-form').classList.add('d-none');
         empleadosList.classList.add('d-none');
         empleadoForm.classList.add('d-none');
         cumpleanosList.classList.add('d-none');
+        document.getElementById('dashboard').classList.add('d-none');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function hideLoginForm() {
@@ -152,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btnLogout) btnLogout.style.display = 'none';
         if (btnLogin) btnLogin.style.display = 'block';
         if (btnRegistro) btnRegistro.style.display = 'block';
+        document.getElementById('dashboard').classList.add('d-none');
         showLoginForm();
     }
 
@@ -168,58 +176,28 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         empleadosList.classList.remove('d-none');
+        empleadosList.classList.add('fade-in');
+        setTimeout(() => empleadosList.classList.remove('fade-in'), 700);
         empleadoForm.classList.add('d-none');
         cumpleanosList.classList.add('d-none');
+        document.getElementById('dashboard').classList.add('d-none');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         renderEmpleados();
     }
 
     function showEmpleadoForm() {
-        // Limpiar el formulario al crear un nuevo empleado
-        document.getElementById('empleadoForm').reset();
-        document.getElementById('contacto-nombre').value = '';
-        document.getElementById('contacto-telefono').value = '';
-        document.getElementById('contacto-parentesco').value = '';
-        document.getElementById('documentos').value = '';
-        // Quitar id de edición si existe
-        document.getElementById('empleadoForm').removeAttribute('data-edit-id');
-        // Asegurar que al guardar se cree un nuevo empleado
-        document.getElementById('empleadoForm').onsubmit = function(e) {
-            e.preventDefault();
-            const empleado = {
-                id: Date.now(),
-                nombres: document.getElementById('nombres').value,
-                apellidos: document.getElementById('apellidos').value,
-                cedula: document.getElementById('cedula').value,
-                telefono: document.getElementById('telefono').value,
-                email: document.getElementById('email-empleado').value,
-                fechaNacimiento: document.getElementById('fecha-nacimiento').value,
-                fechaIngreso: document.getElementById('fecha-ingreso').value,
-                contactoEmergencia: {
-                    nombre: document.getElementById('contacto-nombre').value,
-                    telefono: document.getElementById('contacto-telefono').value,
-                    parentesco: document.getElementById('contacto-parentesco').value
-                },
-                documentos: []
-            };
-            const archivos = document.getElementById('documentos').files;
-            if (archivos.length > 0) {
-                for (let i = 0; i < archivos.length; i++) {
-                    const archivo = archivos[i];
-                    empleado.documentos.push({
-                        nombre: archivo.name,
-                        tipo: archivo.type,
-                        tamaño: archivo.size
-                    });
-                }
-            }
-            empleados.push(empleado);
-            localStorage.setItem('empleados', JSON.stringify(empleados));
-            hideEmpleadoForm();
-            showEmpleadosList();
-        };
+        const form = document.getElementById('empleadoForm');
+        if (form) form.reset();
+        const campos = ['contacto-nombre', 'contacto-telefono', 'contacto-parentesco', 'documentos'];
+        campos.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        if (form) form.removeAttribute('data-edit-id');
         empleadoForm.classList.remove('d-none');
+        empleadoForm.classList.add('fade-in');
+        setTimeout(() => empleadoForm.classList.remove('fade-in'), 700);
         empleadosList.classList.add('d-none');
         cumpleanosList.classList.add('d-none');
+        document.getElementById('dashboard').classList.add('d-none');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function hideEmpleadoForm() {
@@ -259,8 +237,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         cumpleanosList.classList.remove('d-none');
+        cumpleanosList.classList.add('fade-in');
+        setTimeout(() => cumpleanosList.classList.remove('fade-in'), 700);
         empleadosList.classList.add('d-none');
         empleadoForm.classList.add('d-none');
+        document.getElementById('dashboard').classList.add('d-none');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         renderCumpleanos();
     }
 
@@ -332,6 +314,36 @@ document.addEventListener('DOMContentLoaded', function() {
             hideEmpleadoForm();
             showEmpleadosList();
         });
+    }
+
+    // Mostrar dashboard tras login
+    function showDashboard() {
+        document.getElementById('dashboard').classList.remove('d-none');
+        document.getElementById('dashboard').classList.add('fade-in');
+        setTimeout(() => document.getElementById('dashboard').classList.remove('fade-in'), 700);
+        empleadosList.classList.add('d-none');
+        empleadoForm.classList.add('d-none');
+        cumpleanosList.classList.add('d-none');
+        document.getElementById('login-form').classList.add('d-none');
+        document.getElementById('registro-form').classList.add('d-none');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Actualizar datos
+        document.getElementById('dashboard-total-empleados').textContent = empleados.length;
+        // Próximos cumpleaños
+        const hoy = new Date();
+        const proximosCumpleanos = empleados.filter(emp => {
+            if (!emp.fechaNacimiento) return false;
+            const fechaNac = new Date(emp.fechaNacimiento);
+            const proximoCumple = new Date(hoy.getFullYear(), fechaNac.getMonth(), fechaNac.getDate());
+            if (proximoCumple < hoy) {
+                proximoCumple.setFullYear(hoy.getFullYear() + 1);
+            }
+            const diasRestantes = Math.ceil((proximoCumple - hoy) / (1000 * 60 * 60 * 24));
+            return diasRestantes <= 30;
+        });
+        document.getElementById('dashboard-cumpleanos').textContent = proximosCumpleanos.length;
+        // Usuarios registrados
+        document.getElementById('dashboard-usuarios').textContent = usuariosPermitidos.length;
     }
 
     // Inicialización
