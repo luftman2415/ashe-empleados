@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cumpleanosList.classList.add('d-none');
         document.getElementById('dashboard').classList.add('d-none');
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        actualizarBotonLogout();
     }
 
     function hideLoginForm() {
@@ -176,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('dashboard').classList.add('d-none');
         showLoginForm();
         mostrarAlerta('Sesión cerrada correctamente.', 'success');
+        actualizarBotonLogout();
     }
 
     // Función para mostrar alertas visuales
@@ -212,6 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('dashboard').classList.add('d-none');
         window.scrollTo({ top: 0, behavior: 'smooth' });
         renderEmpleados();
+        actualizarBotonLogout();
     }
 
     function showEmpleadoForm() {
@@ -226,6 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cumpleanosList.classList.add('d-none');
         document.getElementById('dashboard').classList.add('d-none');
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        actualizarBotonLogout();
     }
 
     function hideEmpleadoForm() {
@@ -271,6 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('dashboard').classList.add('d-none');
         window.scrollTo({ top: 0, behavior: 'smooth' });
         renderCumpleanos();
+        actualizarBotonLogout();
     }
 
     function renderCumpleanos() {
@@ -371,6 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('dashboard-cumpleanos').textContent = proximosCumpleanos.length;
         // Usuarios registrados
         document.getElementById('dashboard-usuarios').textContent = usuariosPermitidos.length;
+        actualizarBotonLogout();
     }
 
     // Inicialización
@@ -465,4 +471,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener para el botón de logout en el dashboard
     const btnDashboardLogout = document.getElementById('btn-dashboard-logout');
     if (btnDashboardLogout) btnDashboardLogout.onclick = handleLogout;
+
+    // Event listeners para los nuevos botones en empleados-list
+    const btnEmpleadosDashboard = document.getElementById('btn-empleados-dashboard');
+    if (btnEmpleadosDashboard) btnEmpleadosDashboard.onclick = showDashboard;
+    const btnEmpleadosLogout = document.getElementById('btn-empleados-logout');
+    if (btnEmpleadosLogout) btnEmpleadosLogout.onclick = handleLogout;
+
+    // Event listeners para los nuevos botones en cumpleaños-list
+    const btnCumpleanosDashboard = document.getElementById('btn-cumpleanos-dashboard');
+    if (btnCumpleanosDashboard) btnCumpleanosDashboard.onclick = showDashboard;
+    const btnCumpleanosLogout = document.getElementById('btn-cumpleanos-logout');
+    if (btnCumpleanosLogout) btnCumpleanosLogout.onclick = handleLogout;
+
+    // Event listeners para los nuevos botones en empleado-form
+    const btnEmpleadoFormDashboard = document.getElementById('btn-empleadoform-dashboard');
+    if (btnEmpleadoFormDashboard) btnEmpleadoFormDashboard.onclick = showDashboard;
+    const btnEmpleadoFormLogout = document.getElementById('btn-empleadoform-logout');
+    if (btnEmpleadoFormLogout) btnEmpleadoFormLogout.onclick = handleLogout;
+
+    // Refuerza visibilidad del botón de cerrar sesión en la navbar
+    function actualizarBotonLogout() {
+        if (isAuthenticated && btnLogout) {
+            btnLogout.style.display = 'block';
+        } else if (btnLogout) {
+            btnLogout.style.display = 'none';
+        }
+    }
 }); 
