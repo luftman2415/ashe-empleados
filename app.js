@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function showEmpleadoForm() {
         const form = document.getElementById('empleadoForm');
         if (form) form.reset();
-        const campos = ['contacto-nombre', 'contacto-telefono', 'contacto-parentesco', 'documentos'];
+        const campos = ['contacto-nombre', 'contacto-telefono', 'contacto-parentesco', 'documentos', 'nombres', 'apellidos', 'cedula', 'telefono', 'email-empleado', 'fecha-nacimiento', 'fecha-ingreso'];
         campos.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
         if (form) form.removeAttribute('data-edit-id');
         empleadoForm.classList.remove('d-none');
@@ -435,4 +435,8 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Empleado guardado correctamente.');
         }
     }
+
+    // Event listener para el botón de logout en el dashboard
+    const btnDashboardLogout = document.getElementById('btn-dashboard-logout');
+    if (btnDashboardLogout) btnDashboardLogout.onclick = handleLogout;
 }); 
