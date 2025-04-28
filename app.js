@@ -393,6 +393,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('email-empleado').value = empleado.email;
             document.getElementById('fecha-nacimiento').value = empleado.fechaNacimiento;
             document.getElementById('fecha-ingreso').value = empleado.fechaIngreso;
+            document.getElementById('contacto-nombre').value = empleado.contactoEmergencia?.nombre || '';
+            document.getElementById('contacto-telefono').value = empleado.contactoEmergencia?.telefono || '';
+            document.getElementById('contacto-parentesco').value = empleado.contactoEmergencia?.parentesco || '';
             document.getElementById('empleadoForm').setAttribute('data-edit-id', id);
             showEmpleadoForm();
         }
@@ -437,15 +440,19 @@ document.addEventListener('DOMContentLoaded', function() {
         input.click();
     }
 
-    // Corregir y mejorar guardarEmpleado para guardar siempre y mostrar alerta
+    // Guardar cambios de un empleado editado
     window.guardarEmpleado = function(id) {
-        // Buscar el empleado en el array
-        const empleado = empleados.find(e => e.id === id);
+        const form = document.getElementById('empleadoForm');
+        const editId = form.getAttribute('data-edit-id');
+        if (!editId) {
+            mostrarAlerta('Debes editar un empleado antes de guardar.', 'danger');
+            return;
+        }
+        const empleado = empleados.find(e => e.id == editId);
         if (!empleado) {
             mostrarAlerta('Empleado no encontrado.', 'danger');
             return;
         }
-        // Actualizar los datos del empleado con los valores actuales del formulario
         empleado.nombres = document.getElementById('nombres').value;
         empleado.apellidos = document.getElementById('apellidos').value;
         empleado.cedula = document.getElementById('cedula').value;
@@ -487,8 +494,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listeners para los nuevos botones en empleado-form
     const btnEmpleadoFormDashboard = document.getElementById('btn-empleadoform-dashboard');
     if (btnEmpleadoFormDashboard) btnEmpleadoFormDashboard.onclick = showDashboard;
-    const btnEmpleadoFormLogout = document.getElementById('btn-empleadoform-logout');
-    if (btnEmpleadoFormLogout) btnEmpleadoFormLogout.onclick = handleLogout;
 
     // Refuerza visibilidad del botón de cerrar sesión en la navbar
     function actualizarBotonLogout() {
