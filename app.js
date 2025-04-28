@@ -1,318 +1,420 @@
-// Datos de usuarios permitidos
-let usuariosPermitidos = JSON.parse(localStorage.getItem('usuarios')) || [
-    { email: 'admin@ashe.com', password: 'admin123' },
-    { email: 'usuario1@ashe.com', password: 'usuario123' },
-    { email: 'usuario2@ashe.com', password: 'usuario123' }
-];
+document.addEventListener('DOMContentLoaded', function() {
+    // Datos de usuarios permitidos
+    let usuariosPermitidos = JSON.parse(localStorage.getItem('usuarios')) || [
+        { email: 'admin@ashe.com', password: 'admin123' },
+        { email: 'usuario1@ashe.com', password: 'usuario123' },
+        { email: 'usuario2@ashe.com', password: 'usuario123' }
+    ];
 
-// Almacenamiento local para empleados
-let empleados = JSON.parse(localStorage.getItem('empleados')) || [];
+    // Almacenamiento local para empleados
+    let empleados = JSON.parse(localStorage.getItem('empleados')) || [];
 
-// Elementos del DOM
-const loginForm = document.getElementById('loginForm');
-const registroForm = document.getElementById('registroForm');
-const empleadosList = document.getElementById('empleados-list');
-const empleadoForm = document.getElementById('empleado-form');
-const cumpleanosList = document.getElementById('cumpleanos-list');
-const btnNuevoEmpleado = document.getElementById('btn-nuevo-empleado');
-const btnCancelar = document.getElementById('btn-cancelar');
-const btnRegistro = document.getElementById('btn-registro');
-const btnCancelarRegistro = document.getElementById('btn-cancelar-registro');
-const navEmpleados = document.getElementById('nav-empleados');
-const navCumpleanos = document.getElementById('nav-cumpleanos');
-const btnLogin = document.getElementById('btn-login');
-const btnLogout = document.getElementById('btn-logout');
-const btnSalir = document.getElementById('btn-salir');
+    // Elementos del DOM
+    const loginForm = document.getElementById('loginForm');
+    const registroForm = document.getElementById('registroForm');
+    const empleadosList = document.getElementById('empleados-list');
+    const empleadoForm = document.getElementById('empleado-form');
+    const cumpleanosList = document.getElementById('cumpleanos-list');
+    const btnNuevoEmpleado = document.getElementById('btn-nuevo-empleado');
+    const btnCancelar = document.getElementById('btn-cancelar');
+    const btnRegistro = document.getElementById('btn-registro');
+    const btnCancelarRegistro = document.getElementById('btn-cancelar-registro');
+    const navEmpleados = document.getElementById('nav-empleados');
+    const navCumpleanos = document.getElementById('nav-cumpleanos');
+    const btnLogin = document.getElementById('btn-login');
+    const btnLogout = document.getElementById('btn-logout');
+    const btnSalir = document.getElementById('btn-salir');
 
-// Toggles de contraseña
-const togglePassword = document.getElementById('toggle-password');
-const toggleRegPassword = document.getElementById('toggle-reg-password');
-const toggleRegConfirmPassword = document.getElementById('toggle-reg-confirm-password');
+    // Toggles de contraseña
+    const togglePassword = document.getElementById('toggle-password');
+    const toggleRegPassword = document.getElementById('toggle-reg-password');
+    const toggleRegConfirmPassword = document.getElementById('toggle-reg-confirm-password');
 
-// Estado de autenticación
-let isAuthenticated = false;
+    // Estado de autenticación
+    let isAuthenticated = false;
 
-// Event Listeners
-loginForm.addEventListener('submit', handleLogin);
-registroForm.addEventListener('submit', handleRegistro);
-btnNuevoEmpleado.addEventListener('click', showEmpleadoForm);
-btnCancelar.addEventListener('click', hideEmpleadoForm);
-btnRegistro.addEventListener('click', showRegistroForm);
-btnCancelarRegistro.addEventListener('click', hideRegistroForm);
-navEmpleados.addEventListener('click', showEmpleadosList);
-navCumpleanos.addEventListener('click', showCumpleanosList);
-btnLogin.addEventListener('click', showLoginForm);
-btnLogout.addEventListener('click', handleLogout);
-btnSalir.addEventListener('click', handleSalir);
+    // Event Listeners
+    if (loginForm) loginForm.addEventListener('submit', handleLogin);
+    if (registroForm) registroForm.addEventListener('submit', handleRegistro);
+    if (btnNuevoEmpleado) btnNuevoEmpleado.addEventListener('click', showEmpleadoForm);
+    if (btnCancelar) btnCancelar.addEventListener('click', hideEmpleadoForm);
+    if (btnRegistro) btnRegistro.addEventListener('click', showRegistroForm);
+    if (btnCancelarRegistro) btnCancelarRegistro.addEventListener('click', hideRegistroForm);
+    if (navEmpleados) navEmpleados.addEventListener('click', showEmpleadosList);
+    if (navCumpleanos) navCumpleanos.addEventListener('click', showCumpleanosList);
+    if (btnLogin) btnLogin.addEventListener('click', showLoginForm);
+    if (btnLogout) btnLogout.addEventListener('click', handleLogout);
+    if (btnSalir) btnSalir.addEventListener('click', handleSalir);
 
-// Toggle de contraseña
-togglePassword.addEventListener('click', function() {
-    togglePasswordVisibility('password', this);
-});
-
-toggleRegPassword.addEventListener('click', function() {
-    togglePasswordVisibility('reg-password', this);
-});
-
-toggleRegConfirmPassword.addEventListener('click', function() {
-    togglePasswordVisibility('reg-confirm-password', this);
-});
-
-function togglePasswordVisibility(inputId, button) {
-    const input = document.getElementById(inputId);
-    const icon = button.querySelector('i');
-    
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.remove('bi-eye');
-        icon.classList.add('bi-eye-slash');
-    } else {
-        input.type = 'password';
-        icon.classList.remove('bi-eye-slash');
-        icon.classList.add('bi-eye');
+    // Toggle de contraseña
+    if (togglePassword) {
+        togglePassword.addEventListener('click', function() {
+            togglePasswordVisibility('password', this);
+        });
     }
-}
-
-// Funciones de registro
-function handleRegistro(e) {
-    e.preventDefault();
-    const email = document.getElementById('reg-email').value;
-    const password = document.getElementById('reg-password').value;
-    const confirmPassword = document.getElementById('reg-confirm-password').value;
-
-    if (password !== confirmPassword) {
-        alert('Las contraseñas no coinciden');
-        return;
+    if (toggleRegPassword) {
+        toggleRegPassword.addEventListener('click', function() {
+            togglePasswordVisibility('reg-password', this);
+        });
+    }
+    if (toggleRegConfirmPassword) {
+        toggleRegConfirmPassword.addEventListener('click', function() {
+            togglePasswordVisibility('reg-confirm-password', this);
+        });
     }
 
-    if (usuariosPermitidos.some(u => u.email === email)) {
-        alert('El correo electrónico ya está registrado');
-        return;
-    }
-
-    usuariosPermitidos.push({ email, password });
-    localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos));
-    
-    alert('Usuario registrado exitosamente');
-    hideRegistroForm();
-    showLoginForm();
-}
-
-function showRegistroForm() {
-    document.getElementById('registro-form').classList.remove('d-none');
-    document.getElementById('login-form').classList.add('d-none');
-    empleadosList.classList.add('d-none');
-    empleadoForm.classList.add('d-none');
-    cumpleanosList.classList.add('d-none');
-}
-
-function hideRegistroForm() {
-    document.getElementById('registro-form').classList.add('d-none');
-    showLoginForm();
-}
-
-// Funciones de autenticación
-function handleLogin(e) {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    const usuario = usuariosPermitidos.find(u => u.email === email && u.password === password);
-    
-    if (usuario) {
-        isAuthenticated = true;
-        btnLogout.style.display = 'block';
-        btnLogin.style.display = 'none';
-        btnRegistro.style.display = 'none';
-        showEmpleadosList();
-        hideLoginForm();
-    } else {
-        alert('Credenciales incorrectas');
-    }
-}
-
-function showLoginForm() {
-    document.getElementById('login-form').classList.remove('d-none');
-    document.getElementById('registro-form').classList.add('d-none');
-    empleadosList.classList.add('d-none');
-    empleadoForm.classList.add('d-none');
-    cumpleanosList.classList.add('d-none');
-}
-
-function hideLoginForm() {
-    document.getElementById('login-form').classList.add('d-none');
-}
-
-function handleLogout() {
-    isAuthenticated = false;
-    btnLogout.style.display = 'none';
-    btnLogin.style.display = 'block';
-    btnRegistro.style.display = 'block';
-    showLoginForm();
-}
-
-function handleSalir() {
-    if (confirm('¿Está seguro de que desea salir de la aplicación?')) {
-        window.location.href = 'index.html';
-    }
-}
-
-// Funciones de empleados
-function showEmpleadosList() {
-    if (!isAuthenticated) {
-        showLoginForm();
-        return;
-    }
-    
-    empleadosList.classList.remove('d-none');
-    empleadoForm.classList.add('d-none');
-    cumpleanosList.classList.add('d-none');
-    renderEmpleados();
-}
-
-function showEmpleadoForm() {
-    empleadoForm.classList.remove('d-none');
-    empleadosList.classList.add('d-none');
-    cumpleanosList.classList.add('d-none');
-}
-
-function hideEmpleadoForm() {
-    empleadoForm.classList.add('d-none');
-    showEmpleadosList();
-}
-
-function renderEmpleados() {
-    const tbody = document.getElementById('empleados-table-body');
-    tbody.innerHTML = '';
-    
-    empleados.forEach(empleado => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${empleado.nombres}</td>
-            <td>${empleado.apellidos}</td>
-            <td>${empleado.cedula}</td>
-            <td>${empleado.telefono}</td>
-            <td>${empleado.email}</td>
-            <td>
-                <button class="btn btn-sm btn-primary btn-action" onclick="editEmpleado(${empleado.id})">Editar</button>
-                <button class="btn btn-sm btn-danger btn-action" onclick="deleteEmpleado(${empleado.id})">Eliminar</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-// Funciones de cumpleaños
-function showCumpleanosList() {
-    if (!isAuthenticated) {
-        showLoginForm();
-        return;
-    }
-    
-    cumpleanosList.classList.remove('d-none');
-    empleadosList.classList.add('d-none');
-    empleadoForm.classList.add('d-none');
-    renderCumpleanos();
-}
-
-function renderCumpleanos() {
-    const tbody = document.getElementById('cumpleanos-table-body');
-    tbody.innerHTML = '';
-    
-    const hoy = new Date();
-    const proximosCumpleanos = empleados
-        .map(empleado => {
-            const fechaNac = new Date(empleado.fechaNacimiento);
-            const proximoCumple = new Date(hoy.getFullYear(), fechaNac.getMonth(), fechaNac.getDate());
-            
-            if (proximoCumple < hoy) {
-                proximoCumple.setFullYear(hoy.getFullYear() + 1);
-            }
-            
-            const diasRestantes = Math.ceil((proximoCumple - hoy) / (1000 * 60 * 60 * 24));
-            
-            return {
-                ...empleado,
-                diasRestantes
-            };
-        })
-        .filter(emp => emp.diasRestantes <= 30)
-        .sort((a, b) => a.diasRestantes - b.diasRestantes);
-    
-    proximosCumpleanos.forEach(empleado => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${empleado.nombres} ${empleado.apellidos}</td>
-            <td>${new Date(empleado.fechaNacimiento).toLocaleDateString()}</td>
-            <td>${empleado.diasRestantes} días</td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-// Funciones de gestión de empleados
-document.getElementById('empleadoForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const empleado = {
-        id: Date.now(),
-        nombres: document.getElementById('nombres').value,
-        apellidos: document.getElementById('apellidos').value,
-        cedula: document.getElementById('cedula').value,
-        telefono: document.getElementById('telefono').value,
-        email: document.getElementById('email-empleado').value,
-        fechaNacimiento: document.getElementById('fecha-nacimiento').value,
-        fechaIngreso: document.getElementById('fecha-ingreso').value,
-        contactoEmergencia: {
-            nombre: document.getElementById('contacto-nombre').value,
-            telefono: document.getElementById('contacto-telefono').value,
-            parentesco: document.getElementById('contacto-parentesco').value
-        },
-        documentos: []
-    };
-    
-    // Manejar archivos adjuntos
-    const archivos = document.getElementById('documentos').files;
-    if (archivos.length > 0) {
-        for (let i = 0; i < archivos.length; i++) {
-            const archivo = archivos[i];
-            empleado.documentos.push({
-                nombre: archivo.name,
-                tipo: archivo.type,
-                tamaño: archivo.size
-            });
+    function togglePasswordVisibility(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector('i');
+        if (!input || !icon) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
         }
     }
-    
-    empleados.push(empleado);
-    localStorage.setItem('empleados', JSON.stringify(empleados));
-    
-    hideEmpleadoForm();
-    showEmpleadosList();
-});
 
-function editEmpleado(id) {
-    const empleado = empleados.find(e => e.id === id);
-    if (empleado) {
-        document.getElementById('nombres').value = empleado.nombres;
-        document.getElementById('apellidos').value = empleado.apellidos;
-        document.getElementById('cedula').value = empleado.cedula;
-        document.getElementById('telefono').value = empleado.telefono;
-        document.getElementById('email-empleado').value = empleado.email;
-        document.getElementById('fecha-nacimiento').value = empleado.fechaNacimiento;
-        document.getElementById('fecha-ingreso').value = empleado.fechaIngreso;
-        
-        showEmpleadoForm();
+    // Funciones de registro
+    function handleRegistro(e) {
+        e.preventDefault();
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+        const confirmPassword = document.getElementById('reg-confirm-password').value;
+
+        if (password !== confirmPassword) {
+            alert('Las contraseñas no coinciden');
+            return;
+        }
+
+        if (usuariosPermitidos.some(u => u.email === email)) {
+            alert('El correo electrónico ya está registrado');
+            return;
+        }
+
+        usuariosPermitidos.push({ email, password });
+        localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos));
+        alert('Usuario registrado exitosamente');
+        hideRegistroForm();
+        showLoginForm();
     }
-}
 
-function deleteEmpleado(id) {
-    if (confirm('¿Está seguro de que desea eliminar este empleado?')) {
-        empleados = empleados.filter(e => e.id !== id);
-        localStorage.setItem('empleados', JSON.stringify(empleados));
+    function showRegistroForm() {
+        document.getElementById('registro-form').classList.remove('d-none');
+        document.getElementById('login-form').classList.add('d-none');
+        empleadosList.classList.add('d-none');
+        empleadoForm.classList.add('d-none');
+        cumpleanosList.classList.add('d-none');
+    }
+
+    function hideRegistroForm() {
+        document.getElementById('registro-form').classList.add('d-none');
+        showLoginForm();
+    }
+
+    // Funciones de autenticación
+    function handleLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        const usuario = usuariosPermitidos.find(u => u.email === email && u.password === password);
+
+        if (usuario) {
+            isAuthenticated = true;
+            if (btnLogout) btnLogout.style.display = 'block';
+            if (btnLogin) btnLogin.style.display = 'none';
+            if (btnRegistro) btnRegistro.style.display = 'none';
+            showEmpleadosList();
+            hideLoginForm();
+        } else {
+            alert('Credenciales incorrectas');
+        }
+    }
+
+    function showLoginForm() {
+        document.getElementById('login-form').classList.remove('d-none');
+        document.getElementById('registro-form').classList.add('d-none');
+        empleadosList.classList.add('d-none');
+        empleadoForm.classList.add('d-none');
+        cumpleanosList.classList.add('d-none');
+    }
+
+    function hideLoginForm() {
+        document.getElementById('login-form').classList.add('d-none');
+    }
+
+    function handleLogout() {
+        isAuthenticated = false;
+        if (btnLogout) btnLogout.style.display = 'none';
+        if (btnLogin) btnLogin.style.display = 'block';
+        if (btnRegistro) btnRegistro.style.display = 'block';
+        showLoginForm();
+    }
+
+    function handleSalir() {
+        if (confirm('¿Está seguro de que desea salir de la aplicación?')) {
+            window.location.href = 'index.html';
+        }
+    }
+
+    // Funciones de empleados
+    function showEmpleadosList() {
+        if (!isAuthenticated) {
+            showLoginForm();
+            return;
+        }
+        empleadosList.classList.remove('d-none');
+        empleadoForm.classList.add('d-none');
+        cumpleanosList.classList.add('d-none');
         renderEmpleados();
     }
-}
 
-// Inicialización
-showLoginForm(); 
+    function showEmpleadoForm() {
+        // Limpiar el formulario al crear un nuevo empleado
+        document.getElementById('empleadoForm').reset();
+        document.getElementById('contacto-nombre').value = '';
+        document.getElementById('contacto-telefono').value = '';
+        document.getElementById('contacto-parentesco').value = '';
+        document.getElementById('documentos').value = '';
+        // Quitar id de edición si existe
+        document.getElementById('empleadoForm').removeAttribute('data-edit-id');
+        // Asegurar que al guardar se cree un nuevo empleado
+        document.getElementById('empleadoForm').onsubmit = function(e) {
+            e.preventDefault();
+            const empleado = {
+                id: Date.now(),
+                nombres: document.getElementById('nombres').value,
+                apellidos: document.getElementById('apellidos').value,
+                cedula: document.getElementById('cedula').value,
+                telefono: document.getElementById('telefono').value,
+                email: document.getElementById('email-empleado').value,
+                fechaNacimiento: document.getElementById('fecha-nacimiento').value,
+                fechaIngreso: document.getElementById('fecha-ingreso').value,
+                contactoEmergencia: {
+                    nombre: document.getElementById('contacto-nombre').value,
+                    telefono: document.getElementById('contacto-telefono').value,
+                    parentesco: document.getElementById('contacto-parentesco').value
+                },
+                documentos: []
+            };
+            const archivos = document.getElementById('documentos').files;
+            if (archivos.length > 0) {
+                for (let i = 0; i < archivos.length; i++) {
+                    const archivo = archivos[i];
+                    empleado.documentos.push({
+                        nombre: archivo.name,
+                        tipo: archivo.type,
+                        tamaño: archivo.size
+                    });
+                }
+            }
+            empleados.push(empleado);
+            localStorage.setItem('empleados', JSON.stringify(empleados));
+            hideEmpleadoForm();
+            showEmpleadosList();
+        };
+        empleadoForm.classList.remove('d-none');
+        empleadosList.classList.add('d-none');
+        cumpleanosList.classList.add('d-none');
+    }
+
+    function hideEmpleadoForm() {
+        empleadoForm.classList.add('d-none');
+        showEmpleadosList();
+    }
+
+    function renderEmpleados() {
+        const tbody = document.getElementById('empleados-table-body');
+        tbody.innerHTML = '';
+        empleados.forEach(empleado => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${empleado.nombres}</td>
+                <td>${empleado.apellidos}</td>
+                <td>${empleado.cedula}</td>
+                <td>${empleado.telefono}</td>
+                <td>${empleado.email}</td>
+                <td>
+                    <button class="btn btn-sm btn-info btn-action" onclick="adjuntarDocumento(${empleado.id})">Adjuntar</button>
+                    <button class="btn btn-sm btn-primary btn-action" onclick="editEmpleado(${empleado.id})">Editar</button>
+                    <button class="btn btn-sm btn-danger btn-action" onclick="deleteEmpleado(${empleado.id})">Eliminar</button>
+                    <button class="btn btn-sm btn-success btn-action" onclick="guardarEmpleado(${empleado.id})">Guardar</button>
+                </td>
+                <td>
+                    ${empleado.documentos && empleado.documentos.length > 0 ? `<a href="${empleado.documentos[0].data}" target="_blank">Ver documento</a>` : 'Sin documento'}
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Funciones de cumpleaños
+    function showCumpleanosList() {
+        if (!isAuthenticated) {
+            showLoginForm();
+            return;
+        }
+        cumpleanosList.classList.remove('d-none');
+        empleadosList.classList.add('d-none');
+        empleadoForm.classList.add('d-none');
+        renderCumpleanos();
+    }
+
+    function renderCumpleanos() {
+        const tbody = document.getElementById('cumpleanos-table-body');
+        tbody.innerHTML = '';
+        const hoy = new Date();
+        const proximosCumpleanos = empleados
+            .map(empleado => {
+                const fechaNac = new Date(empleado.fechaNacimiento);
+                const proximoCumple = new Date(hoy.getFullYear(), fechaNac.getMonth(), fechaNac.getDate());
+                if (proximoCumple < hoy) {
+                    proximoCumple.setFullYear(hoy.getFullYear() + 1);
+                }
+                const diasRestantes = Math.ceil((proximoCumple - hoy) / (1000 * 60 * 60 * 24));
+                return {
+                    ...empleado,
+                    diasRestantes
+                };
+            })
+            .filter(emp => emp.diasRestantes <= 30)
+            .sort((a, b) => a.diasRestantes - b.diasRestantes);
+        proximosCumpleanos.forEach(empleado => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${empleado.nombres} ${empleado.apellidos}</td>
+                <td>${new Date(empleado.fechaNacimiento).toLocaleDateString()}</td>
+                <td>${empleado.diasRestantes} días</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Funciones de gestión de empleados
+    const empleadoFormElement = document.getElementById('empleadoForm');
+    if (empleadoFormElement) {
+        empleadoFormElement.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const empleado = {
+                id: Date.now(),
+                nombres: document.getElementById('nombres').value,
+                apellidos: document.getElementById('apellidos').value,
+                cedula: document.getElementById('cedula').value,
+                telefono: document.getElementById('telefono').value,
+                email: document.getElementById('email-empleado').value,
+                fechaNacimiento: document.getElementById('fecha-nacimiento').value,
+                fechaIngreso: document.getElementById('fecha-ingreso').value,
+                contactoEmergencia: {
+                    nombre: document.getElementById('contacto-nombre').value,
+                    telefono: document.getElementById('contacto-telefono').value,
+                    parentesco: document.getElementById('contacto-parentesco').value
+                },
+                documentos: []
+            };
+            // Manejar archivos adjuntos
+            const archivos = document.getElementById('documentos').files;
+            if (archivos.length > 0) {
+                for (let i = 0; i < archivos.length; i++) {
+                    const archivo = archivos[i];
+                    empleado.documentos.push({
+                        nombre: archivo.name,
+                        tipo: archivo.type,
+                        tamaño: archivo.size
+                    });
+                }
+            }
+            empleados.push(empleado);
+            localStorage.setItem('empleados', JSON.stringify(empleados));
+            hideEmpleadoForm();
+            showEmpleadosList();
+        });
+    }
+
+    // Inicialización
+    showLoginForm();
+
+    // Exponer funciones globales para botones de editar/eliminar
+    window.editEmpleado = function(id) {
+        const empleado = empleados.find(e => e.id === id);
+        if (empleado) {
+            document.getElementById('nombres').value = empleado.nombres;
+            document.getElementById('apellidos').value = empleado.apellidos;
+            document.getElementById('cedula').value = empleado.cedula;
+            document.getElementById('telefono').value = empleado.telefono;
+            document.getElementById('email-empleado').value = empleado.email;
+            document.getElementById('fecha-nacimiento').value = empleado.fechaNacimiento;
+            document.getElementById('fecha-ingreso').value = empleado.fechaIngreso;
+            document.getElementById('empleadoForm').setAttribute('data-edit-id', id);
+            showEmpleadoForm();
+        }
+    };
+
+    window.deleteEmpleado = function(id) {
+        if (confirm('¿Está seguro de que desea eliminar este empleado?')) {
+            empleados = empleados.filter(e => e.id !== id);
+            localStorage.setItem('empleados', JSON.stringify(empleados));
+            renderEmpleados();
+        }
+    };
+
+    // Adjuntar documento a un empleado
+    window.adjuntarDocumento = function(id) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '*/*';
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const empleadosActualizados = empleados.map(emp => {
+                        if (emp.id === id) {
+                            emp.documentos = [{
+                                nombre: file.name,
+                                tipo: file.type,
+                                tamaño: file.size,
+                                data: evt.target.result
+                            }];
+                        }
+                        return emp;
+                    });
+                    empleados = empleadosActualizados;
+                    localStorage.setItem('empleados', JSON.stringify(empleados));
+                    renderEmpleados();
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
+    }
+
+    // Guardar cambios de un empleado
+    window.guardarEmpleado = function(id) {
+        // Buscar el empleado en el array
+        const empleado = empleados.find(e => e.id === id);
+        if (!empleado) return;
+        // Si el formulario está en modo edición de este empleado, actualiza los datos
+        if (document.getElementById('empleadoForm').getAttribute('data-edit-id') == id) {
+            empleado.nombres = document.getElementById('nombres').value;
+            empleado.apellidos = document.getElementById('apellidos').value;
+            empleado.cedula = document.getElementById('cedula').value;
+            empleado.telefono = document.getElementById('telefono').value;
+            empleado.email = document.getElementById('email-empleado').value;
+            empleado.fechaNacimiento = document.getElementById('fecha-nacimiento').value;
+            empleado.fechaIngreso = document.getElementById('fecha-ingreso').value;
+            empleado.contactoEmergencia = {
+                nombre: document.getElementById('contacto-nombre').value,
+                telefono: document.getElementById('contacto-telefono').value,
+                parentesco: document.getElementById('contacto-parentesco').value
+            };
+            localStorage.setItem('empleados', JSON.stringify(empleados));
+            renderEmpleados();
+            hideEmpleadoForm();
+            alert('Empleado guardado correctamente.');
+        }
+    }
+}); 
