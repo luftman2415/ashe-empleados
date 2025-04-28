@@ -86,18 +86,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const confirmPassword = document.getElementById('reg-confirm-password').value;
 
         if (password !== confirmPassword) {
-            alert('Las contraseñas no coinciden');
+            mostrarAlerta('Las contraseñas no coinciden', 'danger');
             return;
         }
 
         if (usuariosPermitidos.some(u => u.email === email)) {
-            alert('El correo electrónico ya está registrado');
+            mostrarAlerta('El correo electrónico ya está registrado', 'danger');
             return;
         }
 
         usuariosPermitidos.push({ email, password });
         localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos));
-        alert('Usuario registrado exitosamente');
+        mostrarAlerta('Usuario registrado exitosamente', 'success');
         hideRegistroForm();
         showLoginForm();
     }
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (btnRegistro) btnRegistro.style.display = 'none';
             showDashboard();
         } else {
-            alert('Credenciales incorrectas');
+            mostrarAlerta('Credenciales incorrectas', 'danger');
         }
     }
 
@@ -167,6 +167,22 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btnRegistro) btnRegistro.style.display = 'block';
         document.getElementById('dashboard').classList.add('d-none');
         showLoginForm();
+        mostrarAlerta('Sesión cerrada correctamente.', 'success');
+    }
+
+    // Función para mostrar alertas visuales
+    function mostrarAlerta(mensaje, tipo = 'success') {
+        let alerta = document.getElementById('alerta-visual');
+        if (!alerta) {
+            alerta = document.createElement('div');
+            alerta.id = 'alerta-visual';
+            alerta.className = `alert alert-${tipo} position-fixed top-0 start-50 translate-middle-x mt-3 fade-in`;
+            alerta.style.zIndex = 9999;
+            document.body.appendChild(alerta);
+        }
+        alerta.textContent = mensaje;
+        alerta.style.display = 'block';
+        setTimeout(() => { alerta.style.display = 'none'; }, 2200);
     }
 
     function handleSalir() {
@@ -414,7 +430,10 @@ document.addEventListener('DOMContentLoaded', function() {
     window.guardarEmpleado = function(id) {
         // Buscar el empleado en el array
         const empleado = empleados.find(e => e.id === id);
-        if (!empleado) return;
+        if (!empleado) {
+            mostrarAlerta('Empleado no encontrado.', 'danger');
+            return;
+        }
         // Si el formulario está en modo edición de este empleado, actualiza los datos
         if (document.getElementById('empleadoForm').getAttribute('data-edit-id') == id) {
             empleado.nombres = document.getElementById('nombres').value;
@@ -432,7 +451,9 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('empleados', JSON.stringify(empleados));
             renderEmpleados();
             hideEmpleadoForm();
-            alert('Empleado guardado correctamente.');
+            mostrarAlerta('Empleado guardado correctamente.', 'success');
+        } else {
+            mostrarAlerta('Debes editar el empleado antes de guardar.', 'danger');
         }
     }
 
