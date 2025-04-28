@@ -1,12 +1,12 @@
 body {
     font-family: 'Roboto', Arial, sans-serif;
-    background-color: #f8f9fa;
+    background-color: #f4f6fa;
     color: #222;
 }
 
-.navbar {
-    box-shadow: 0 2px 8px #0001;
-    min-height: 64px;
+.navbar, .footer {
+    background: #0056b3;
+    color: #fff;
 }
 
 .navbar .navbar-brand img {
@@ -15,6 +15,7 @@ body {
 }
 
 .navbar .nav-link {
+    color: #fff !important;
     font-size: 1.1rem;
     transition: color 0.2s;
 }
@@ -23,18 +24,21 @@ body {
     color: #ffd700 !important;
 }
 
-.btn {
+.btn, .btn-primary, .btn-outline-light {
     border-radius: 24px;
     font-weight: 500;
     transition: box-shadow 0.2s, background 0.2s;
+    box-shadow: 0 2px 8px #0056b322;
 }
 
 .btn-primary, .btn-outline-primary {
-    box-shadow: 0 2px 8px #007bff22;
+    background: #0056b3;
+    border-color: #0056b3;
 }
 
 .btn-primary:hover, .btn-outline-primary:hover {
-    background: #0056b3;
+    background: #003974;
+    border-color: #003974;
     color: #fff;
 }
 
@@ -42,11 +46,12 @@ body {
     border-radius: 18px;
     box-shadow: 0 2px 16px #0001;
     border: none;
+    background: #fff;
 }
 
 .card-title {
     font-weight: 700;
-    color: #0d6efd;
+    color: #0056b3;
 }
 
 .table th, .table td {
@@ -69,8 +74,6 @@ body {
 }
 
 .footer {
-    background: #0d6efd;
-    color: #fff;
     font-size: 1rem;
     box-shadow: 0 -2px 8px #0001;
 }
@@ -103,12 +106,12 @@ body {
 #dashboard .display-4 {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #0d6efd;
+    color: #0056b3;
 }
 
 .form-control:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+    border-color: #0056b3;
+    box-shadow: 0 0 0 0.25rem rgba(0,86,179,.25);
 }
 
 #login-form {
@@ -164,4 +167,69 @@ body {
     padding: 6px;
     object-fit: contain;
     display: inline-block;
+}
+
+.section-contacto {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px #0001;
+    padding: 2rem 1.5rem;
+    margin: 2rem auto;
+    max-width: 700px;
+    border-left: 6px solid #0056b3;
+}
+
+.section-contacto h2 {
+    color: #0056b3;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.section-contacto p {
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.section-contacto .contact-info {
+    margin-top: 1.5rem;
+    font-size: 1.05rem;
+}
+
+.sg-sst-banner {
+    background: linear-gradient(90deg, #0056b3 80%, #007bff 100%);
+    font-size: 1.15rem;
+    letter-spacing: 1px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px #0001;
+    margin-bottom: 2rem;
+}
+
+.section-nosotros, .section-productos {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px #0001;
+    padding: 2rem 1.5rem;
+    margin: 2rem auto 1.5rem auto;
+    max-width: 700px;
+    border-left: 6px solid #0056b3;
+}
+
+.section-nosotros h2, .section-productos h2 {
+    color: #0056b3;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.section-nosotros p, .section-productos ul {
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.section-productos ul {
+    padding-left: 1.2rem;
+}
+
+.section-productos li {
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
 } 
