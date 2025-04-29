@@ -13,6 +13,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
+            <img src="logo.png" alt="Logo ASHE" id="logo-ashe" style="height:48px; margin-right:16px;">
             <a class="navbar-brand" href="#">Portal RRHH ASHE</a>
             <div class="ms-auto d-flex align-items-center">
                 <button id="btn-dashboard" class="btn btn-link nav-link d-none">Dashboard</button>
@@ -34,7 +35,7 @@
 
     <!-- Login Form -->
     <section id="login-form" class="mb-4">
-        <form id="loginForm">
+        <form id="loginForm" autocomplete="off">
             <h2>Iniciar Sesión</h2>
             <div class="mb-3">
                 <label for="email" class="form-label">Correo electrónico</label>
@@ -70,6 +71,30 @@
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Enviar</button>
                         <button type="button" class="btn btn-secondary" id="btn-cerrar-forgot">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Restablecer contraseña -->
+    <div id="reset-password-modal" class="modal d-none" tabindex="-1" style="display:block; background:rgba(0,0,0,0.3); position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:9999;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header">
+                    <h5 class="modal-title">Restablecer contraseña</h5>
+                    <button type="button" class="btn-close" id="btn-cerrar-reset"></button>
+                </div>
+                <form id="reset-password-form">
+                    <div class="modal-body">
+                        <label for="reset-password" class="form-label">Nueva contraseña</label>
+                        <input type="password" class="form-control" id="reset-password" required>
+                        <label for="reset-password-confirm" class="form-label mt-2">Confirmar nueva contraseña</label>
+                        <input type="password" class="form-control" id="reset-password-confirm" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Restablecer</button>
+                        <button type="button" class="btn btn-secondary" id="btn-cerrar-reset">Cancelar</button>
                     </div>
                 </form>
             </div>
@@ -121,6 +146,7 @@
         </div>
         <div class="text-center">
             <button id="btn-nuevo-empleado" class="btn btn-primary mb-3">Crear Nuevo Empleado</button>
+            <button id="btn-ver-empleados" class="btn btn-secondary mb-3">Ver Empleados</button>
             <button id="btn-exportar-csv" class="btn btn-secondary mb-3">Exportar CSV</button>
         </div>
         <div class="text-center">
@@ -146,6 +172,8 @@
                         <th>Departamento</th>
                         <th>Tipo Contrato</th>
                         <th>Salario</th>
+                        <th>Fecha de Cumpleaños</th>
+                        <th>Fecha de Ingreso</th>
                         <th>Notas/Acontecimientos</th>
                         <th>Hoja de Vida</th>
                         <th>Contacto Emergencia Nombre</th>
@@ -159,6 +187,18 @@
         </div>
         <div class="text-center">
             <button id="btn-cancelar" class="btn btn-cancelar">Volver</button>
+        </div>
+    </section>
+
+    <!-- Vista individual de empleado -->
+    <section id="empleado-detalle" class="d-none">
+        <div class="card mt-4 mb-4 mx-auto" style="max-width:600px;">
+            <div class="card-body" id="empleado-detalle-body">
+                <!-- Aquí se carga la información del empleado -->
+            </div>
+        </div>
+        <div class="text-center">
+            <button id="btn-volver-empleados" class="btn btn-cancelar">Volver a empleados</button>
         </div>
     </section>
 
@@ -200,7 +240,15 @@
             </div>
             <div class="mb-3">
                 <label for="salario" class="form-label">Salario</label>
-                <input type="number" class="form-control" id="salario">
+                <input type="text" class="form-control" id="salario" pattern="^\d{1,3}(\.\d{3})*(\,\d+)?$" placeholder="Ej: 1.000.000" inputmode="numeric">
+            </div>
+            <div class="mb-3">
+                <label for="fecha-nacimiento" class="form-label">Fecha de Cumpleaños</label>
+                <input type="date" class="form-control" id="fecha-nacimiento">
+            </div>
+            <div class="mb-3">
+                <label for="fecha-ingreso" class="form-label">Fecha de Ingreso</label>
+                <input type="date" class="form-control" id="fecha-ingreso">
             </div>
             <div class="mb-3">
                 <label for="notas" class="form-label">Notas / Acontecimientos</label>
@@ -285,16 +333,17 @@
     <section id="contacto" class="container mb-4">
         <div class="card mt-4">
             <div class="card-body">
-                <h5 class="card-title">Contacto RRHH</h5>
-                <p class="card-text mb-1"><i class="bi bi-envelope"></i> rrhh@ashe.com</p>
-                <p class="card-text"><i class="bi bi-telephone"></i> +57 123 456 7890</p>
+                <h5 class="card-title"><i class="bi bi-person-lines-fill"></i> Contacto RRHH</h5>
+                <p class="card-text mb-1"><i class="bi bi-envelope"></i> caccali@ashe.com.co</p>
+                <p class="card-text mb-1"><i class="bi bi-telephone"></i> +57 (602) 524 40 44</p>
+                <p class="card-text"><i class="bi bi-geo-alt"></i> Carrera 35 # 12 – 145, Zona Industrial, Arroyohondo, Yumbo – Valle, Colombia</p>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <div>© 2024 ASHE - Portal de Recursos Humanos</div>
+        <div>© 2025 ASHE - Portal de Recursos Humanos</div>
     </footer>
 
     <!-- Alerta visual -->
