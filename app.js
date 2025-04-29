@@ -222,3 +222,378 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btnCumpleanos) btnCumpleanos.classList.add('d-none');
         if (btnAusencias) btnAusencias.classList.add('d-none');
     }
+    // Dashboard
+    function showDashboard() {
+        dashboard.classList.remove('d-none');
+        ocultarTodo(['login-form', 'registro-form', 'empleados-list', 'empleado-form', 
+                     'cumpleanos-list', 'ausencias-list', 'empleado-detalle']);
+        actualizarBreadcrumb('Dashboard');
+
+        // Actualizar estadísticas
+        document.getElementById('dashboard-total-empleados').textContent = empleados.length;
+        document.getElementById('dashboard-usuarios').textContent = usuariosPermitidos.length;
+
+        // Próximos cumpleaños
+        const proximosCumpleanos = empleados.filter(emp => {
+            if (!emp.fechaNacimiento) return false;
+            const diasRestantes = calcularDiasParaCumpleanos(emp.fechaNacimiento);
+            return diasRestantes <= 30;
+        });
+        document.getElementById('dashboard-cumpleanos').textContent = proximosCumpleanos.length;
+    }
+
+    // Funciones de empleados
+    function showEmpleadosList() {
+        if (!isAuthenticated) {
+            showLoginForm();
+            return;
+        }
+        empleadosList.classList.remove('d-none');
+        ocultarTodo(['login-form', 'registro-form', 'empleado-form', 'cumpleanos-list', 
+                     'dashboard', 'ausencias-list', 'empleado-detalle']);
+        actualizarBreadcrumb('Lista de Empleados');
+        actualizarFiltroDepartamentos();
+        renderEmpleados();
+    }
+
+    function showEmpleadoForm(editId = null) {
+        const form = document.getElementById('empleadoForm');
+        if (form) {
+            form.reset();
+            if (editId) {
+                form.setAttribute('data-edit-id', editId);
+                cargarDatosEmpleado(editId);
+            } else {
+                form.removeAttribute('data-edit-id');
+            }
+        }
+        empleadoForm.classList.remove('d-none');
+        ocultarTodo(['login-form', 'registro-form', 'empleados-list', 'cumpleanos-list', 
+                     'dashboard', 'ausencias-list', 'empleado-detalle']);
+        actualizarBreadcrumb(editId ? 'Editar Empleado' : 'Nuevo Empleado');
+    }
+
+    function renderEmpleados() {
+        const tbody = document.getElementById('empleados-table-body');
+        tbody.innerHTML = '';
+
+        let empleadosFiltrados = empleados;
+
+        // Aplicar filtros
+        const departamento = filtroDepartamento.value;
+        const antiguedad = filtroAntiguedad.value;
+        const busqueda = busquedaEmpleados.value.toLowerCase();
+
+        if (departamento) {
+            empleadosFiltrados = empleadosFiltrados.filter(emp => emp.departamento === departamento);
+        }
+
+        if (antiguedad) {
+            const [min, max] = antiguedad.split('-');
+            empleadosFiltrados = empleadosFiltrados.filter(emp => {
+                const años = calcularAntiguedad(emp.fechaIngreso);
+                if (max === '+') return años > parseInt(min);
+                return años >= parseInt(min) && años <= parseInt(max);
+            });
+        }
+
+        if (busqueda) {
+            empleadosFiltrados = empleadosFiltrados.filter(emp => 
+                emp.nombres.toLowerCase().includes(busqueda) ||
+                emp.apellidos.toLowerCase().includes(busqueda) ||
+                emp.cedula.toLowerCase().includes(busqueda) ||
+                (emp.cargo || '').toLowerCase().includes(busqueda) ||
+                (emp.departamento || '').toLowerCase().includes(busqueda)
+            );
+        }
+
+        empleadosFiltrados.forEach(empleado => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><a href="#" class="ver-empleado" data-id="${empleado.id}">${empleado.nombres}</a></td>
+                <td>${empleado.apellidos}</td>
+                <td>${empleado.cedula}</td>
+                <td>${empleado.telefono}</td>
+                <td>${empleado.email}</td>
+                <td>${empleado.cargo || ''}</td>
+                <td>${empleado.departamento || ''}</td>
+                <td>${calcularAntiguedadTexto(empleado.fechaIngreso)}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="editarEmpleado(${empleado.id})">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="eliminarEmpleado(${empleado.id})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Eventos para ver detalle
+        document.querySelectorAll('.ver-empleado').forEach(link => {
+            link.onclick = function(e) {
+                e.preventDefault();
+                mostrarDetalleEmpleado(this.getAttribute('data-id'));
+            };
+        });
+    }
+
+    function mostrarDetalleEmpleado(id) {
+        const empleado = empleados.find(e => e.id == id);
+        if (!empleado) return;
+
+        const detalleBody = document.getElementById('empleado-detalle-body');
+        detalleBody.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>${empleado.nombres} ${empleado.apellidos}</h4>
+                    <p><strong>Cédula:</strong> ${empleado.cedula}</p>
+                    <p><strong>Teléfono:</strong> ${empleado.telefono}</p>
+                    <p><strong>Email:</strong> ${empleado.email}</p>
+                    <p><strong>Cargo:</strong> ${empleado.cargo || ''}</p>
+                    <p><strong>Departamento:</strong> ${empleado.departamento || ''}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Tipo de Contrato:</strong> ${empleado.tipoContrato || ''}</p>
+                    <p><strong>Fecha de Nacimiento:</strong> ${formatearFecha(empleado.fechaNacimiento)}</p>
+                    <p><strong>Fecha de Ingreso:</strong> ${formatearFecha(empleado.fechaIngreso)}</p>
+                    <p><strong>Antigüedad:</strong> ${calcularAntiguedadTexto(empleado.fechaIngreso)}</p>
+                    <p><strong>Salario:</strong> ${usuarioActual.rol === 'admin' ? formatearMiles(empleado.salario) : '****'}</p>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h5>Notas / Acontecimientos</h5>
+                    <p>${empleado.notas || 'Sin notas registradas'}</p>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h5>Contacto de Emergencia</h5>
+                    <p><strong>Nombre:</strong> ${empleado.contactoEmergenciaNombre || ''}</p>
+                    <p><strong>Teléfono:</strong> ${empleado.contactoEmergenciaTelefono || ''}</p>
+                    <p><strong>Parentesco:</strong> ${empleado.contactoEmergenciaParentesco || ''}</p>
+                </div>
+            </div>
+        `;
+
+        empleadoDetalle.classList.remove('d-none');
+        ocultarTodo(['login-form', 'registro-form', 'empleados-list', 'empleado-form', 
+                     'cumpleanos-list', 'dashboard', 'ausencias-list']);
+        actualizarBreadcrumb('Detalle de Empleado');
+    }
+
+    function editarEmpleado(id) {
+        showEmpleadoForm(id);
+    }
+
+    function eliminarEmpleado(id) {
+        if (confirm('¿Está seguro de que desea eliminar este empleado?')) {
+            empleados = empleados.filter(e => e.id != id);
+            localStorage.setItem('empleados', JSON.stringify(empleados));
+            mostrarAlerta('Empleado eliminado correctamente', 'success');
+            renderEmpleados();
+        }
+    }
+
+    function cargarDatosEmpleado(id) {
+        const empleado = empleados.find(e => e.id == id);
+        if (empleado) {
+            Object.keys(empleado).forEach(key => {
+                const elemento = document.getElementById(key);
+                if (elemento && key !== 'id') {
+                    elemento.value = empleado[key];
+                }
+            });
+        }
+    }
+
+    // Guardar empleado
+    const empleadoFormElement = document.getElementById('empleadoForm');
+    if (empleadoFormElement) {
+        empleadoFormElement.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const editId = this.getAttribute('data-edit-id');
+            
+            const empleado = {
+                id: editId ? parseInt(editId) : Date.now(),
+                nombres: document.getElementById('nombres').value,
+                apellidos: document.getElementById('apellidos').value,
+                cedula: document.getElementById('cedula').value,
+                telefono: document.getElementById('telefono').value,
+                email: document.getElementById('email-empleado').value,
+                cargo: document.getElementById('cargo').value,
+                departamento: document.getElementById('departamento').value,
+                tipoContrato: document.getElementById('tipo-contrato').value,
+                salario: limpiarMiles(document.getElementById('salario').value),
+                fechaNacimiento: document.getElementById('fecha-nacimiento').value,
+                fechaIngreso: document.getElementById('fecha-ingreso').value,
+                notas: document.getElementById('notas').value,
+                contactoEmergenciaNombre: document.getElementById('contacto-emergencia-nombre').value,
+                contactoEmergenciaTelefono: document.getElementById('contacto-emergencia-telefono').value,
+                contactoEmergenciaParentesco: document.getElementById('contacto-emergencia-parentesco').value
+            };
+
+            if (editId) {
+                const index = empleados.findIndex(e => e.id == editId);
+                if (index !== -1) {
+                    empleados[index] = empleado;
+                    mostrarAlerta('Empleado actualizado correctamente', 'success');
+                }
+            } else {
+                empleados.push(empleado);
+                mostrarAlerta('Empleado guardado correctamente', 'success');
+            }
+
+            localStorage.setItem('empleados', JSON.stringify(empleados));
+            showEmpleadosList();
+        });
+    }
+
+    // Funciones de utilidad
+    function ocultarTodo(ids) {
+        ids.forEach(id => document.getElementById(id).classList.add('d-none'));
+    }
+
+    function actualizarBreadcrumb(seccion) {
+        if (breadcrumbSection) {
+            breadcrumbSection.textContent = seccion;
+        }
+    }
+
+    function calcularAntiguedad(fechaIngreso) {
+        if (!fechaIngreso) return 0;
+        const inicio = new Date(fechaIngreso);
+        const hoy = new Date();
+        return Math.floor((hoy - inicio) / (365.25 * 24 * 60 * 60 * 1000));
+    }
+
+    function calcularAntiguedadTexto(fechaIngreso) {
+        if (!fechaIngreso) return 'No registrada';
+        const años = calcularAntiguedad(fechaIngreso);
+        if (años < 1) {
+            const meses = Math.floor((new Date() - new Date(fechaIngreso)) / (30.44 * 24 * 60 * 60 * 1000));
+            return meses === 1 ? '1 mes' : `${meses} meses`;
+        }
+        return años === 1 ? '1 año' : `${años} años`;
+    }
+
+    function calcularDiasParaCumpleanos(fechaNacimiento) {
+        if (!fechaNacimiento) return Infinity;
+        const hoy = new Date();
+        const cumple = new Date(fechaNacimiento);
+        cumple.setFullYear(hoy.getFullYear());
+        if (cumple < hoy) {
+            cumple.setFullYear(hoy.getFullYear() + 1);
+        }
+        return Math.ceil((cumple - hoy) / (24 * 60 * 60 * 1000));
+    }
+
+    function formatearFecha(fecha) {
+        if (!fecha) return 'No registrada';
+        return new Date(fecha).toLocaleDateString();
+    }
+
+    function formatearMiles(valor) {
+        if (!valor) return '';
+        return valor.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function limpiarMiles(valor) {
+        return valor ? valor.replace(/\./g, '') : '';
+    }
+
+    function mostrarAlerta(mensaje, tipo = 'success') {
+        const alerta = document.createElement('div');
+        alerta.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+        alerta.style.zIndex = '9999';
+        alerta.innerHTML = `
+            ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alerta);
+        setTimeout(() => alerta.remove(), 3000);
+    }
+
+    function actualizarFiltroDepartamentos() {
+        const departamentos = [...new Set(empleados.map(emp => emp.departamento).filter(Boolean))];
+        filtroDepartamento.innerHTML = '<option value="">Todos los departamentos</option>';
+        departamentos.forEach(dep => {
+            filtroDepartamento.innerHTML += `<option value="${dep}">${dep}</option>`;
+        });
+    }
+
+    function cancelarFormulario() {
+        showEmpleadosList();
+    }
+
+    // Notificaciones de cumpleaños
+    function notificarCumpleanos() {
+        empleados.forEach(emp => {
+            if (emp.fechaNacimiento) {
+                const dias = calcularDiasParaCumpleanos(emp.fechaNacimiento);
+                if (dias === 1) {
+                    mostrarAlerta(`¡Mañana es el cumpleaños de ${emp.nombres} ${emp.apellidos}!`, 'info');
+                } else if (dias === 0) {
+                    mostrarAlerta(`¡Hoy es el cumpleaños de ${emp.nombres} ${emp.apellidos}!`, 'info');
+                }
+            }
+        });
+    }
+
+    // Exportar a CSV
+    function exportarEmpleadosCSV() {
+        if (!empleados.length) {
+            mostrarAlerta('No hay empleados para exportar', 'warning');
+            return;
+        }
+
+        const headers = [
+            'Nombres', 'Apellidos', 'Cédula', 'Teléfono', 'Email', 'Cargo', 
+            'Departamento', 'Tipo de Contrato', 'Salario', 'Fecha de Nacimiento',
+            'Fecha de Ingreso', 'Antigüedad', 'Notas', 'Contacto Emergencia Nombre',
+            'Contacto Emergencia Teléfono', 'Contacto Emergencia Parentesco'
+        ];
+
+        let csv = headers.join(',') + '\n';
+        
+        empleados.forEach(emp => {
+            const row = [
+                emp.nombres,
+                emp.apellidos,
+                emp.cedula,
+                emp.telefono,
+                emp.email,
+                emp.cargo || '',
+                emp.departamento || '',
+                emp.tipoContrato || '',
+                emp.salario || '',
+                emp.fechaNacimiento || '',
+                emp.fechaIngreso || '',
+                calcularAntiguedadTexto(emp.fechaIngreso),
+                (emp.notas || '').replace(/,/g, ';'),
+                emp.contactoEmergenciaNombre || '',
+                emp.contactoEmergenciaTelefono || '',
+                emp.contactoEmergenciaParentesco || ''
+            ].map(val => `"${val}"`);
+            
+            csv += row.join(',') + '\n';
+        });
+
+        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'empleados_ashe.csv');
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Inicialización
+    showLoginForm();
+});
