@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const cumpleanosList = document.getElementById('cumpleanos-list');
     const dashboard = document.getElementById('dashboard');
     const btnNuevoEmpleado = document.getElementById('btn-nuevo-empleado');
+    const btnVerEmpleados = document.getElementById('btn-ver-empleados');
     const btnCancelar = document.getElementById('btn-cancelar');
     const btnRegistro = document.getElementById('btn-registro');
     const btnCancelarRegistro = document.getElementById('btn-cancelar-registro');
@@ -35,15 +36,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const busquedaEmpleados = document.getElementById('busqueda-empleados');
     const ausenciasList = document.getElementById('ausencias-list');
     const ausenciaForm = document.getElementById('ausenciaForm');
+    const empleadoDetalle = document.getElementById('empleado-detalle');
+    const empleadoDetalleBody = document.getElementById('empleado-detalle-body');
+    const btnVolverEmpleados = document.getElementById('btn-volver-empleados');
 
     // Olvidé mi contraseña
     const forgotPasswordLink = document.getElementById('forgot-password-link');
     const forgotPasswordModal = document.getElementById('forgot-password-modal');
     const forgotPasswordForm = document.getElementById('forgot-password-form');
     const btnCerrarForgot = document.querySelectorAll('#btn-cerrar-forgot');
+    const resetPasswordModal = document.getElementById('reset-password-modal');
+    const resetPasswordForm = document.getElementById('reset-password-form');
+    const btnCerrarReset = document.querySelectorAll('#btn-cerrar-reset');
 
     // Estado de autenticación
     let isAuthenticated = false;
+    let emailToReset = null;
 
     // Toggle de contraseña
     document.querySelectorAll('.toggle-password').forEach(btn => {
@@ -80,11 +88,38 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const email = document.getElementById('forgot-email').value;
             if (usuariosPermitidos.some(u => u.email === email)) {
-                mostrarAlerta('Se ha enviado un correo para restablecer la contraseña (simulado)', 'success');
+                emailToReset = email;
+                forgotPasswordModal.classList.add('d-none');
+                resetPasswordModal.classList.remove('d-none');
             } else {
                 mostrarAlerta('El correo no está registrado', 'danger');
+                forgotPasswordModal.classList.add('d-none');
             }
-            forgotPasswordModal.classList.add('d-none');
+        };
+    }
+    if (btnCerrarReset) {
+        btnCerrarReset.forEach(btn => {
+            btn.onclick = function() {
+                resetPasswordModal.classList.add('d-none');
+            };
+        });
+    }
+    if (resetPasswordForm) {
+        resetPasswordForm.onsubmit = function(e) {
+            e.preventDefault();
+            const pass1 = document.getElementById('reset-password').value;
+            const pass2 = document.getElementById('reset-password-confirm').value;
+            if (pass1 !== pass2) {
+                mostrarAlerta('Las contraseñas no coinciden', 'danger');
+                return;
+            }
+            let idx = usuariosPermitidos.findIndex(u => u.email === emailToReset);
+            if (idx !== -1) {
+                usuariosPermitidos[idx].password = pass1;
+                localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos));
+                mostrarAlerta('Contraseña restablecida con éxito', 'success');
+            }
+            resetPasswordModal.classList.add('d-none');
         };
     }
 
@@ -92,10 +127,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loginForm) loginForm.addEventListener('submit', handleLogin);
     if (registroForm) registroForm.addEventListener('submit', handleRegistro);
     if (btnNuevoEmpleado) btnNuevoEmpleado.onclick = showEmpleadoForm;
-    if (btnCancelar) btnCancelar.onclick = hideEmpleadoForm;
+    if (btnVerEmpleados) btnVerEmpleados.onclick = showEmpleadosList;
+    if (btnCancelar) btnCancelar.onclick = function() {
+        empleadoForm.classList.add('d-none');
+        showEmpleadosList();
+    };
     if (btnRegistro) btnRegistro.onclick = showRegistroForm;
     if (btnCancelarRegistro) btnCancelarRegistro.onclick = hideRegistroForm;
-    if (btnLogin) btnLogin.onclick = showLoginForm;
+    if (btnLogin) btnLogin.onclick = function() {
+        limpiarLogin();
+        showLoginForm();
+    };
     if (btnLogout) btnLogout.onclick = handleLogout;
     if (btnDashboard) btnDashboard.onclick = showDashboard;
     if (btnCumpleanos) btnCumpleanos.onclick = showCumpleanosList;
@@ -106,6 +148,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnExportarCSV) btnExportarCSV.onclick = exportarEmpleadosCSV;
     if (busquedaEmpleados) busquedaEmpleados.oninput = filtrarEmpleados;
     if (ausenciaForm) ausenciaForm.addEventListener('submit', handleRegistrarAusencia);
+    if (btnVolverEmpleados) btnVolverEmpleados.onclick = function() {
+        empleadoDetalle.classList.add('d-none');
+        showEmpleadosList();
+    };
 
     // Funciones de registro
     function handleRegistro(e) {
@@ -139,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cumpleanosList.classList.add('d-none');
         dashboard.classList.add('d-none');
         ausenciasList.classList.add('d-none');
+        empleadoDetalle.classList.add('d-none');
     }
 
     function hideRegistroForm() {
@@ -164,8 +211,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (btnCumpleanos) btnCumpleanos.style.display = '';
             if (btnAusencias) btnAusencias.style.display = '';
             showDashboard();
-            // Ocultar login en todas las páginas autenticadas
             document.getElementById('login-form').classList.add('d-none');
+            notificarCumpleanos();
         } else {
             mostrarAlerta('Credenciales incorrectas', 'danger');
         }
@@ -179,12 +226,20 @@ document.addEventListener('DOMContentLoaded', function() {
         cumpleanosList.classList.add('d-none');
         dashboard.classList.add('d-none');
         ausenciasList.classList.add('d-none');
+        empleadoDetalle.classList.add('d-none');
         if (btnLogout) btnLogout.classList.add('d-none');
         if (btnDashboard) btnDashboard.style.display = 'none';
         if (btnCumpleanos) btnCumpleanos.style.display = 'none';
         if (btnAusencias) btnAusencias.style.display = 'none';
         if (btnLogin) btnLogin.classList.remove('d-none');
         if (btnRegistro) btnRegistro.classList.remove('d-none');
+        limpiarLogin();
+    }
+
+    function limpiarLogin() {
+        if (loginForm) {
+            loginForm.reset();
+        }
     }
 
     function handleLogout() {
@@ -222,6 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
         empleadoForm.classList.add('d-none');
         cumpleanosList.classList.add('d-none');
         ausenciasList.classList.add('d-none');
+        empleadoDetalle.classList.add('d-none');
         document.getElementById('login-form').classList.add('d-none');
         document.getElementById('registro-form').classList.add('d-none');
         // Actualizar datos
@@ -254,6 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cumpleanosList.classList.add('d-none');
         dashboard.classList.add('d-none');
         ausenciasList.classList.add('d-none');
+        empleadoDetalle.classList.add('d-none');
         renderEmpleados();
     }
 
@@ -266,11 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cumpleanosList.classList.add('d-none');
         dashboard.classList.add('d-none');
         ausenciasList.classList.add('d-none');
-    }
-
-    function hideEmpleadoForm() {
-        empleadoForm.classList.add('d-none');
-        showEmpleadosList();
+        empleadoDetalle.classList.add('d-none');
     }
 
     function renderEmpleados() {
@@ -289,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }).forEach(empleado => {
             let salarioTd = '';
             if (usuarioActual && usuarioActual.rol === 'admin') {
-                salarioTd = `<td>${empleado.salario || ''}</td>`;
+                salarioTd = `<td>${formatearMiles(empleado.salario) || ''}</td>`;
             } else {
                 salarioTd = `<td>****</td>`;
             }
@@ -298,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 : `<td></td>`;
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${empleado.nombres}</td>
+                <td><a href="#" class="ver-empleado" data-id="${empleado.id}">${empleado.nombres}</a></td>
                 <td>${empleado.apellidos}</td>
                 <td>${empleado.cedula}</td>
                 <td>${empleado.telefono}</td>
@@ -307,6 +360,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${empleado.departamento || ''}</td>
                 <td>${empleado.tipoContrato || ''}</td>
                 ${salarioTd}
+                <td>${empleado.fechaNacimiento ? new Date(empleado.fechaNacimiento).toLocaleDateString() : ''}</td>
+                <td>${empleado.fechaIngreso ? new Date(empleado.fechaIngreso).toLocaleDateString() : ''}</td>
                 <td>${empleado.notas || ''}</td>
                 ${hojaDeVidaTd}
                 <td>${empleado.contactoEmergenciaNombre || ''}</td>
@@ -319,28 +374,37 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             tbody.appendChild(tr);
         });
+
+        // Evento para ver detalle de empleado
+        document.querySelectorAll('.ver-empleado').forEach(link => {
+            link.onclick = function(e) {
+                e.preventDefault();
+                const id = Number(this.getAttribute('data-id'));
+                mostrarDetalleEmpleado(id);
+            };
+        });
     }
 
     function filtrarEmpleados() {
         renderEmpleados();
     }
 
-    // Exportar empleados a CSV (corregido)
+    // Exportar empleados a CSV (UTF-8, separador coma)
     function exportarEmpleadosCSV() {
         if (!empleados.length) {
             mostrarAlerta('No hay empleados para exportar', 'danger');
             return;
         }
-        let csv = 'Nombres,Apellidos,Cédula,Teléfono,Email,Cargo,Departamento,Tipo de Contrato,Salario,Notas/Acontecimientos,Hoja de Vida,Contacto Emergencia Nombre,Contacto Emergencia Teléfono,Contacto Emergencia Parentesco\n';
+        let csv = 'Nombres,Apellidos,Cédula,Teléfono,Email,Cargo,Departamento,Tipo de Contrato,Salario,Fecha de Cumpleaños,Fecha de Ingreso,Notas/Acontecimientos,Hoja de Vida,Contacto Emergencia Nombre,Contacto Emergencia Teléfono,Contacto Emergencia Parentesco\n';
         empleados.forEach(emp => {
             csv += [
                 emp.nombres, emp.apellidos, emp.cedula, emp.telefono, emp.email,
                 emp.cargo || '', emp.departamento || '', emp.tipoContrato || '',
-                emp.salario || '', emp.notas || '', emp.hojaDeVidaNombre || '',
+                emp.salario || '', emp.fechaNacimiento || '', emp.fechaIngreso || '', emp.notas || '', emp.hojaDeVidaNombre || '',
                 emp.contactoEmergenciaNombre || '', emp.contactoEmergenciaTelefono || '', emp.contactoEmergenciaParentesco || ''
             ].map(val => `"${(val || '').replace(/"/g, '""')}"`).join(',') + '\n';
         });
-        const blob = new Blob([csv], { type: 'text/csv' });
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -351,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
         URL.revokeObjectURL(url);
     }
 
-    // Guardar empleado (con notas, hoja de vida y contacto emergencia separado)
+    // Guardar empleado (con notas, hoja de vida, fechas y contacto emergencia separado)
     const empleadoFormElement = document.getElementById('empleadoForm');
     if (empleadoFormElement) {
         empleadoFormElement.addEventListener('submit', function(e) {
@@ -363,7 +427,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const hojaDeVidaInput = document.getElementById('hoja-de-vida');
             if (hojaDeVidaInput && hojaDeVidaInput.files.length > 0) {
                 hojaDeVidaNombre = hojaDeVidaInput.files[0].name;
-                // Guardar como base64 (solo nombre en CSV)
                 const reader = new FileReader();
                 reader.onload = function(evt) {
                     hojaDeVidaArchivo = evt.target.result;
@@ -386,7 +449,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     cargo: document.getElementById('cargo') ? document.getElementById('cargo').value : '',
                     departamento: document.getElementById('departamento') ? document.getElementById('departamento').value : '',
                     tipoContrato: document.getElementById('tipo-contrato') ? document.getElementById('tipo-contrato').value : '',
-                    salario: (usuarioActual && usuarioActual.rol === 'admin' && document.getElementById('salario')) ? document.getElementById('salario').value : '',
+                    salario: limpiarMiles(document.getElementById('salario').value),
+                    fechaNacimiento: document.getElementById('fecha-nacimiento').value,
+                    fechaIngreso: document.getElementById('fecha-ingreso').value,
                     notas: document.getElementById('notas') ? document.getElementById('notas').value : '',
                     hojaDeVidaNombre,
                     hojaDeVidaArchivo,
@@ -410,6 +475,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 showEmpleadosList();
             }
         });
+
+        // Formato de miles en salario
+        const salarioInput = document.getElementById('salario');
+        if (salarioInput) {
+            salarioInput.addEventListener('input', function(e) {
+                let val = this.value.replace(/\D/g, '');
+                if (val) {
+                    this.value = formatearMiles(val);
+                } else {
+                    this.value = '';
+                }
+            });
+        }
     }
 
     // Editar empleado (cargar campos separados)
@@ -424,7 +502,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('cargo')) document.getElementById('cargo').value = empleado.cargo || '';
             if (document.getElementById('departamento')) document.getElementById('departamento').value = empleado.departamento || '';
             if (document.getElementById('tipo-contrato')) document.getElementById('tipo-contrato').value = empleado.tipoContrato || '';
-            if (usuarioActual && usuarioActual.rol === 'admin' && document.getElementById('salario')) document.getElementById('salario').value = empleado.salario || '';
+            if (document.getElementById('salario')) document.getElementById('salario').value = formatearMiles(empleado.salario || '');
+            if (document.getElementById('fecha-nacimiento')) document.getElementById('fecha-nacimiento').value = empleado.fechaNacimiento || '';
+            if (document.getElementById('fecha-ingreso')) document.getElementById('fecha-ingreso').value = empleado.fechaIngreso || '';
             if (document.getElementById('notas')) document.getElementById('notas').value = empleado.notas || '';
             if (document.getElementById('contacto-emergencia-nombre')) document.getElementById('contacto-emergencia-nombre').value = empleado.contactoEmergenciaNombre || '';
             if (document.getElementById('contacto-emergencia-telefono')) document.getElementById('contacto-emergencia-telefono').value = empleado.contactoEmergenciaTelefono || '';
@@ -443,6 +523,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    // Ver detalle de empleado
+    function mostrarDetalleEmpleado(id) {
+        const empleado = empleados.find(e => e.id === id);
+        if (!empleado) return;
+        let salario = (usuarioActual && usuarioActual.rol === 'admin') ? formatearMiles(empleado.salario) : '****';
+        empleadoDetalleBody.innerHTML = `
+            <h4>${empleado.nombres} ${empleado.apellidos}</h4>
+            <p><i class="bi bi-credit-card"></i> <b>Cédula:</b> ${empleado.cedula}</p>
+            <p><i class="bi bi-telephone"></i> <b>Teléfono:</b> ${empleado.telefono}</p>
+            <p><i class="bi bi-envelope"></i> <b>Email:</b> ${empleado.email}</p>
+            <p><i class="bi bi-person-badge"></i> <b>Cargo:</b> ${empleado.cargo || ''}</p>
+            <p><i class="bi bi-building"></i> <b>Departamento:</b> ${empleado.departamento || ''}</p>
+            <p><i class="bi bi-file-earmark-text"></i> <b>Tipo de Contrato:</b> ${empleado.tipoContrato || ''}</p>
+            <p><i class="bi bi-cash"></i> <b>Salario:</b> ${salario}</p>
+            <p><i class="bi bi-gift"></i> <b>Fecha de Cumpleaños:</b> ${empleado.fechaNacimiento ? new Date(empleado.fechaNacimiento).toLocaleDateString() : ''}</p>
+            <p><i class="bi bi-calendar-check"></i> <b>Fecha de Ingreso:</b> ${empleado.fechaIngreso ? new Date(empleado.fechaIngreso).toLocaleDateString() : ''}</p>
+            <p><i class="bi bi-journal-text"></i> <b>Notas/Acontecimientos:</b> ${empleado.notas || ''}</p>
+            <p><i class="bi bi-file-earmark-pdf"></i> <b>Hoja de Vida:</b> ${empleado.hojaDeVidaNombre ? `<a href="${empleado.hojaDeVidaArchivo}" target="_blank">${empleado.hojaDeVidaNombre}</a>` : ''}</p>
+            <p><i class="bi bi-person-lines-fill"></i> <b>Contacto Emergencia:</b> ${empleado.contactoEmergenciaNombre || ''} (${empleado.contactoEmergenciaParentesco || ''}) - ${empleado.contactoEmergenciaTelefono || ''}</p>
+        `;
+        empleadosList.classList.add('d-none');
+        empleadoDetalle.classList.remove('d-none');
+    }
+
     // Cumpleaños
     function showCumpleanosList() {
         cumpleanosList.classList.remove('d-none');
@@ -450,6 +554,7 @@ document.addEventListener('DOMContentLoaded', function() {
         empleadoForm.classList.add('d-none');
         dashboard.classList.add('d-none');
         ausenciasList.classList.add('d-none');
+        empleadoDetalle.classList.add('d-none');
         renderCumpleanos();
     }
 
@@ -484,6 +589,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Notificación visual de cumpleaños próximo
+    function notificarCumpleanos() {
+        const hoy = new Date();
+        empleados.forEach(emp => {
+            if (!emp.fechaNacimiento) return;
+            const fechaNac = new Date(emp.fechaNacimiento);
+            const proximoCumple = new Date(hoy.getFullYear(), fechaNac.getMonth(), fechaNac.getDate());
+            if (proximoCumple < hoy) {
+                proximoCumple.setFullYear(hoy.getFullYear() + 1);
+            }
+            const diasRestantes = Math.ceil((proximoCumple - hoy) / (1000 * 60 * 60 * 24));
+            if (diasRestantes === 1) {
+                mostrarAlerta(`¡Mañana es el cumpleaños de ${emp.nombres} ${emp.apellidos}!`, 'info');
+            }
+        });
+    }
+
     // Ausencias y Vacaciones
     function showAusenciasList() {
         ausenciasList.classList.remove('d-none');
@@ -491,6 +613,7 @@ document.addEventListener('DOMContentLoaded', function() {
         empleadoForm.classList.add('d-none');
         dashboard.classList.add('d-none');
         cumpleanosList.classList.add('d-none');
+        empleadoDetalle.classList.add('d-none');
         renderAusencias();
     }
 
@@ -524,6 +647,15 @@ document.addEventListener('DOMContentLoaded', function() {
     window.showCumpleanosList = showCumpleanosList;
     window.showDashboard = showDashboard;
     window.showAusenciasList = showAusenciasList;
+
+    // Utilidades
+    function formatearMiles(valor) {
+        if (!valor) return '';
+        return valor.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    function limpiarMiles(valor) {
+        return valor ? valor.replace(/\./g, '') : '';
+    }
 
     // Inicialización
     showLoginForm();
