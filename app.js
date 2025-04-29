@@ -1,5 +1,5 @@
 // app.js
-// Lógica principal para gestión de empleados RRHH ASHE
+// Lógica principal para gestión de empleados RRHH ASHE con toggle de contraseña
 
 document.addEventListener('DOMContentLoaded', function() {
     // Usuarios permitidos (admin puede ver salario)
@@ -21,12 +21,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnCancelar = document.getElementById('btn-cancelar');
     const btnRegistro = document.getElementById('btn-registro');
     const btnCancelarRegistro = document.getElementById('btn-cancelar-registro');
-    const navEmpleados = document.getElementById('nav-empleados');
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
 
     // Estado de autenticación
     let isAuthenticated = false;
+
+    // Toggle de contraseña
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const input = document.getElementById(this.getAttribute('data-target'));
+            if (input.type === 'password') {
+                input.type = 'text';
+                this.querySelector('i').classList.remove('bi-eye');
+                this.querySelector('i').classList.add('bi-eye-slash');
+            } else {
+                input.type = 'password';
+                this.querySelector('i').classList.remove('bi-eye-slash');
+                this.querySelector('i').classList.add('bi-eye');
+            }
+        });
+    });
 
     // Event Listeners
     if (loginForm) loginForm.addEventListener('submit', handleLogin);
@@ -35,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnCancelar) btnCancelar.onclick = hideEmpleadoForm;
     if (btnRegistro) btnRegistro.onclick = showRegistroForm;
     if (btnCancelarRegistro) btnCancelarRegistro.onclick = hideRegistroForm;
-    if (navEmpleados) navEmpleados.onclick = showEmpleadosList;
     if (btnLogin) btnLogin.onclick = showLoginForm;
     if (btnLogout) btnLogout.onclick = handleLogout;
 
