@@ -17,9 +17,13 @@
                 <span class="fw-bold fs-4">Gestión de Personal ASHE</span>
             </a>
             <div class="d-flex gap-2">
+                <button class="btn btn-outline-light" id="btn-dashboard" style="display:none;"><i class="bi bi-house"></i> Dashboard</button>
+                <button class="btn btn-outline-light" id="btn-cumpleanos" style="display:none;"><i class="bi bi-gift"></i> Cumpleaños</button>
+                <button class="btn btn-outline-light" id="btn-ausencias" style="display:none;"><i class="bi bi-calendar-x"></i> Ausencias</button>
+                <button class="btn btn-outline-light" id="btn-documentos" style="display:none;"><i class="bi bi-folder2-open"></i> Documentos</button>
                 <button class="btn btn-outline-light" id="btn-registro"><i class="bi bi-person-plus"></i> Registrarse</button>
                 <button class="btn btn-outline-light" id="btn-login"><i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión</button>
-                <button class="btn btn-outline-light d-none" id="btn-logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+                <button class="btn btn-outline-light d-none" id="btn-logout"><i class="bi bi-lock-fill"></i> Cerrar Sesión</button>
             </div>
         </div>
     </nav>
@@ -30,6 +34,42 @@
         <!-- Portal RRHH Banner -->
         <div class="portal-rrhh-banner text-center text-white fw-bold py-2 mb-3" style="background: linear-gradient(90deg, #0056b3 80%, #007bff 100%); border-radius: 12px;">
             Portal RRHH – Recursos Humanos ASHE
+        </div>
+
+        <!-- Dashboard de bienvenida -->
+        <div id="dashboard" class="card d-none mb-4">
+            <div class="card-body text-center">
+                <h2 class="card-title">Bienvenido al Portal RRHH</h2>
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Empleados</h5>
+                                <div class="display-4" id="dashboard-total-empleados">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Próximos Cumpleaños</h5>
+                                <div class="display-4" id="dashboard-cumpleanos">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Usuarios Registrados</h5>
+                                <div class="display-4" id="dashboard-usuarios">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-danger btn-lg" id="btn-dashboard-logout"><i class="bi bi-lock-fill"></i> Cerrar Sesión</button>
+                </div>
+            </div>
         </div>
 
         <!-- Formulario de Registro -->
@@ -83,6 +123,9 @@
                             </button>
                         </div>
                     </div>
+                    <div class="mb-2">
+                        <a href="#" id="forgot-password" class="text-primary small">¿Olvidaste tu contraseña?</a>
+                    </div>
                     <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                 </form>
             </div>
@@ -93,7 +136,12 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 class="card-title mb-0">Lista de Empleados</h2>
-                    <button class="btn btn-primary" id="btn-nuevo-empleado">Nuevo Empleado</button>
+                    <div class="d-flex gap-2">
+                        <input type="text" id="busqueda-empleados" class="form-control" placeholder="Buscar...">
+                        <button class="btn btn-outline-success" id="btn-exportar-csv"><i class="bi bi-file-earmark-spreadsheet"></i> Exportar CSV</button>
+                        <button class="btn btn-primary" id="btn-nuevo-empleado">Nuevo Empleado</button>
+                        <button class="btn btn-secondary" id="btn-volver-dashboard"><i class="bi bi-arrow-left"></i> Volver</button>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table">
@@ -108,6 +156,8 @@
                                 <th>Departamento</th>
                                 <th>Tipo de Contrato</th>
                                 <th>Salario</th>
+                                <th>Historial Laboral</th>
+                                <th>Contacto Emergencia</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -167,9 +217,83 @@
                             <input type="number" class="form-control" id="salario">
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label for="historial-laboral" class="form-label">Historial Laboral</label>
+                        <textarea class="form-control" id="historial-laboral" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contacto-emergencia" class="form-label">Contacto de Emergencia</label>
+                        <input type="text" class="form-control" id="contacto-emergencia" placeholder="Nombre, Teléfono, Parentesco">
+                    </div>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                     <button type="button" class="btn btn-secondary" id="btn-cancelar">Cancelar</button>
                 </form>
+            </div>
+        </div>
+
+        <!-- Cumpleaños -->
+        <div id="cumpleanos-list" class="card d-none">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="card-title mb-0">Próximos Cumpleaños</h2>
+                    <button class="btn btn-secondary" id="btn-volver-dashboard-cumple"><i class="bi bi-arrow-left"></i> Volver</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Fecha de Cumpleaños</th>
+                                <th>Días Restantes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cumpleanos-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ausencias y Vacaciones -->
+        <div id="ausencias-list" class="card d-none">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="card-title mb-0">Gestión de Ausencias y Vacaciones</h2>
+                    <button class="btn btn-secondary" id="btn-volver-dashboard-ausencias"><i class="bi bi-arrow-left"></i> Volver</button>
+                </div>
+                <form id="ausenciaForm" class="mb-3">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <input type="text" class="form-control" id="ausencia-nombre" placeholder="Nombre del empleado" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <input type="date" class="form-control" id="ausencia-fecha" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <select class="form-control" id="ausencia-tipo" required>
+                                <option value="">Tipo</option>
+                                <option value="Vacaciones">Vacaciones</option>
+                                <option value="Incapacidad">Incapacidad</option>
+                                <option value="Permiso">Permiso</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registrar Ausencia</button>
+                </form>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ausencias-table-body">
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
