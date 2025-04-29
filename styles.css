@@ -1,3 +1,6 @@
+/* styles.css */
+/* Estilos principales para el Portal RRHH ASHE */
+
 body {
     font-family: 'Roboto', Arial, sans-serif;
     background-color: #f4f6fa;
@@ -9,155 +12,6 @@ body {
     color: #fff;
 }
 
-.navbar .navbar-brand img {
-    border-radius: 8px;
-    box-shadow: 0 2px 8px #0002;
-}
-
-.navbar .nav-link {
-    color: #fff !important;
-    font-size: 1.1rem;
-    transition: color 0.2s;
-}
-
-.navbar .nav-link:hover, .navbar .nav-link.active {
-    color: #ffd700 !important;
-}
-
-.btn, .btn-primary, .btn-outline-light {
-    border-radius: 24px;
-    font-weight: 500;
-    transition: box-shadow 0.2s, background 0.2s;
-    box-shadow: 0 2px 8px #0056b322;
-}
-
-.btn-primary, .btn-outline-primary {
-    background: #0056b3;
-    border-color: #0056b3;
-}
-
-.btn-primary:hover, .btn-outline-primary:hover {
-    background: #003974;
-    border-color: #003974;
-    color: #fff;
-}
-
-.card {
-    border-radius: 18px;
-    box-shadow: 0 2px 16px #0001;
-    border: none;
-    background: #fff;
-}
-
-.card-title {
-    font-weight: 700;
-    color: #0056b3;
-}
-
-.table th, .table td {
-    vertical-align: middle;
-}
-
-.input-group .form-control {
-    border-radius: 24px 0 0 24px;
-}
-
-.input-group .btn {
-    border-radius: 0 24px 24px 0;
-}
-
-.alert {
-    border-radius: 16px;
-    font-size: 1rem;
-    font-weight: 500;
-    box-shadow: 0 2px 8px #0001;
-}
-
-.footer {
-    font-size: 1rem;
-    box-shadow: 0 -2px 8px #0001;
-}
-
-@media (max-width: 768px) {
-    .navbar .navbar-brand span {
-        font-size: 1.1rem;
-    }
-    .card-title {
-        font-size: 1.2rem;
-    }
-    .footer {
-        font-size: 0.9rem;
-    }
-    .logo-navbar {
-        max-height: 36px;
-        width: 36px;
-        padding: 3px;
-    }
-}
-
-/* Espaciado para dashboard y tarjetas */
-#dashboard .card {
-    min-height: 160px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#dashboard .display-4 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #0056b3;
-}
-
-.form-control:focus {
-    border-color: #0056b3;
-    box-shadow: 0 0 0 0.25rem rgba(0,86,179,.25);
-}
-
-#login-form {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-#empleado-form {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.table-responsive {
-    margin-top: 20px;
-}
-
-/* Estilos para la tabla de cumpleaños */
-#cumpleanos-list .table td {
-    vertical-align: middle;
-}
-
-/* Estilos para los botones de acción */
-.btn-action {
-    padding: 5px 10px;
-    margin: 0 5px;
-}
-
-/* Estilos para el formulario de empleado */
-.form-label {
-    font-weight: 500;
-}
-
-/* Estilos para los mensajes de error */
-.error-message {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-/* Estilos para los mensajes de éxito */
-.success-message {
-    color: #198754;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
 .logo-navbar {
     background: #fff;
     border-radius: 50%;
@@ -167,6 +21,19 @@ body {
     padding: 6px;
     object-fit: contain;
     display: inline-block;
+}
+
+.bg-light {
+    background: #f8f9fa !important;
+}
+
+.portal-rrhh-banner {
+    background: linear-gradient(90deg, #0056b3 80%, #007bff 100%);
+    font-size: 1.15rem;
+    letter-spacing: 1px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px #0001;
+    margin-bottom: 2rem;
 }
 
 .section-contacto {
@@ -195,51 +62,53 @@ body {
     font-size: 1.05rem;
 }
 
-.sg-sst-banner {
-    background: linear-gradient(90deg, #0056b3 80%, #007bff 100%);
-    font-size: 1.15rem;
-    letter-spacing: 1px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px #0001;
-    margin-bottom: 2rem;
-}
-
-.section-nosotros, .section-productos {
-    background: #fff;
+.card {
     border-radius: 18px;
     box-shadow: 0 2px 16px #0001;
-    padding: 1.2rem 1rem;
-    margin: 1.2rem auto 1rem auto;
-    max-width: 420px;
-    border-left: 6px solid #0056b3;
+    border: none;
+    background: #fff;
 }
 
-.section-nosotros h2, .section-productos h2 {
-    color: #0056b3;
+.card-title {
     font-weight: 700;
-    margin-bottom: 0.7rem;
-    font-size: 1.3rem;
+    color: #0056b3;
 }
 
-.section-nosotros p, .section-productos ul {
-    color: #333;
-    font-size: 1rem;
+.table th, .table td {
+    vertical-align: middle;
 }
 
-.section-productos ul {
-    padding-left: 1.1rem;
+.btn, .btn-primary, .btn-outline-light {
+    border-radius: 24px;
+    font-weight: 500;
+    transition: box-shadow 0.2s, background 0.2s;
+    box-shadow: 0 2px 8px #0056b322;
 }
 
-.section-productos li {
-    margin-bottom: 0.3rem;
-    font-size: 0.98rem;
+.btn-primary, .btn-outline-primary {
+    background: #0056b3;
+    border-color: #0056b3;
 }
 
-.fade-in {
-    animation: fadeIn 0.6s;
+.btn-primary:hover, .btn-outline-primary:hover {
+    background: #003974;
+    border-color: #003974;
+    color: #fff;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-} 
+@media (max-width: 768px) {
+    .navbar .navbar-brand span {
+        font-size: 1.1rem;
+    }
+    .card-title {
+        font-size: 1.2rem;
+    }
+    .footer {
+        font-size: 0.9rem;
+    }
+    .logo-navbar {
+        max-height: 36px;
+        width: 36px;
+        padding: 3px;
+    }
+}
