@@ -1,5 +1,4 @@
-// app.js
-// Portal RRHH ASHE: gestión avanzada de empleados, cumpleaños, ausencias, documentos, login seguro y navegación moderna
+// app.js - Portal RRHH ASHE
 
 document.addEventListener('DOMContentLoaded', function() {
     // Usuarios permitidos (admin puede ver salario)
@@ -29,7 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnDashboard = document.getElementById('btn-dashboard');
     const btnCumpleanos = document.getElementById('btn-cumpleanos');
     const btnAusencias = document.getElementById('btn-ausencias');
-    const btnDocumentos = document.getElementById('btn-documentos');
     const btnVolverDashboard = document.getElementById('btn-volver-dashboard');
     const btnVolverDashboardCumple = document.getElementById('btn-volver-dashboard-cumple');
     const btnVolverDashboardAusencias = document.getElementById('btn-volver-dashboard-ausencias');
@@ -37,6 +35,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const busquedaEmpleados = document.getElementById('busqueda-empleados');
     const ausenciasList = document.getElementById('ausencias-list');
     const ausenciaForm = document.getElementById('ausenciaForm');
+
+    // Olvidé mi contraseña
+    const forgotPasswordLink = document.getElementById('forgot-password-link');
+    const forgotPasswordModal = document.getElementById('forgot-password-modal');
+    const forgotPasswordForm = document.getElementById('forgot-password-form');
+    const btnCerrarForgot = document.querySelectorAll('#btn-cerrar-forgot');
 
     // Estado de autenticación
     let isAuthenticated = false;
@@ -57,6 +61,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Mostrar modal de "Olvidé mi contraseña"
+    if (forgotPasswordLink) {
+        forgotPasswordLink.onclick = function(e) {
+            e.preventDefault();
+            forgotPasswordModal.classList.remove('d-none');
+        };
+    }
+    if (btnCerrarForgot) {
+        btnCerrarForgot.forEach(btn => {
+            btn.onclick = function() {
+                forgotPasswordModal.classList.add('d-none');
+            };
+        });
+    }
+    if (forgotPasswordForm) {
+        forgotPasswordForm.onsubmit = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value;
+            if (usuariosPermitidos.some(u => u.email === email)) {
+                mostrarAlerta('Se ha enviado un correo para restablecer la contraseña (simulado)', 'success');
+            } else {
+                mostrarAlerta('El correo no está registrado', 'danger');
+            }
+            forgotPasswordModal.classList.add('d-none');
+        };
+    }
+
     // Event Listeners
     if (loginForm) loginForm.addEventListener('submit', handleLogin);
     if (registroForm) registroForm.addEventListener('submit', handleRegistro);
@@ -69,9 +100,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnDashboard) btnDashboard.onclick = showDashboard;
     if (btnCumpleanos) btnCumpleanos.onclick = showCumpleanosList;
     if (btnAusencias) btnAusencias.onclick = showAusenciasList;
-    if (btnVolverDashboard) btnVolverDashboard.onclick = showDashboard;
-    if (btnVolverDashboardCumple) btnVolverDashboardCumple.onclick = showDashboard;
-    if (btnVolverDashboardAusencias) btnVolverDashboardAusencias.onclick = showDashboard;
+    if (btnVolverDashboard) btnVolverDashboard.onclick = showLoginForm;
+    if (btnVolverDashboardCumple) btnVolverDashboardCumple.onclick = showLoginForm;
+    if (btnVolverDashboardAusencias) btnVolverDashboardAusencias.onclick = showLoginForm;
     if (btnExportarCSV) btnExportarCSV.onclick = exportarEmpleadosCSV;
     if (busquedaEmpleados) busquedaEmpleados.oninput = filtrarEmpleados;
     if (ausenciaForm) ausenciaForm.addEventListener('submit', handleRegistrarAusencia);
@@ -133,6 +164,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (btnCumpleanos) btnCumpleanos.style.display = '';
             if (btnAusencias) btnAusencias.style.display = '';
             showDashboard();
+            // Ocultar login en todas las páginas autenticadas
+            document.getElementById('login-form').classList.add('d-none');
         } else {
             mostrarAlerta('Credenciales incorrectas', 'danger');
         }
@@ -150,6 +183,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btnDashboard) btnDashboard.style.display = 'none';
         if (btnCumpleanos) btnCumpleanos.style.display = 'none';
         if (btnAusencias) btnAusencias.style.display = 'none';
+        if (btnLogin) btnLogin.classList.remove('d-none');
+        if (btnRegistro) btnRegistro.classList.remove('d-none');
     }
 
     function handleLogout() {
@@ -258,6 +293,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 salarioTd = `<td>****</td>`;
             }
+            const hojaDeVidaTd = empleado.hojaDeVidaNombre
+                ? `<td><a href="${empleado.hojaDeVidaArchivo}" target="_blank">${empleado.hojaDeVidaNombre}</a></td>`
+                : `<td></td>`;
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${empleado.nombres}</td>
@@ -269,8 +307,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${empleado.departamento || ''}</td>
                 <td>${empleado.tipoContrato || ''}</td>
                 ${salarioTd}
-                <td>${empleado.historialLaboral || ''}</td>
-                <td>${empleado.contactoEmergencia || ''}</td>
+                <td>${empleado.notas || ''}</td>
+                ${hojaDeVidaTd}
+                <td>${empleado.contactoEmergenciaNombre || ''}</td>
+                <td>${empleado.contactoEmergenciaTelefono || ''}</td>
+                <td>${empleado.contactoEmergenciaParentesco || ''}</td>
                 <td>
                     <button class="btn btn-sm btn-primary btn-action" onclick="editEmpleado(${empleado.id})">Editar</button>
                     <button class="btn btn-sm btn-danger btn-action" onclick="deleteEmpleado(${empleado.id})">Eliminar</button>
@@ -284,14 +325,19 @@ document.addEventListener('DOMContentLoaded', function() {
         renderEmpleados();
     }
 
-    // Exportar empleados a CSV
+    // Exportar empleados a CSV (corregido)
     function exportarEmpleadosCSV() {
-        let csv = 'Nombres,Apellidos,Cédula,Teléfono,Email,Cargo,Departamento,Tipo de Contrato,Salario,Historial Laboral,Contacto Emergencia\n';
+        if (!empleados.length) {
+            mostrarAlerta('No hay empleados para exportar', 'danger');
+            return;
+        }
+        let csv = 'Nombres,Apellidos,Cédula,Teléfono,Email,Cargo,Departamento,Tipo de Contrato,Salario,Notas/Acontecimientos,Hoja de Vida,Contacto Emergencia Nombre,Contacto Emergencia Teléfono,Contacto Emergencia Parentesco\n';
         empleados.forEach(emp => {
             csv += [
                 emp.nombres, emp.apellidos, emp.cedula, emp.telefono, emp.email,
                 emp.cargo || '', emp.departamento || '', emp.tipoContrato || '',
-                emp.salario || '', emp.historialLaboral || '', emp.contactoEmergencia || ''
+                emp.salario || '', emp.notas || '', emp.hojaDeVidaNombre || '',
+                emp.contactoEmergenciaNombre || '', emp.contactoEmergenciaTelefono || '', emp.contactoEmergenciaParentesco || ''
             ].map(val => `"${(val || '').replace(/"/g, '""')}"`).join(',') + '\n';
         });
         const blob = new Blob([csv], { type: 'text/csv' });
@@ -299,48 +345,74 @@ document.addEventListener('DOMContentLoaded', function() {
         const a = document.createElement('a');
         a.href = url;
         a.download = 'empleados.csv';
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }
 
-    // Guardar empleado
+    // Guardar empleado (con notas, hoja de vida y contacto emergencia separado)
     const empleadoFormElement = document.getElementById('empleadoForm');
     if (empleadoFormElement) {
         empleadoFormElement.addEventListener('submit', function(e) {
             e.preventDefault();
             const editId = empleadoFormElement.getAttribute('data-edit-id');
-            const empleado = {
-                id: editId ? Number(editId) : Date.now(),
-                nombres: document.getElementById('nombres').value,
-                apellidos: document.getElementById('apellidos').value,
-                cedula: document.getElementById('cedula').value,
-                telefono: document.getElementById('telefono').value,
-                email: document.getElementById('email-empleado').value,
-                cargo: document.getElementById('cargo') ? document.getElementById('cargo').value : '',
-                departamento: document.getElementById('departamento') ? document.getElementById('departamento').value : '',
-                tipoContrato: document.getElementById('tipo-contrato') ? document.getElementById('tipo-contrato').value : '',
-                salario: (usuarioActual && usuarioActual.rol === 'admin' && document.getElementById('salario')) ? document.getElementById('salario').value : '',
-                historialLaboral: document.getElementById('historial-laboral') ? document.getElementById('historial-laboral').value : '',
-                contactoEmergencia: document.getElementById('contacto-emergencia') ? document.getElementById('contacto-emergencia').value : ''
-            };
-            if (editId) {
-                const idx = empleados.findIndex(e => e.id == editId);
-                if (idx !== -1) {
-                    empleados[idx] = empleado;
-                }
-                empleadoFormElement.removeAttribute('data-edit-id');
-                mostrarAlerta('Empleado actualizado correctamente.', 'success');
+            // Adjuntar hoja de vida
+            let hojaDeVidaNombre = '';
+            let hojaDeVidaArchivo = '';
+            const hojaDeVidaInput = document.getElementById('hoja-de-vida');
+            if (hojaDeVidaInput && hojaDeVidaInput.files.length > 0) {
+                hojaDeVidaNombre = hojaDeVidaInput.files[0].name;
+                // Guardar como base64 (solo nombre en CSV)
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    hojaDeVidaArchivo = evt.target.result;
+                    guardarEmpleado();
+                };
+                reader.readAsDataURL(hojaDeVidaInput.files[0]);
+                return; // Esperar a que termine FileReader
             } else {
-                empleados.push(empleado);
-                mostrarAlerta('Empleado guardado correctamente.', 'success');
+                guardarEmpleado();
             }
-            localStorage.setItem('empleados', JSON.stringify(empleados));
-            hideEmpleadoForm();
-            showEmpleadosList();
+
+            function guardarEmpleado() {
+                const empleado = {
+                    id: editId ? Number(editId) : Date.now(),
+                    nombres: document.getElementById('nombres').value,
+                    apellidos: document.getElementById('apellidos').value,
+                    cedula: document.getElementById('cedula').value,
+                    telefono: document.getElementById('telefono').value,
+                    email: document.getElementById('email-empleado').value,
+                    cargo: document.getElementById('cargo') ? document.getElementById('cargo').value : '',
+                    departamento: document.getElementById('departamento') ? document.getElementById('departamento').value : '',
+                    tipoContrato: document.getElementById('tipo-contrato') ? document.getElementById('tipo-contrato').value : '',
+                    salario: (usuarioActual && usuarioActual.rol === 'admin' && document.getElementById('salario')) ? document.getElementById('salario').value : '',
+                    notas: document.getElementById('notas') ? document.getElementById('notas').value : '',
+                    hojaDeVidaNombre,
+                    hojaDeVidaArchivo,
+                    contactoEmergenciaNombre: document.getElementById('contacto-emergencia-nombre') ? document.getElementById('contacto-emergencia-nombre').value : '',
+                    contactoEmergenciaTelefono: document.getElementById('contacto-emergencia-telefono') ? document.getElementById('contacto-emergencia-telefono').value : '',
+                    contactoEmergenciaParentesco: document.getElementById('contacto-emergencia-parentesco') ? document.getElementById('contacto-emergencia-parentesco').value : ''
+                };
+                if (editId) {
+                    const idx = empleados.findIndex(e => e.id == editId);
+                    if (idx !== -1) {
+                        empleados[idx] = empleado;
+                    }
+                    empleadoFormElement.removeAttribute('data-edit-id');
+                    mostrarAlerta('Empleado actualizado correctamente.', 'success');
+                } else {
+                    empleados.push(empleado);
+                    mostrarAlerta('Empleado guardado correctamente.', 'success');
+                }
+                localStorage.setItem('empleados', JSON.stringify(empleados));
+                hideEmpleadoForm();
+                showEmpleadosList();
+            }
         });
     }
 
-    // Editar empleado
+    // Editar empleado (cargar campos separados)
     window.editEmpleado = function(id) {
         const empleado = empleados.find(e => e.id === id);
         if (empleado) {
@@ -353,8 +425,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('departamento')) document.getElementById('departamento').value = empleado.departamento || '';
             if (document.getElementById('tipo-contrato')) document.getElementById('tipo-contrato').value = empleado.tipoContrato || '';
             if (usuarioActual && usuarioActual.rol === 'admin' && document.getElementById('salario')) document.getElementById('salario').value = empleado.salario || '';
-            if (document.getElementById('historial-laboral')) document.getElementById('historial-laboral').value = empleado.historialLaboral || '';
-            if (document.getElementById('contacto-emergencia')) document.getElementById('contacto-emergencia').value = empleado.contactoEmergencia || '';
+            if (document.getElementById('notas')) document.getElementById('notas').value = empleado.notas || '';
+            if (document.getElementById('contacto-emergencia-nombre')) document.getElementById('contacto-emergencia-nombre').value = empleado.contactoEmergenciaNombre || '';
+            if (document.getElementById('contacto-emergencia-telefono')) document.getElementById('contacto-emergencia-telefono').value = empleado.contactoEmergenciaTelefono || '';
+            if (document.getElementById('contacto-emergencia-parentesco')) document.getElementById('contacto-emergencia-parentesco').value = empleado.contactoEmergenciaParentesco || '';
             empleadoFormElement.setAttribute('data-edit-id', id);
             showEmpleadoForm();
         }
