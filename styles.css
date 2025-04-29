@@ -119,6 +119,14 @@ a:hover {
 .btn-secondary:hover, .btn-secondary:focus {
     background: #565e64;
 }
+.btn-cancelar {
+    background: #6c757d;
+    color: #fff;
+}
+.btn-cancelar:hover {
+    background: #495057;
+    color: #fff;
+}
 
 /* Tablas */
 .table {
@@ -304,6 +312,24 @@ footer {
 }
 .input-group .toggle-password {
     margin-bottom: 0;
+}
+
+/* Modal Olvidé mi contraseña */
+#forgot-password-modal {
+    display: none;
+}
+#forgot-password-modal:not(.d-none) {
+    display: block;
+}
+#forgot-password-modal .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(13,110,253,0.13);
+}
+#forgot-password-modal .modal-header {
+    border-bottom: 1px solid #e2e6ea;
+}
+#forgot-password-modal .modal-footer {
+    border-top: 1px solid #e2e6ea;
 }
 
 /* Botón cancelar */
