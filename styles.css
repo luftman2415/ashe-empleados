@@ -1,129 +1,327 @@
-/* styles.css */
-/* Estilos principales para el Portal RRHH ASHE */
+/* styles.css - Portal RRHH ASHE */
 
+/* General */
 body {
-    font-family: 'Roboto', Arial, sans-serif;
-    background-color: #f4f6fa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f6fa;
     color: #222;
+    margin: 0;
+    padding: 0;
 }
 
-.navbar, .footer {
-    background: #0056b3;
+a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/* Navbar */
+.navbar {
+    background: linear-gradient(90deg, #0d6efd 60%, #0a58ca 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.navbar .navbar-brand {
+    font-weight: bold;
+    letter-spacing: 1px;
     color: #fff;
 }
-
-.logo-navbar {
+.navbar .nav-link, .navbar .btn {
+    color: #fff !important;
+    margin-right: 10px;
+}
+.navbar .btn-logout {
     background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 2px 8px #0002;
-    max-height: 48px;
-    width: 48px;
-    padding: 6px;
-    object-fit: contain;
-    display: inline-block;
-}
-
-.bg-light {
-    background: #f8f9fa !important;
-}
-
-.portal-rrhh-banner {
-    background: linear-gradient(90deg, #0056b3 80%, #007bff 100%);
-    font-size: 1.15rem;
-    letter-spacing: 1px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px #0001;
-    margin-bottom: 2rem;
-}
-
-.section-contacto {
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 2px 16px #0001;
-    padding: 2rem 1.5rem;
-    margin: 2rem auto;
-    max-width: 700px;
-    border-left: 6px solid #0056b3;
-}
-
-.section-contacto h2 {
-    color: #0056b3;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-.section-contacto p {
-    color: #333;
-    font-size: 1.1rem;
-}
-
-.section-contacto .contact-info {
-    margin-top: 1.5rem;
-    font-size: 1.05rem;
-}
-
-.card {
-    border-radius: 18px;
-    box-shadow: 0 2px 16px #0001;
+    color: #0d6efd !important;
+    border-radius: 20px;
+    font-weight: 500;
+    padding: 4px 18px;
     border: none;
-    background: #fff;
+    transition: background 0.2s;
+}
+.navbar .btn-logout:hover {
+    background: #e2e6ea;
+    color: #0a58ca !important;
 }
 
-.card-title {
+/* Banner */
+#portal-banner {
+    background: linear-gradient(90deg, #0d6efd 60%, #0a58ca 100%);
+    color: #fff;
+    padding: 32px 0 24px 0;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 12px rgba(13,110,253,0.08);
+}
+#portal-banner h1 {
+    font-size: 2.2rem;
     font-weight: 700;
-    color: #0056b3;
+    margin-bottom: 8px;
+}
+#portal-banner p {
+    font-size: 1.1rem;
+    opacity: 0.95;
 }
 
-.table th, .table td {
+/* Formularios */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 1rem;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 2px #0d6efd22;
+}
+.form-label {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+.input-group-text {
+    background: #f1f3f7;
+    border-radius: 8px 0 0 8px;
+    border: 1px solid #d1d5db;
+}
+
+/* Botones */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 8px 20px;
+    transition: background 0.2s, color 0.2s;
+}
+.btn-primary {
+    background: #0d6efd;
+    border: none;
+}
+.btn-primary:hover, .btn-primary:focus {
+    background: #0a58ca;
+}
+.btn-danger {
+    background: #dc3545;
+    border: none;
+}
+.btn-danger:hover, .btn-danger:focus {
+    background: #b52a37;
+}
+.btn-action {
+    padding: 4px 12px;
+    font-size: 0.95rem;
+}
+.btn-secondary {
+    background: #6c757d;
+    border: none;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+    background: #565e64;
+}
+
+/* Tablas */
+.table {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    margin-bottom: 24px;
+}
+.table th {
+    background: #f1f3f7;
+    font-weight: 600;
+    color: #0d6efd;
+    border-bottom: 2px solid #e2e6ea;
+}
+.table td, .table th {
+    padding: 10px 12px;
     vertical-align: middle;
 }
-
-.btn, .btn-primary, .btn-outline-light {
-    border-radius: 24px;
-    font-weight: 500;
-    transition: box-shadow 0.2s, background 0.2s;
-    box-shadow: 0 2px 8px #0056b322;
+.table tr:nth-child(even) {
+    background: #f8fafc;
+}
+.table tr:hover {
+    background: #e7f1ff;
 }
 
-.btn-primary, .btn-outline-primary {
-    background: #0056b3;
-    border-color: #0056b3;
+/* Dashboard */
+#dashboard {
+    margin: 0 auto;
+    max-width: 900px;
+    padding: 24px 0;
+}
+.dashboard-cards {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+.dashboard-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(13,110,253,0.07);
+    padding: 28px 36px;
+    min-width: 220px;
+    text-align: center;
+    flex: 1 1 220px;
+}
+.dashboard-card h2 {
+    font-size: 2.2rem;
+    color: #0d6efd;
+    margin-bottom: 8px;
+}
+.dashboard-card p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 0;
 }
 
-.btn-primary:hover, .btn-outline-primary:hover {
-    background: #003974;
-    border-color: #003974;
+/* Sección de cumpleaños */
+#cumpleanos-list {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 24px 0;
+}
+#cumpleanos-list h3 {
+    color: #0d6efd;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+
+/* Sección de ausencias */
+#ausencias-list {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 24px 0;
+}
+#ausencias-list h3 {
+    color: #0d6efd;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+
+/* Sección de documentos */
+#documentos-list {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 24px 0;
+}
+#documentos-list h3 {
+    color: #0d6efd;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+
+/* Alertas visuales */
+#alerta-visual {
+    min-width: 260px;
+    text-align: center;
+    font-size: 1.05rem;
+    z-index: 9999;
+    opacity: 0.97;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(220,53,69,0.08);
+    animation: fadeIn 0.5s;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px);}
+    to { opacity: 0.97; transform: translateY(0);}
+}
+
+/* Footer */
+footer {
+    background: #0d6efd;
+    color: #fff;
+    text-align: center;
+    padding: 18px 0 10px 0;
+    margin-top: 40px;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 -2px 8px rgba(13,110,253,0.07);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .dashboard-cards {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .dashboard-card {
+        min-width: 0;
+        padding: 20px 10px;
+    }
+}
+@media (max-width: 600px) {
+    #portal-banner h1 {
+        font-size: 1.3rem;
+    }
+    .dashboard-card h2 {
+        font-size: 1.3rem;
+    }
+    .table th, .table td {
+        font-size: 0.95rem;
+        padding: 7px 6px;
+    }
+    .navbar .navbar-brand {
+        font-size: 1.1rem;
+    }
+}
+
+/* Login y registro */
+#login-form, #registro-form {
+    max-width: 400px;
+    margin: 0 auto 30px auto;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(13,110,253,0.07);
+    padding: 32px 28px 24px 28px;
+}
+#login-form h2, #registro-form h2 {
+    color: #0d6efd;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+.toggle-password {
+    cursor: pointer;
+    user-select: none;
+    color: #0d6efd;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    margin-left: -36px;
+    z-index: 2;
+    position: relative;
+}
+.input-group {
+    display: flex;
+    align-items: center;
+}
+.input-group .form-control {
+    flex: 1 1 auto;
+    margin-bottom: 0;
+}
+.input-group .toggle-password {
+    margin-bottom: 0;
+}
+
+/* Botón cancelar */
+.btn-cancelar {
+    background: #6c757d;
+    color: #fff;
+}
+.btn-cancelar:hover {
+    background: #495057;
     color: #fff;
 }
 
-.input-group .form-control {
-    border-radius: 24px 0 0 24px;
+/* Otros */
+.d-none {
+    display: none !important;
 }
-
-.input-group .btn {
-    border-radius: 0 24px 24px 0;
-}
-
-.toggle-password {
-    border: none;
-    background: transparent;
-    outline: none;
-    box-shadow: none;
-}
-
-@media (max-width: 768px) {
-    .navbar .navbar-brand span {
-        font-size: 1.1rem;
-    }
-    .card-title {
-        font-size: 1.2rem;
-    }
-    .footer {
-        font-size: 0.9rem;
-    }
-    .logo-navbar {
-        max-height: 36px;
-        width: 36px;
-        padding: 3px;
-    }
-}
+.mt-3 { margin-top: 1rem !important; }
+.mb-3 { margin-bottom: 1rem !important; }
+.mb-4 { margin-bottom: 1.5rem !important; }
+.text-center { text-align: center !important; }
+.w-100 { width: 100% !important; }
