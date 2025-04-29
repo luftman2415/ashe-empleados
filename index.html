@@ -16,6 +16,11 @@
                 <img src="logo.png" height="48" class="me-2 logo-navbar" style="object-fit: contain;">
                 <span class="fw-bold fs-4">Gestión de Personal ASHE</span>
             </a>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-light" id="btn-registro"><i class="bi bi-person-plus"></i> Registrarse</button>
+                <button class="btn btn-outline-light" id="btn-login"><i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión</button>
+                <button class="btn btn-outline-light d-none" id="btn-logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+            </div>
         </div>
     </nav>
     <div class="bg-light text-center py-2 border-bottom">
@@ -38,11 +43,21 @@
                     </div>
                     <div class="mb-3">
                         <label for="reg-password" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="reg-password" required>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="reg-password" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" tabindex="-1" data-target="reg-password">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="reg-confirm-password" class="form-label">Confirmar Contraseña</label>
-                        <input type="password" class="form-control" id="reg-confirm-password" required>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="reg-confirm-password" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" tabindex="-1" data-target="reg-confirm-password">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Registrarse</button>
                     <button type="button" class="btn btn-secondary" id="btn-cancelar-registro">Cancelar</button>
@@ -61,7 +76,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="password" required>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button" tabindex="-1" data-target="password">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                 </form>
