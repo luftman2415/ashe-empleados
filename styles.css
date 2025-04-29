@@ -96,6 +96,21 @@ body {
     color: #fff;
 }
 
+.input-group .form-control {
+    border-radius: 24px 0 0 24px;
+}
+
+.input-group .btn {
+    border-radius: 0 24px 24px 0;
+}
+
+.toggle-password {
+    border: none;
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+}
+
 @media (max-width: 768px) {
     .navbar .navbar-brand span {
         font-size: 1.1rem;
