@@ -17,18 +17,20 @@ body {
     gap: 10px;
 }
 
+/* Ajuste específico para el logo */
 .logo-img {
-    width: 40px;
-    height: 40px;
+    width: 32px;  /* Reducido de 40px */
+    height: 32px; /* Reducido de 40px */
     border-radius: 50%;
     background-color: white;
-    padding: 5px;
+    padding: 4px;  /* Reducido de 5px */
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.navbar-brand span {
-    color: white;
-    font-weight: 500;
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;     /* Reducido de 10px */
 }
 
 .nav-link {
