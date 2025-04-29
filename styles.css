@@ -1,353 +1,312 @@
-/* styles.css - Portal RRHH ASHE */
-
-/* General */
+/* Estilos generales */
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #f4f6fa;
-    color: #222;
-    margin: 0;
-    padding: 0;
-}
-
-a {
-    color: #0d6efd;
-    text-decoration: none;
-}
-a:hover {
-    text-decoration: underline;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
 }
 
 /* Navbar */
 .navbar {
-    background: linear-gradient(90deg, #0d6efd 60%, #0a58ca 100%);
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-.navbar .navbar-brand {
-    font-weight: bold;
-    letter-spacing: 1px;
-    color: #fff;
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
-.navbar .nav-link, .navbar .btn {
-    color: #fff !important;
-    margin-right: 10px;
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: white;
+    padding: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-.navbar .btn-logout {
-    background: #fff;
-    color: #0d6efd !important;
-    border-radius: 20px;
+
+.navbar-brand span {
+    color: white;
     font-weight: 500;
-    padding: 4px 18px;
-    border: none;
-    transition: background 0.2s;
 }
-.navbar .btn-logout:hover {
-    background: #e2e6ea;
-    color: #0a58ca !important;
+
+.nav-link {
+    color: rgba(255,255,255,0.9) !important;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: white !important;
 }
 
 /* Banner */
-#portal-banner {
-    background: linear-gradient(90deg, #0d6efd 60%, #0a58ca 100%);
-    color: #fff;
-    padding: 32px 0 24px 0;
-    text-align: center;
-    margin-bottom: 30px;
-    box-shadow: 0 2px 12px rgba(13,110,253,0.08);
+.banner {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
 }
-#portal-banner h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-#portal-banner p {
-    font-size: 1.1rem;
-    opacity: 0.95;
+
+.banner h1 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
 }
 
 /* Formularios */
-.form-control, .form-select {
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    font-size: 1rem;
-    padding: 10px 12px;
-    margin-bottom: 12px;
+.form-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
 }
-.form-control:focus, .form-select:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 2px #0d6efd22;
+
+.form-floating {
+    margin-bottom: 1rem;
 }
-.form-label {
-    font-weight: 500;
-    margin-bottom: 4px;
-}
+
 .input-group-text {
-    background: #f1f3f7;
-    border-radius: 8px 0 0 8px;
-    border: 1px solid #d1d5db;
+    background-color: transparent;
+    border-left: none;
+    cursor: pointer;
+}
+
+.input-group-text:hover {
+    color: #0d6efd;
 }
 
 /* Botones */
-.btn {
-    border-radius: 8px;
-    font-weight: 500;
-    padding: 8px 20px;
-    transition: background 0.2s, color 0.2s;
-}
 .btn-primary {
-    background: #0d6efd;
-    border: none;
-}
-.btn-primary:hover, .btn-primary:focus {
-    background: #0a58ca;
-}
-.btn-danger {
-    background: #dc3545;
-    border: none;
-}
-.btn-danger:hover, .btn-danger:focus {
-    background: #b52a37;
-}
-.btn-action {
-    padding: 4px 12px;
-    font-size: 0.95rem;
-}
-.btn-secondary {
-    background: #6c757d;
-    border: none;
-}
-.btn-secondary:hover, .btn-secondary:focus {
-    background: #565e64;
-}
-.btn-cancelar {
-    background: #6c757d;
-    color: #fff;
-}
-.btn-cancelar:hover {
-    background: #495057;
-    color: #fff;
+    background: #1e3c72;
+    border-color: #1e3c72;
 }
 
-/* Tablas */
-.table {
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    margin-bottom: 24px;
+.btn-primary:hover {
+    background: #2a5298;
+    border-color: #2a5298;
 }
-.table th {
-    background: #f1f3f7;
-    font-weight: 600;
-    color: #0d6efd;
-    border-bottom: 2px solid #e2e6ea;
-}
-.table td, .table th {
-    padding: 10px 12px;
-    vertical-align: middle;
-}
-.table tr:nth-child(even) {
-    background: #f8fafc;
-}
-.table tr:hover {
-    background: #e7f1ff;
+
+.btn-outline-light:hover {
+    background-color: rgba(255,255,255,0.1);
 }
 
 /* Dashboard */
-#dashboard {
-    margin: 0 auto;
-    max-width: 900px;
-    padding: 24px 0;
-}
-.dashboard-cards {
-    display: flex;
-    gap: 24px;
-    justify-content: center;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-}
 .dashboard-card {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(13,110,253,0.07);
-    padding: 28px 36px;
-    min-width: 220px;
-    text-align: center;
-    flex: 1 1 220px;
-}
-.dashboard-card h2 {
-    font-size: 2.2rem;
-    color: #0d6efd;
-    margin-bottom: 8px;
-}
-.dashboard-card p {
-    font-size: 1.1rem;
-    color: #555;
-    margin-bottom: 0;
-}
-
-/* Sección de cumpleaños */
-#cumpleanos-list {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 24px 0;
-}
-#cumpleanos-list h3 {
-    color: #0d6efd;
-    font-weight: 600;
-    margin-bottom: 18px;
-}
-
-/* Sección de ausencias */
-#ausencias-list {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 24px 0;
-}
-#ausencias-list h3 {
-    color: #0d6efd;
-    font-weight: 600;
-    margin-bottom: 18px;
-}
-
-/* Sección de documentos */
-#documentos-list {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 24px 0;
-}
-#documentos-list h3 {
-    color: #0d6efd;
-    font-weight: 600;
-    margin-bottom: 18px;
-}
-
-/* Alertas visuales */
-#alerta-visual {
-    min-width: 260px;
-    text-align: center;
-    font-size: 1.05rem;
-    z-index: 9999;
-    opacity: 0.97;
+    background: white;
     border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(220,53,69,0.08);
-    animation: fadeIn 0.5s;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
 }
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px);}
-    to { opacity: 0.97; transform: translateY(0);}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+.dashboard-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #1e3c72;
+}
+
+/* Tabla de empleados */
+.table-container {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Filtros */
+.filtros-container {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Detalle de empleado */
+.empleado-detalle {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.empleado-detalle h4 {
+    color: #1e3c72;
+    margin-bottom: 1.5rem;
+}
+
+/* Alertas */
+.alert {
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background: transparent;
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-item.active {
+    color: #1e3c72;
+}
+
+/* Sección de contacto */
+.contact-section {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.contact-icon {
+    font-size: 2rem;
+    color: #1e3c72;
+    margin-bottom: 1rem;
 }
 
 /* Footer */
-footer {
-    background: #0d6efd;
-    color: #fff;
-    text-align: center;
-    padding: 18px 0 10px 0;
-    margin-top: 40px;
-    font-size: 1rem;
-    letter-spacing: 0.5px;
-    box-shadow: 0 -2px 8px rgba(13,110,253,0.07);
+.footer {
+    background: #1e3c72;
+    color: white;
+    padding: 2rem 0;
+    margin-top: 3rem;
 }
 
 /* Responsive */
-@media (max-width: 900px) {
-    .dashboard-cards {
-        flex-direction: column;
-        gap: 16px;
+@media (max-width: 768px) {
+    .banner h1 {
+        font-size: 2rem;
     }
+
+    .form-container {
+        padding: 1.5rem;
+    }
+
     .dashboard-card {
-        min-width: 0;
-        padding: 20px 10px;
+        margin-bottom: 1rem;
     }
-}
-@media (max-width: 600px) {
-    #portal-banner h1 {
-        font-size: 1.3rem;
+
+    .table-container {
+        padding: 1rem;
     }
-    .dashboard-card h2 {
-        font-size: 1.3rem;
-    }
-    .table th, .table td {
-        font-size: 0.95rem;
-        padding: 7px 6px;
-    }
-    .navbar .navbar-brand {
-        font-size: 1.1rem;
+
+    .table-responsive {
+        margin-bottom: 1rem;
     }
 }
 
-/* Login y registro */
-#login-form, #registro-form {
-    max-width: 400px;
-    margin: 0 auto 30px auto;
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(13,110,253,0.07);
-    padding: 32px 28px 24px 28px;
+/* Animaciones */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
 }
-#login-form h2, #registro-form h2 {
-    color: #0d6efd;
-    font-weight: 600;
-    margin-bottom: 18px;
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
-.toggle-password {
-    cursor: pointer;
-    user-select: none;
-    color: #0d6efd;
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    margin-left: -36px;
-    z-index: 2;
+
+/* Estilos para modales */
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.modal-header {
+    background: #f8f9fa;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Estilos para tooltips */
+.tooltip {
+    font-size: 0.875rem;
+}
+
+/* Estilos para paginación */
+.pagination .page-link {
+    color: #1e3c72;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #1e3c72;
+    border-color: #1e3c72;
+}
+
+/* Estilos para campos de búsqueda */
+.search-container {
     position: relative;
+    margin-bottom: 1rem;
 }
-.input-group {
+
+.search-container .form-control {
+    padding-left: 2.5rem;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+/* Estilos para botones de acción */
+.action-buttons {
+    white-space: nowrap;
+}
+
+.action-buttons .btn {
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.25rem;
+}
+
+/* Estilos para campos requeridos */
+.required-field::after {
+    content: "*";
+    color: #dc3545;
+    margin-left: 4px;
+}
+
+/* Estilos para spinner de carga */
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.8);
     display: flex;
+    justify-content: center;
     align-items: center;
-}
-.input-group .form-control {
-    flex: 1 1 auto;
-    margin-bottom: 0;
-}
-.input-group .toggle-password {
-    margin-bottom: 0;
+    z-index: 9999;
 }
 
-/* Modal Olvidé mi contraseña */
-#forgot-password-modal {
-    display: none;
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    color: #1e3c72;
 }
-#forgot-password-modal:not(.d-none) {
-    display: block;
-}
-#forgot-password-modal .modal-content {
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(13,110,253,0.13);
-}
-#forgot-password-modal .modal-header {
-    border-bottom: 1px solid #e2e6ea;
-}
-#forgot-password-modal .modal-footer {
-    border-top: 1px solid #e2e6ea;
-}
-
-/* Botón cancelar */
-.btn-cancelar {
-    background: #6c757d;
-    color: #fff;
-}
-.btn-cancelar:hover {
-    background: #495057;
-    color: #fff;
-}
-
-/* Otros */
-.d-none {
-    display: none !important;
-}
-.mt-3 { margin-top: 1rem !important; }
-.mb-3 { margin-bottom: 1rem !important; }
-.mb-4 { margin-bottom: 1.5rem !important; }
-.text-center { text-align: center !important; }
-.w-100 { width: 100% !important; }
