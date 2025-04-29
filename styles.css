@@ -16,9 +16,9 @@ body {
     background: #fff;
     border-radius: 50%;
     box-shadow: 0 2px 8px #0002;
-    max-height: 32px;  /* Reducido de 48px */
-    width: 32px;      /* Reducido de 48px */
-    padding: 4px;     /* Reducido de 6px */
+    max-height: 32px;
+    width: 32px;
+    padding: 4px;
     object-fit: contain;
     display: inline-block;
 }
@@ -122,8 +122,8 @@ body {
         font-size: 0.9rem;
     }
     .logo-navbar {
-        max-height: 28px;  /* Reducido para móviles */
-        width: 28px;       /* Reducido para móviles */
+        max-height: 28px;
+        width: 28px;
         padding: 3px;
     }
 }
