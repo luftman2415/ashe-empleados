@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASHE S.A.S - Gestión de Empleados</title>
+    <title>Gestión de Personal ASHE – Portal RRHH</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -14,60 +14,21 @@
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2" href="https://ashe.com.co/" target="_blank" rel="noopener">
                 <img src="logo.png" height="48" class="me-2 logo-navbar" style="object-fit: contain;">
-                <span class="fw-bold fs-4">ASHE S.A.S</span>
+                <span class="fw-bold fs-4">Gestión de Personal ASHE</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="nav-empleados">Empleados</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="nav-cumpleanos">Cumpleaños</a>
-                    </li>
-                </ul>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-light" id="btn-registro"><i class="bi bi-person-plus"></i> Registrarse</button>
-                    <button class="btn btn-outline-light" id="btn-login"><i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión</button>
-                    <button class="btn btn-outline-light d-none" id="btn-logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
-                </div>
-            </div>
         </div>
     </nav>
-
+    <div class="bg-light text-center py-2 border-bottom">
+        <span class="fw-bold text-primary" style="font-size:1.2rem;">Somos mucho más que papel.</span>
+    </div>
     <div class="container mt-4">
-        <!-- Banda SG-SST -->
-        <div class="sg-sst-banner text-center text-white fw-bold py-2 mb-3">
-            Área: SG-SST (Seguridad y Salud en el Trabajo)
-        </div>
-
-        <!-- Secciones Nosotros y Productos y Servicios en dos columnas -->
-        <div class="row justify-content-center mb-4">
-            <div class="col-md-5 mb-3">
-                <div class="section-nosotros h-100">
-                    <h2>Nosotros</h2>
-                    <p>ASHE S.A.S. es una empresa líder en la comercialización y distribución de papel, cartón y artículos de papelería en Colombia, con más de 70 años de experiencia y cobertura nacional.</p>
-                    <p>Nuestra misión es ofrecer productos de alta calidad y un servicio excepcional a nuestros clientes, contribuyendo al desarrollo de la industria gráfica y de empaque en el país.</p>
-                </div>
-            </div>
-            <div class="col-md-5 mb-3">
-                <div class="section-productos h-100">
-                    <h2>Productos y Servicios</h2>
-                    <ul>
-                        <li>Comercialización y distribución de papel y cartón</li>
-                        <li>Artículos de papelería y oficina</li>
-                        <li>Servicio de corte de papel y cartón a medida</li>
-                        <li>Envíos y entregas a nivel nacional</li>
-                        <li>Atención personalizada en nuestras agencias</li>
-                    </ul>
-                </div>
-            </div>
+        <!-- Portal RRHH Banner -->
+        <div class="portal-rrhh-banner text-center text-white fw-bold py-2 mb-3" style="background: linear-gradient(90deg, #0056b3 80%, #007bff 100%); border-radius: 12px;">
+            Portal RRHH – Recursos Humanos ASHE
         </div>
 
         <!-- Formulario de Registro -->
-        <div id="registro-form" class="card d-none">
+        <div id="registro-form" class="card d-none" style="max-width:400px;margin:2rem auto;">
             <div class="card-body">
                 <h2 class="card-title">Registro de Usuario</h2>
                 <form id="registroForm">
@@ -77,21 +38,11 @@
                     </div>
                     <div class="mb-3">
                         <label for="reg-password" class="form-label">Contraseña</label>
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="reg-password" required>
-                            <button class="btn btn-outline-secondary" type="button" id="toggle-reg-password">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </div>
+                        <input type="password" class="form-control" id="reg-password" required>
                     </div>
                     <div class="mb-3">
                         <label for="reg-confirm-password" class="form-label">Confirmar Contraseña</label>
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="reg-confirm-password" required>
-                            <button class="btn btn-outline-secondary" type="button" id="toggle-reg-confirm-password">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </div>
+                        <input type="password" class="form-control" id="reg-confirm-password" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Registrarse</button>
                     <button type="button" class="btn btn-secondary" id="btn-cancelar-registro">Cancelar</button>
@@ -100,7 +51,7 @@
         </div>
 
         <!-- Formulario de Login -->
-        <div id="login-form" class="card">
+        <div id="login-form" class="card" style="max-width:400px;margin:2rem auto;">
             <div class="card-body">
                 <h2 class="card-title">Iniciar Sesión</h2>
                 <form id="loginForm">
@@ -110,12 +61,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Contraseña</label>
-                        <div class="input-group">
-                            <input type="password" class="form-control" id="password" required>
-                            <button class="btn btn-outline-secondary" type="button" id="toggle-password">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </div>
+                        <input type="password" class="form-control" id="password" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                 </form>
@@ -127,12 +73,8 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 class="card-title mb-0">Lista de Empleados</h2>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-outline-primary" id="btn-empleados-dashboard"><i class="bi bi-house"></i> Inicio</button>
-                        <button class="btn btn-outline-danger" id="btn-empleados-logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
-                    </div>
+                    <button class="btn btn-primary" id="btn-nuevo-empleado">Nuevo Empleado</button>
                 </div>
-                <button class="btn btn-primary mb-3" id="btn-nuevo-empleado">Nuevo Empleado</button>
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -142,8 +84,11 @@
                                 <th>Cédula</th>
                                 <th>Teléfono</th>
                                 <th>Email</th>
+                                <th>Cargo</th>
+                                <th>Departamento</th>
+                                <th>Tipo de Contrato</th>
+                                <th>Salario</th>
                                 <th>Acciones</th>
-                                <th>Documento</th>
                             </tr>
                         </thead>
                         <tbody id="empleados-table-body">
@@ -156,13 +101,7 @@
         <!-- Formulario de Empleado -->
         <div id="empleado-form" class="card d-none">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h2 class="card-title mb-0">Nuevo Empleado</h2>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-outline-primary" id="btn-empleadoform-dashboard"><i class="bi bi-house"></i> Inicio</button>
-                        <button class="btn btn-outline-danger" id="btn-empleadoform-logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
-                    </div>
-                </div>
+                <h2 class="card-title mb-3">Nuevo Empleado</h2>
                 <form id="empleadoForm">
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -185,17 +124,27 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
+                        <label for="email-empleado" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email-empleado" required>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="fecha-nacimiento" class="form-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="fecha-nacimiento" required>
+                            <label for="cargo" class="form-label">Cargo</label>
+                            <input type="text" class="form-control" id="cargo">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="fecha-ingreso" class="form-label">Fecha de Ingreso</label>
-                            <input type="date" class="form-control" id="fecha-ingreso" required>
+                            <label for="departamento" class="form-label">Departamento</label>
+                            <input type="text" class="form-control" id="departamento">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tipo-contrato" class="form-label">Tipo de Contrato</label>
+                            <input type="text" class="form-control" id="tipo-contrato">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="salario" class="form-label">Salario</label>
+                            <input type="number" class="form-control" id="salario">
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar</button>
@@ -204,84 +153,23 @@
             </div>
         </div>
 
-        <!-- Lista de Cumpleaños -->
-        <div id="cumpleanos-list" class="card d-none">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h2 class="card-title mb-0">Próximos Cumpleaños</h2>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-outline-primary" id="btn-cumpleanos-dashboard"><i class="bi bi-house"></i> Inicio</button>
-                        <button class="btn btn-outline-danger" id="btn-cumpleanos-logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Fecha de Cumpleaños</th>
-                                <th>Días Restantes</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cumpleanos-table-body">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dashboard de bienvenida -->
-        <div id="dashboard" class="container mt-4 d-none">
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <div class="card text-center shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Empleados</h5>
-                            <div class="display-4" id="dashboard-total-empleados">0</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card text-center shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Próximos Cumpleaños</h5>
-                            <div class="display-4" id="dashboard-cumpleanos">0</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card text-center shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Usuarios Registrados</h5>
-                            <div class="display-4" id="dashboard-usuarios">0</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="text-center mt-4">
-                <button class="btn btn-danger btn-lg" id="btn-dashboard-logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
-            </div>
-        </div>
-
         <!-- Sección de Contacto -->
         <div class="section-contacto">
             <h2>Contacto</h2>
             <p>¿Tienes alguna pregunta o necesitas soporte? Contáctanos y te responderemos lo antes posible.</p>
             <div class="contact-info">
-                <strong>Email:</strong> info@ashe.com.co<br>
-                <strong>Teléfono:</strong> (602) 485 6000<br>
-                <strong>Dirección:</strong> Calle 21N # 6AN-44, Cali, Colombia
+                <strong>Email:</strong> caccali@ashe.com.co<br>
+                <strong>Teléfono:</strong> +57 (602) 524 40 44<br>
+                <strong>Dirección:</strong> Carrera 35 # 12 – 145, Zona Industrial, Arroyohondo, Yumbo – Valle, Colombia
             </div>
         </div>
     </div>
-
     <footer class="footer bg-primary text-white text-center py-3 mt-5 shadow-sm">
         <div class="container">
-            <small>&copy; 2024 ASHE S.A.S. Todos los derechos reservados. | Contacto: info@ashesas.com</small>
+            <small>&copy; 2025 ASHE S.A.S. Todos los derechos reservados. | Contacto: caccali@ashe.com.co</small>
         </div>
     </footer>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="app.js"></script>
 </body>
-</html> 
+</html>
