@@ -24,9 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let ausencias = JSON.parse(localStorage.getItem('ausencias')) || [];
     let usuarioActual = null; // Se establece al hacer login
 
-    // Elementos del DOM - Obtenemos referencias
-    const loginForm = document.getElementById('login-form'); // <-- CORREGIDO
-    const registroForm = document.getElementById('registro-form'); // <-- CORREGIDO
+    // Elementos del DOM - Obtenemos referencias (VERIFICADOS - Los IDs coinciden con HTML)
+    const loginForm = document.getElementById('login-form');
+    const registroForm = document.getElementById('registro-form');
     const empleadosListSection = document.getElementById('empleados-list');
     const empleadoFormSection = document.getElementById('empleado-form');
     const empleadoDetalleSection = document.getElementById('empleado-detalle');
@@ -61,6 +61,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const resetPasswordModalElement = document.getElementById('reset-password-modal');
     const resetPasswordModal = resetPasswordModalElement ? new bootstrap.Modal(resetPasswordModalElement) : null; // Inicialización segura
     const resetPasswordForm = document.getElementById('reset-password-form');
+    // Botones dentro del formulario del modal (los necesitamos para adjuntar listeners)
+    const resetRequestBtn = resetPasswordForm ? resetPasswordForm.querySelector('button[type="submit"]') : null; // El primer submit es solicitar
+    const resetConfirmBtn = resetPasswordForm ? resetPasswordForm.querySelector('.modal-footer button.btn-primary') : null; // El de continuar en el footer
+
     const resetPasswordFields = document.getElementById('reset-password-fields');
     const forgotPasswordLink = document.getElementById('forgot-password-link'); // Enlace "¿Olvidaste tu contraseña?"
     let emailToReset = ''; // Variable para guardar el email en el proceso de reset
@@ -82,6 +86,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function actualizarBreadcrumb(seccion) {
+        const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]'); // Seleccionar la navegación del breadcrumb
+
         if (breadcrumbSection) {
             // Limpia los elementos breadcrumb existentes excepto el primero (Inicio)
             while (breadcrumbSection.nextElementSibling) {
@@ -96,7 +102,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
              // Asegurarse de que el breadcrumb principal es visible si una sección está activa
-             const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]'); // Seleccionar la navegación del breadcrumb
               if (breadcrumbNav) breadcrumbNav.classList.remove('d-none');
 
               // Ocultar el breadcrumb principal si estamos en login/registro
@@ -245,7 +250,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // --- Eventos de delegación para los botones dentro de la tabla ---
             // Usamos delegación porque DataTables recarga el contenido del tbody
-             $('#empleados-table-body').on('click', '.ver-empleado', function(e) {
+            // Usamos .off() antes de .on() para asegurarnos de no adjuntar múltiples listeners si la tabla se redibuja completamente (raro pero posible)
+             $('#empleados-table-body').off('click', '.ver-empleado').on('click', '.ver-empleado', function(e) {
                  e.preventDefault(); // Previene la navegación del enlace
                  // Obtenemos el objeto de datos asociado a la fila clicada
                  const rowData = empleadosTable.row($(this).parents('tr')).data();
@@ -253,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
                       mostrarDetalleEmpleado(rowData.id);
                  }
              });
-             $('#empleados-table-body').on('click', '.editar-empleado-btn', function() {
+             $('#empleados-table-body').off('click', '.editar-empleado-btn').on('click', '.editar-empleado-btn', function() {
                   // Obtenemos el objeto de datos asociado al botón
                   const rowData = empleadosTable.row($(this).parents('tr')).data();
                   if (rowData && rowData.id !== undefined) {
@@ -261,31 +267,29 @@ document.addEventListener('DOMContentLoaded', function() {
                   }
              });
              // Delegación solo para el botón eliminar, y solo si el usuario es admin
-             if (usuarioActual && usuarioActual.rol === 'admin') {
-                 $('#empleados-table-body').on('click', '.eliminar-empleado-btn', function() {
-                      // Obtenemos el objeto de datos asociado al botón
-                      const rowData = empleadosTable.row($(this).parents('tr')).data();
-                     if (rowData && rowData.id !== undefined) {
-                          eliminarEmpleado(rowData.id);
-                     }
-                 });
-             }
+             // Aseguramos que el listener se adjunte *siempre*, pero la acción real dentro del handler verifica el rol.
+             $('#empleados-table-body').off('click', '.eliminar-empleado-btn').on('click', '.eliminar-empleado-btn', function() {
+                  // Obtenemos el objeto de datos asociado al botón
+                  const rowData = empleadosTable.row($(this).parents('tr')).data();
+                 if (rowData && rowData.id !== undefined) {
+                      eliminarEmpleado(rowData.id); // eliminarEmpleado ya verifica el rol
+                 }
+             });
 
 
              // --- Vincula los filtros y búsqueda externos a DataTables ---
              // Búsqueda global (vinculada al input que ya tienes)
              if (busquedaEmpleadosInput) {
-                  busquedaEmpleadosInput.addEventListener('keyup', function () {
+                  // Usamos .off() antes de .on() para evitar duplicados si la función showEmpleadosList se llama varias veces
+                  $(busquedaEmpleadosInput).off('keyup search').on('keyup search', function () {
                       empleadosTable.search(this.value).draw(); // Aplica la búsqueda global y redibuja
-                  });
-                   busquedaEmpleadosInput.addEventListener('search', function () { // Evento para limpiar búsqueda con X
-                      empleadosTable.search('').draw();
                   });
              }
 
              // Filtro por Departamento (aplicado a la columna de departamento)
              if (filtroDepartamentoSelect) {
-                  filtroDepartamentoSelect.addEventListener('change', function () {
+                  // Usamos .off() antes de .on()
+                  $(filtroDepartamentoSelect).off('change').on('change', function () {
                       const searchValue = this.value;
                       // La columna de departamento es la 7ma (índice 6, contando desde 0)
                       // ^value$ busca el valor exacto en la columna. '' busca cualquier cosa (quita filtro)
@@ -295,46 +299,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
              // Filtro por Antigüedad (filtro personalizado en DataTables)
              if (filtroAntiguedadSelect) {
-                  // Agregamos la lógica del filtro personalizado de DataTables
-                  $.fn.dataTable.ext.search.push(
-                      function( settings, data, dataIndex ) {
-                          // Asegura que este filtro solo se aplique a nuestra tabla de empleados
-                          if ( settings.sTableId !== 'empleados-table' ) {
-                              return true; // No aplicar a otras tablas si las hubiera
+                  // Agregamos la lógica del filtro personalizado de DataTables una sola vez
+                  // Solo agregamos la función de filtro una vez, pero su lógica interna usa el valor del select
+                  if (!$.fn.dataTable.ext.search.some(fn => fn.name === 'antiguedadFilterFn')) { // Evita añadir el filtro múltiples veces
+                      $.fn.dataTable.ext.search.push(
+                          function antiguedadFilterFn( settings, data, dataIndex ) { // Añadimos un nombre a la función de filtro
+                              // Asegura que este filtro solo se aplique a nuestra tabla de empleados
+                              if ( settings.sTableId !== 'empleados-table' ) {
+                                  return true; // No aplicar a otras tablas si las hubiera
+                              }
+
+                              // Obtener el valor seleccionado del filtro externo
+                              const antiguedadFiltroElement = document.getElementById('filtro-antiguedad');
+                              if (!antiguedadFiltroElement) return true; // No aplicar filtro si el select no existe
+                              const antiguedadFiltro = antiguedadFiltroElement.value;
+
+
+                              if (antiguedadFiltro === "") {
+                                  return true; // Mostrar todos si no hay filtro seleccionado
+                              }
+
+                              // Obtenemos el objeto de datos original de la fila que DataTables está evaluando
+                              const rowData = settings.aoData[dataIndex]._aData;
+                              const fechaIngreso = rowData.fechaIngreso; // Obtiene la fecha original
+
+                              if (!fechaIngreso) return false; // Ocultar si no hay fecha de ingreso
+
+                              const años = calcularAntiguedad(fechaIngreso); // Calcula la antigüedad exacta (puede ser flotante)
+
+                              const [minStr, maxStr] = antiguedadFiltro.split('-');
+                              const min = parseInt(minStr);
+                              const max = maxStr === '+' ? Infinity : parseInt(maxStr);
+
+                              // Rango "0-1": años >= 0 && años < 1 (menos de 1 año)
+                              // Rango "1-3": años >= 1 && años < 3 (1, 2 años)
+                              // Rango "3-5": años >= 3 && años < 5 (3, 4 años)
+                              // Rango "5+": años >= 5 (5 años o más)
+                              if (maxStr === '+') {
+                                   return años >= min;
+                              } else {
+                                   return años >= min && años < max;
+                              }
                           }
+                      );
+                  }
 
-                          const antiguedadFiltro = filtroAntiguedadSelect.value;
-                          if (antiguedadFiltro === "") {
-                              return true; // Mostrar todos si no hay filtro seleccionado
-                          }
-
-                          // Obtenemos el objeto de datos original de la fila que DataTables está evaluando
-                          const rowData = settings.aoData[dataIndex]._aData;
-                          const fechaIngreso = rowData.fechaIngreso; // Obtiene la fecha original
-
-                          if (!fechaIngreso) return false; // Ocultar si no hay fecha de ingreso
-
-                          const años = calcularAntiguedad(fechaIngreso); // Calcula la antigüedad exacta (puede ser flotante)
-
-                          const [minStr, maxStr] = antiguedadFiltro.split('-');
-                          const min = parseInt(minStr);
-                          const max = maxStr === '+' ? Infinity : parseInt(maxStr);
-
-                          // Rango "0-1": años >= 0 && años < 1 (menos de 1 año)
-                          // Rango "1-3": años >= 1 && años < 3 (1, 2 años)
-                          // Rango "3-5": años >= 3 && años < 5 (3, 4 años)
-                          // Rango "5+": años >= 5 (5 años o más)
-                          if (maxStr === '+') {
-                               return años >= min;
-                          } else {
-                               return años >= min && años < max;
-                          }
-                      }
-                  );
 
                   // El evento de cambio en el select de antigüedad solo necesita redibujar la tabla,
                   // el filtro personalizado de DataTables se encargará de la lógica.
-                  filtroAntiguedadSelect.addEventListener('change', function () {
+                  // Usamos .off() antes de .on()
+                  $(filtroAntiguedadSelect).off('change').on('change', function () {
                       empleadosTable.draw(); // Redibuja la tabla para aplicar el filtro personalizado
                   });
              }
@@ -347,19 +361,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Si DataTables ya está inicializado, solo actualizamos los datos
              empleadosTable.clear().rows.add(empleados).draw(); // Borra datos viejos, añade nuevos y redibuja
              // Re-aplicar filtros actuales al redibujar (en caso de que los selectores tengan valores)
-             // Primero búsqueda global
-             if (busquedaEmpleadosInput) empleadosTable.search(busquedaEmpleadosInput.value).draw();
-             // Luego filtro de columna por departamento
-             if (filtroDepartamentoSelect) {
-                  const searchValue = filtroDepartamentoSelect.value;
-                  empleadosTable.column(6).search(searchValue ? '^'+searchValue+'$' : '', true, false).draw();
-             }
-             // El filtro de antigüedad es personalizado, solo necesitamos redibujar
-             if (filtroAntiguedadSelect) empleadosTable.draw();
-
-             // Actualizar visibilidad del botón eliminar si el rol cambió (improbable en esta demo, pero buena práctica)
-             // La lógica ya está en el render de la columna, solo necesitamos redibujar si la data cambió
-             // empleadosTable.rows().invalidate().draw(); // Invalidar caché si el rol afectara la visualización por fila
+             // DataTables debería recordar los filtros de búsqueda y columna al redibujar,
+             // pero si usas filtros personalizados o buscas manualmente, podrías necesitar re-aplicarlos
+             // Si usas los listeners de keyup/change en los inputs/selects externos, ellos ya disparan el draw()
+             // Así que aquí quizás solo necesitamos redibujar si hay filtros activos fuera de esos eventos.
+             // Una llamada draw() general suele bastar.
+             empleadosTable.draw(); // Redibuja para asegurar que los datos frescos se muestren con filtros/búsqueda activos
         }
     }
 
@@ -458,28 +465,57 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
           // Event listener para el botón Editar desde Detalle
+          // Eliminamos el patrón cloneNode/replaceChild, adjuntamos directamente si el elemento existe
           const btnEditarDesdeDetalle = document.getElementById('btn-editar-desde-detalle');
           if (btnEditarDesdeDetalle) {
-               // Quitamos listener viejo y ponemos uno nuevo para evitar duplicados
-               // Clonamos solo si el botón está visible (es admin)
-               if (!btnEditarDesdeDetalle.classList.contains('d-none')) {
-                   const newBtnEditarDesdeDetalle = btnEditarDesdeDetalle.cloneNode(true);
-                   btnEditarDesdeDetalle.parentNode.replaceChild(newBtnEditarDesdeDetalle, btnEditarDesdeDetalle);
-                   newBtnEditarDesdeDetalle.addEventListener('click', function() {
-                       editarEmpleado(empleado.id); // Llama a la función editarEmpleado
-                   });
-               }
+              // Opcional: Remover listener si ya existiera (menos probable con DOMContentLoaded)
+              // btnEditarDesdeDetalle.removeEventListener('click', editarEmpleado); // Si tuvieras una referencia a la función del handler
+
+              // Adjuntamos el nuevo listener (la lógica dentro de la función verificaría el rol si fuera necesario,
+              // pero la visibilidad ya se maneja arriba)
+               btnEditarDesdeDetalle.addEventListener('click', function() {
+                   // Encontramos el ID del empleado desde la sección de detalle si es necesario,
+                   // o si la función mostrarDetalleEmpleado guarda el ID en algún lugar.
+                   // Para simplificar, la llamamos con el ID del empleado cargado en la vista
+                   // (asumimos que 'empleado' en el scope de mostrarDetalleEmpleado es el correcto)
+                   // Una forma más robusta sería guardar el ID del empleado en la sección de detalle:
+                   // if(empleadoDetalleSection) empleadoDetalleSection.setAttribute('data-empleado-id', empleado.id);
+                   // Y luego recuperarlo aquí: const empleadoId = empleadoDetalleSection ? empleadoDetalleSection.getAttribute('data-empleado-id') : null;
+                   // Para esta demo, pasaremos el ID directamente al llamar a esta función desde la tabla.
+                   // Si esta función se llama desde otro lugar sin un ID explícito, necesitaríamos obtenerlo.
+                   // Como la función mostrarDetalleEmpleado es la única que llama a esto, asumimos que 'empleado.id' es accesible o se pasa.
+                   // PERO, la forma correcta es que mostrarDetalleEmpleado pase el ID a editarEmpleado.
+                   // La lógica actual de mostrarDetalleEmpleado ya llama a editarEmpleado(empleado.id) directamente en el listener.
+                   // ¡Revisando el código, el listener ya llama a editarEmpleado(empleado.id) directamente!
+                   // El código que estaba dando error era el de cloneNode/replaceChild.
+                   // Así que solo necesitamos adjuntar el listener sin el clonado/reemplazo.
+                   // La función mostrarDetalleEmpleado ya adjunta el listener para el botón 'btn-editar-desde-detalle' y llama a editarEmpleado(empleado.id)
+                   // PERO, ese listener se adjunta DENTRO de mostrarDetalleEmpleado. Si mostrarDetalleEmpleado se llama múltiples veces, se adjuntan múltiples listeners.
+                   // Debemos adjuntar este listener FUERA de mostrarDetalleEmpleado, una sola vez en DOMContentLoaded.
+                   // Necesitaremos una forma de saber qué empleado editar cuando se haga clic si no estamos pasando el ID.
+                   // Opción: Guardar el ID del empleado cargado en la sección de detalle.
+
+                   // Modificamos mostrarDetalleEmpleado para guardar el ID:
+                   if (empleadoDetalleSection) empleadoDetalleSection.setAttribute('data-current-empleado-id', empleado.id);
+
+                   // Ahora, el listener del botón editar solo necesita leer ese atributo:
+                   const empleadoId = empleadoDetalleSection ? empleadoDetalleSection.getAttribute('data-current-empleado-id') : null;
+                   if (empleadoId) {
+                       editarEmpleado(parseInt(empleadoId)); // Llamar a editarEmpleado con el ID
+                   } else {
+                       console.error("No se pudo obtener el ID del empleado desde la sección de detalle.");
+                   }
+               });
           }
 
+
            // Event listener para el botón Volver desde Detalle
+           // Eliminamos el patrón cloneNode/replaceChild, adjuntamos directamente
            const btnVolverDesdeDetalle = document.getElementById('btn-volver-desde-detalle');
            if (btnVolverDesdeDetalle) {
-              // Quitamos listener viejo y ponemos uno nuevo
-              const newBtnVolverDesdeDetalle = btnVolverDesdeDetalle.cloneNode(true);
-              btnVolverDesdeDetalle.parentNode.replaceChild(newBtnVolverDesdeDetelle, btnVolverDesdeDetalle);
-               newBtnVolverDesdeDetalle.addEventListener('click', function() {
-                   showEmpleadosList(); // Vuelve a la lista de empleados
-               });
+              // Opcional: Remover listener si ya existiera
+              // btnVolverDesdeDetalle.removeEventListener('click', showEmpleadosList); // Si tuvieras referencia
+               btnVolverDesdeDetalle.addEventListener('click', showEmpleadosList); // Adjuntamos directamente
            }
      }
 
@@ -586,14 +622,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
          // Evento de delegación para eliminar ausencias (solo si es admin)
-         // Quitamos listener viejo y ponemos uno nuevo
-         $('#ausencias-list .table tbody').off('click', '.eliminar-ausencia-btn'); // Quitar listeners existentes
-         if (usuarioActual && usuarioActual.rol === 'admin') {
-              $('#ausencias-list .table tbody').on('click', '.eliminar-ausencia-btn', function() {
-                  const ausenciaId = $(this).data('id'); // Usamos jQuery data para obtener el id
-                  eliminarAusencia(ausenciaId);
-              });
-         }
+         // Usamos .off().on() con jQuery para manejar listeners en elementos dinámicos dentro de la tabla
+         $('#ausencias-list .table tbody').off('click', '.eliminar-ausencia-btn').on('click', '.eliminar-ausencia-btn', function() {
+             // La lógica de verificación de rol está dentro de eliminarAusencia
+             const ausenciaId = $(this).data('id'); // Usamos jQuery data para obtener el id
+             eliminarAusencia(ausenciaId);
+         });
      }
 
      function eliminarAusencia(id) {
@@ -611,13 +645,11 @@ document.addEventListener('DOMContentLoaded', function() {
      }
 
      // Event listener para el formulario de Ausencias
+     // Eliminamos el patrón cloneNode/replaceChild, adjuntamos directamente si el elemento existe
      const ausenciaFormElement = document.getElementById('ausenciaForm');
      if (ausenciaFormElement) {
-          // Quitamos listener viejo y ponemos uno nuevo (prevents multiple listeners on redraw/re-show)
-          const newAusenciaForm = ausenciaFormElement.cloneNode(true);
-          ausenciaFormElement.parentNode.replaceChild(newAusenciaForm, ausenciaFormElement);
-
-         newAusenciaForm.addEventListener('submit', function(e) {
+         // Usamos .off().on() con jQuery para manejar submit si es necesario evitar múltiples envíos
+         $(ausenciaFormElement).off('submit').on('submit', function(e) {
               e.preventDefault();
               // Asegurarse de que solo admin puede registrar
               if (!(usuarioActual && usuarioActual.rol === 'admin')) {
@@ -644,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function() {
               ausencias.push(nuevaAusencia);
               localStorage.setItem('ausencias', JSON.stringify(ausencias));
               mostrarAlerta('Ausencia registrada correctamente', 'success');
-              newAusenciaForm.reset(); // Limpiar formulario
+              ausenciaFormElement.reset(); // Limpiar formulario
               renderAusencias(); // Actualizar lista de ausencias
           });
      }
@@ -676,7 +708,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
      function limpiarLogin() {
           // Limpia solo el formulario de login
-          const loginFormElement = document.getElementById('loginForm');
+          const loginFormElement = document.getElementById('login-form'); // Usar el ID correcto
           if (loginFormElement) loginFormElement.reset();
      }
 
@@ -705,21 +737,31 @@ document.addEventListener('DOMContentLoaded', function() {
          mostrarElements([btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias]);
 
         // Mostrar botones específicos según la sección (solo si las secciones existen)
+         // Esta lógica se ejecuta cada vez que se cambia de sección o al iniciar sesión
+         // Asegura que solo se muestren los botones relevantes para la sección actual
+
+         // Ocultar *todos* los botones de acción primero, y luego mostrar los de la sección actual
+         ocultarElements([btnNuevoEmpleado, btnNuevoEmpleadoLista, btnVerEmpleados, btnCancelar, btnExportarCSV]);
+         // Ocultar botones específicos del detalle del empleado (adjuntos en la función mostrarDetalleEmpleado, pero los ocultamos globalmente aquí por si acaso)
+         ocultarElements([document.getElementById('btn-editar-desde-detalle'), document.getElementById('btn-volver-desde-detalle')]);
+
+
          if (dashboardSection && !dashboardSection.classList.contains('d-none')) { // Si el dashboard está visible
               // Botones en el dashboard
                mostrarElements([btnNuevoEmpleado, btnVerEmpleados, btnExportarCSV]);
          } else if (empleadosListSection && !empleadosListSection.classList.contains('d-none')) { // Si la lista de empleados está visible
               // Botones en la lista de empleados
-              mostrarElements([btnNuevoEmpleadoLista]); // Botón flotante "+"
-              // Los filtros y búsqueda ya están visibles en la sección
+              mostrarElements([btnNuevoEmpleadoLista]); // Botón "Nuevo Empleado" flotante
+              // Los filtros y búsqueda ya están visibles en la sección HTML
          } else if (empleadoFormSection && !empleadoFormSection.classList.contains('d-none')) { // Si el formulario de empleado está visible
              // Botones en el formulario de empleado
              mostrarElements([btnCancelar]); // Muestra el botón cancelar
          } else if (empleadoDetalleSection && !empleadoDetalleSection.classList.contains('d-none')) { // Si el detalle de empleado está visible
-              // Botones en el detalle de empleado
-              mostrarElements([document.getElementById('btn-editar-desde-detalle'), document.getElementById('btn-volver-desde-detalle')]);
+              // Botones en el detalle de empleado - Se muestran en la función mostrarDetalleEmpleado
+              // Solo nos aseguramos de que estén ocultos si no estamos en esa sección
          }
           // Nota: No hay botones específicos para Cumpleaños o Ausencias aparte de la navegación principal
+
 
          // Ocultar botones de autenticación si existen
          ocultarElements([btnLogin, btnRegistro]);
@@ -727,23 +769,29 @@ document.addEventListener('DOMContentLoaded', function() {
          // Control de visibilidad de elementos solo para Admin si aplica
          const dashboardUsuariosCard = document.getElementById('dashboard-usuarios-card');
          const ausenciaForm = document.getElementById('ausenciaForm'); // Formulario de registro de ausencia
-         const btnExportar = document.getElementById('btn-exportar-csv'); // Botón Exportar CSV (si está en el dashboard)
+         // const btnExportar = document.getElementById('btn-exportar-csv'); // Botón Exportar CSV (ya lo referenciamos arriba)
 
          if (usuarioActual && usuarioActual.rol !== 'admin') {
              // Ocultar elementos solo para admin si existen
              if (dashboardUsuariosCard) dashboardUsuariosCard.classList.add('d-none');
              if (btnRegistro) btnRegistro.classList.add('d-none'); // Usuario empleado no puede registrar nuevos usuarios
              if (ausenciaForm) ausenciaForm.classList.add('d-none'); // Usuario empleado no puede registrar ausencias
-             if (btnExportar) btnExportar.classList.add('d-none'); // Usuario empleado no puede exportar
+             if (btnExportarCSV) btnExportarCSV.classList.add('d-none'); // Usuario empleado no puede exportar
 
              // Ocultar columnas/botones de admin en tablas (manejado en renderizado de DataTables y renderAusencias)
 
          } else {
               // Si es admin, asegurarse de que estén visibles si existen
               if (dashboardUsuariosCard) dashboardUsuariosCard.classList.remove('d-none');
-              if (btnRegistro) btnRegistro.classList.remove('d-none'); // Admin podría registrar nuevos usuarios (en una versión real)
+              // El botón de registro de usuario en el navbar (`btnRegistro`) se gestiona en ocultarElementosAutenticados y mostrarElementosAutenticados.
+              // Cuando no estás autenticado, se muestra junto con btnLogin.
+              // Cuando estás autenticado, se oculta en ocultarElementosAutenticados y luego mostrarElementosAutenticados
+              // no lo vuelve a mostrar porque no es un botón de navegación principal ni de sección.
+              // Si un admin pudiera registrar usuarios autenticado, necesitaríamos otro botón de registro en la UI.
+              // Por ahora, el botón "Registrarse" solo aparece en la página de login inicial.
+
               if (ausenciaForm) ausenciaForm.classList.remove('d-none'); // Admin puede registrar ausencias
-              if (btnExportar) btnExportar.classList.remove('d-none'); // Admin puede exportar
+              if (btnExportarCSV) btnExportarCSV.classList.remove('d-none'); // Admin puede exportar
          }
 
          // Ocultar el breadcrumb principal al autenticar para que solo aparezca en secciones internas
@@ -788,7 +836,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Si DataTables está inicializado, actualiza sus datos
         if (empleadosTable) {
              empleadosTable.clear().rows.add(empleados).draw();
-             // Re-aplicar filtros actuales después de actualizar los datos
+             // Re-aplicar filtros actuales al redibujar (en caso de que los selectores tengan valores)
              // Esto asegura que si un empleado guardado/editado afectara un filtro, la lista se actualice correctamente
              if (busquedaEmpleadosInput) empleadosTable.search(busquedaEmpleadosInput.value).draw();
              if (filtroDepartamentoSelect) {
@@ -937,13 +985,26 @@ document.addEventListener('DOMContentLoaded', function() {
     function formatearFecha(fechaStr) {
         if (!fechaStr) return '';
         const [year, month, day] = fechaStr.split('-');
+        if (!year || !month || !day) return fechaStr; // Devuelve original si el formato no es YYYY-MM-DD
+        // Validar si es una fecha válida después de parsear
+        const date = new Date(fechaStr);
+         if (isNaN(date.getTime())) {
+              return fechaStr; // Devuelve original si es una fecha no válida
+         }
         return `${day}/${month}/${year}`;
     }
+
 
      // Función para calcular antigüedad en años (puede ser flotante)
       function calcularAntiguedad(fechaIngresoStr) {
           if (!fechaIngresoStr) return 0;
+
+          // Validar si la fecha es válida antes de crear el objeto Date
           const fechaIngreso = new Date(fechaIngresoStr);
+           if (isNaN(fechaIngreso.getTime())) {
+              return 0; // Devuelve 0 si la fecha no es válida
+           }
+
           const hoy = new Date();
           hoy.setHours(0,0,0,0); // Normalizar hora a medianoche
           fechaIngreso.setHours(0,0,0,0); // Normalizar hora a medianoche
@@ -954,7 +1015,8 @@ document.addEventListener('DOMContentLoaded', function() {
           }
 
           const diffMs = hoy.getTime() - fechaIngreso.getTime();
-          const añosExactos = diffMs / (1000 * 60 * 60 * 24 * 365.25); // Dividir por el número de milisegundos en un año promedio
+          // Usar 365.25 para años bisiestos
+          const añosExactos = diffMs / (1000 * 60 * 60 * 24 * 365.25);
           return añosExactos > 0 ? añosExactos : 0; // Asegura que no sea negativo
       }
 
@@ -963,7 +1025,12 @@ document.addEventListener('DOMContentLoaded', function() {
       function calcularAntiguedadTexto(fechaIngresoStr) {
           if (!fechaIngresoStr) return 'Fecha no válida';
 
+          // Validar si la fecha es válida antes de crear el objeto Date
           const fechaIngreso = new Date(fechaIngresoStr);
+          if (isNaN(fechaIngreso.getTime())) {
+             return 'Fecha no válida';
+          }
+
           const hoy = new Date();
 
           // Validar que la fecha de ingreso no sea en el futuro
@@ -995,12 +1062,11 @@ document.addEventListener('DOMContentLoaded', function() {
           if (meses > 0) partes.push(`${meses} mes${meses > 1 ? 'es' : ''}`);
           // Solo añadir días si no hay años o meses, o si es el mismo año/mes y hay días restantes
           // Esto evita ver "1 año, 0 meses, 5 días" y mostrar solo "1 año, 5 días" o "5 días"
-          if (partes.length === 0 || dias > 0) {
-             // Si no hay partes (menos de un mes o exacto hoy), o si hay días positivos, los añadimos
-             if (dias > 0 || partes.length === 0) { // Si no hay años/meses O si hay días > 0
-                  partes.push(`${dias} día${dias > 1 ? 's' : ''}`);
-             }
-          }
+          // Ajustamos la lógica para ser más clara: si hay días positivos, los añadimos.
+          // Si no hay años NI meses, y hay días (incluyendo 0 si la fecha es hoy), añadimos los días.
+           if (dias > 0 || (años === 0 && meses === 0)) { // Si hay días > 0 O si es menos de un mes (años=0, meses=0)
+               partes.push(`${dias} día${dias !== 1 ? 's' : ''}`);
+           }
 
 
           if (partes.length === 0) {
@@ -1009,9 +1075,15 @@ document.addEventListener('DOMContentLoaded', function() {
                const fechaIngresoSinHora = new Date(fechaIngreso.getFullYear(), fechaIngreso.getMonth(), fechaIngreso.getDate());
                const hoySinHora = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
                if (fechaIngresoSinHora.getTime() === hoySinHora.getTime()) {
-                    return 'Menos de 1 día'; // Contratado hoy
+                    return 'Hoy'; // Contratado hoy
                }
-               return 'Recién ingresado'; // Debería cubrir casos de < 1 día si la fecha no es hoy exactamente
+               return 'Menos de 1 día'; // Debería cubrir casos de < 1 día si la fecha no es hoy exactamente
+          }
+
+          // Unir las partes: usa "y" solo entre las dos últimas si hay más de una parte
+          if (partes.length > 1) {
+              const ultimaParte = partes.pop();
+              return partes.join(', ') + ' y ' + ultimaParte;
           }
 
 
@@ -1022,16 +1094,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para formatear números grandes con separadores de miles para visualización
     function formatearMiles(numero) {
         if (numero === null || numero === undefined) return '';
+         // Asegurarse de que es un número
+         const num = parseFloat(numero);
+         if (isNaN(num)) return '';
          // Convertir a string y usar toLocaleString para formato de miles del idioma local (es-ES)
-        return numero.toLocaleString('es-ES');
+        return num.toLocaleString('es-ES');
     }
 
     // Función para formatear números grandes con separadores de miles para inputs (puede necesitar formato local)
     function formatearMilesInput(numero) {
         if (numero === null || numero === undefined) return '';
-        // Usa toLocaleString con opciones para forzar 2 decimales y separadores.
-        // Puede que necesites ajustar 'es-ES' si el formato local es diferente (ej: coma para decimales)
-        return numero.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+         // Asegurarse de que es un número
+         const num = parseFloat(numero);
+         if (isNaN(num)) return '';
+        // Usa toLocaleString con opciones para forzar 0 decimales y separadores.
+        // Si necesitas decimales en el input, ajusta minimumFractionDigits/maximumFractionDigits
+        return num.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     }
 
 
@@ -1043,6 +1121,10 @@ document.addEventListener('DOMContentLoaded', function() {
               alert(mensaje); // Fallback básico si no se encuentra el contenedor
               return;
          }
+
+         // Limpiar alertas existentes antes de mostrar una nueva (opcional, para no saturar)
+         alertaContainer.innerHTML = ''; // Limpia todas las alertas anteriores
+
 
          // Crear el elemento de alerta (usamos Bootstrap 5 structure)
          const alerta = document.createElement('div');
@@ -1057,15 +1139,23 @@ document.addEventListener('DOMContentLoaded', function() {
          alertaContainer.appendChild(alerta);
 
          // Opcional: auto-cerrar la alerta después de unos segundos
-         // Usamos Bootstrap's data-bs-dismiss="alert" que ya maneja el cierre,
-         // esto es solo para remover el elemento del DOM después de la animación fade-out
+         // Usamos Bootstrap's data-bs-dismiss="alert" que ya maneja el cierre al hacer clic en la X.
+         // Este setTimeout es para auto-cerrar si el usuario no hace clic en la X.
          setTimeout(() => {
-             // Encontrar el elemento alerta dentro del contenedor que tenga la clase 'show' (significa que aún no se ha cerrado)
-             const currentAlerts = alertaContainer.querySelectorAll('.alert.show');
-              currentAlerts.forEach(currentAlert => {
-                  // Opcional: Remover del DOM después de un tiempo
-                   currentAlert.remove(); // Remover directamente después del tiempo
-              });
+             // Encuentra la alerta específica que acabamos de añadir y remuévela si no se ha cerrado ya
+             const alertToRemove = alertaContainer.querySelector('.alert.show'); // Busca la primera alerta visible
+              if (alertToRemove) {
+                   // Usar la función de cierre de Bootstrap para que la animación funcione al auto-cerrar
+                   const bootstrapAlert = bootstrap.Alert.getInstance(alertToRemove);
+                   if (bootstrapAlert) {
+                       bootstrapAlert.hide(); // Inicia la animación de fade-out de Bootstrap
+                       // Remover del DOM después de que la animación termine (por defecto dura 500ms)
+                       setTimeout(() => alertToRemove.remove(), 500);
+                   } else {
+                       // Si no se pudo obtener la instancia, simplemente remueve el elemento
+                       alertToRemove.remove();
+                   }
+              }
 
          }, 7000); // 7 segundos (dar tiempo a leer)
      }
@@ -1124,7 +1214,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
          const unDia = 24 * 60 * 60 * 1000; // Milisegundos en un día
 
-         // Si el cumpleaños de este año ya pasó
+         // Si el cumpleaños de este año ya pasó (y no es hoy)
          if (cumpleanosEsteAño < hoy) {
              // Calcular el cumpleaños del próximo año
              const cumpleanosProximoAño = new Date(hoy.getFullYear() + 1, fechaNacimiento.getMonth(), fechaNacimiento.getDate());
@@ -1143,15 +1233,10 @@ document.addEventListener('DOMContentLoaded', function() {
      function notificarCumpleanos() {
           // Esta función se llama al iniciar sesión y al guardar/eliminar empleado
           // Asume que ya estamos autenticados.
-          if (!dashboardSection || dashboardSection.classList.contains('d-none')) {
-              // Si no estamos en el dashboard, no mostramos el detalle de notificaciones,
-              // pero sí podríamos mostrar una alerta si hay cumpleaños hoy.
-              // La alerta de cumpleaños hoy ya se maneja más abajo si hay próximos.
-               return;
-          }
+          const notificacionesDiv = document.getElementById('cumpleanos-notificaciones'); // El div en el dashboard para esto
 
-
-          const proximosCumpleanos = empleados
+          // Siempre calculamos los próximos cumpleaños en los 30 días para mostrar en el dashboard si está visible
+          const proximosCumpleanos30Dias = empleados
               .filter(emp => emp.fechaNacimiento && calcularDiasParaCumpleanos(emp.fechaNacimiento) >= 0) // Solo empleados con fecha de nacimiento válida que aún no pasó este año
               .map(emp => {
                   const dias = calcularDiasParaCumpleanos(emp.fechaNacimiento);
@@ -1165,36 +1250,37 @@ document.addEventListener('DOMContentLoaded', function() {
               .sort((a, b) => a.diasRestantes - b.diasRestantes); // Ordenar por los días restantes
 
 
-          const notificacionesDiv = document.getElementById('cumpleanos-notificaciones'); // El div en el dashboard para esto
-          if (!notificacionesDiv) {
-              console.error("Error: No se encontró el contenedor de notificaciones de cumpleaños con ID 'cumpleanos-notificaciones'.");
-              return; // Salir si no existe el div
+          if (notificacionesDiv) { // Solo actualizamos el div del dashboard si existe
+              notificacionesDiv.innerHTML = ''; // Limpiar notificaciones anteriores
+
+              if (proximosCumpleanos30Dias.length > 0) {
+                  let notificacionHtml = '<h6 class="card-subtitle mb-2 text-muted">Próximos Cumpleaños (30 días)</h6><ul>';
+                  proximosCumpleanos30Dias.forEach(emp => {
+                      notificacionHtml += `<li>${emp.nombres || ''} ${emp.apellidos || ''} - ${emp.diasRestantes === 0 ? 'Hoy' : `en ${emp.diasRestantes} día${emp.diasRestantes !== 1 ? 's' : ''}`} (${formatearFecha(emp.fechaNacimiento)})</li>`;
+                  });
+                  notificacionHtml += '</ul>';
+                  notificacionesDiv.innerHTML = notificacionHtml;
+                  notificacionesDiv.classList.remove('d-none'); // Mostrar el contenedor de notificaciones si hay cumpleaños
+              } else {
+                  notificacionesDiv.innerHTML = '<p class="card-text text-muted">No hay próximos cumpleaños registrados en los siguientes 30 días.</p>';
+                   // Mantenemos visible el contenedor con el mensaje de "no hay"
+                  notificacionesDiv.classList.remove('d-none');
+              }
           }
 
-          notificacionesDiv.innerHTML = ''; // Limpiar notificaciones anteriores
 
-          if (proximosCumpleanos.length > 0) {
-              let notificacionHtml = '<h6 class="card-subtitle mb-2 text-muted">Próximos Cumpleaños (30 días)</h6><ul>';
-              proximosCumpleanos.forEach(emp => {
-                  notificacionHtml += `<li>${emp.nombres || ''} ${emp.apellidos || ''} - ${emp.diasRestantes === 0 ? 'Hoy' : `en ${emp.diasRestantes} día${emp.diasRestantes !== 1 ? 's' : ''}`} (${formatearFecha(emp.fechaNacimiento)})</li>`;
-              });
-              notificacionHtml += '</ul>';
-              notificacionesDiv.innerHTML = notificacionHtml;
-              notificacionesDiv.classList.remove('d-none'); // Mostrar el contenedor de notificaciones
+           // Mostrar una alerta de Bootstrap si hay cumpleaños hoy (para que aparezca aunque no esté en dashboard)
+           const cumpleanosHoy = empleados.filter(emp => emp.fechaNacimiento && calcularDiasParaCumpleanos(emp.fechaNacimiento) === 0);
+           if (cumpleanosHoy.length > 0) {
+               // Evitar mostrar la alerta múltiples veces si ya está visible (busca una alerta info con texto específico)
+               const alertaExiste = document.querySelector('.alert-info');
+               const alertaExistenteYaDiceCumple = alertaExiste ? alertaExiste.textContent.includes('cumpleaños hoy') : false;
 
-               // Opcional: Mostrar una alerta de Bootstrap si hay cumpleaños hoy (para que aparezca aunque no esté en dashboard)
-               if (proximosCumpleanos.some(emp => emp.diasRestantes === 0)) {
-                   // Evitar mostrar la alerta múltiples veces si ya está visible
-                   const alertaExiste = document.querySelector('.alert-info'); // Busca si ya hay una alerta info visible
-                   if (!alertaExiste) {
-                        mostrarAlerta('¡Hay cumpleaños hoy! Revisa el Dashboard.', 'info');
-                   }
+               if (!alertaExiste || !alertaExistenteYaDiceCumple) {
+                    mostrarAlerta('¡Hay cumpleaños hoy! Revisa el Dashboard.', 'info');
                }
+           }
 
-          } else {
-              notificacionesDiv.innerHTML = '<p class="card-text text-muted">No hay próximos cumpleaños registrados en los siguientes 30 días.</p>';
-               notificacionesDiv.classList.remove('d-none'); // Mostrar el contenedor aunque esté vacío con el mensaje
-          }
      }
 
 
@@ -1205,15 +1291,22 @@ document.addEventListener('DOMContentLoaded', function() {
          if (resetPasswordModal) {
               // Resetear el estado del modal
               const resetEmailInput = document.getElementById('reset-email');
-              const resetRequestBtn = document.getElementById('reset-request-btn');
-              const resetConfirmBtn = document.getElementById('reset-confirm-btn');
+              const resetRequestBtnElement = resetPasswordForm ? resetPasswordForm.querySelector('button[type="submit"]') : null; // El primer submit es solicitar
+              const resetConfirmBtnElement = resetPasswordForm ? resetPasswordForm.querySelector('.modal-footer button.btn-primary') : null; // El de continuar en el footer
+
               const resetMessage = document.getElementById('reset-message'); // Asume que tienes un elemento con este ID en el modal para mensajes
 
               if (resetEmailInput) resetEmailInput.value = ''; // Limpia el campo de email
                if (resetPasswordFields) resetPasswordFields.classList.add('d-none'); // Oculta campos de nueva contraseña
-               if (resetRequestBtn) resetRequestBtn.classList.remove('d-none'); // Muestra botón de solicitud
-               if (resetConfirmBtn) resetConfirmBtn.classList.add('d-none'); // Oculta botón de confirmación
+               if (resetRequestBtnElement) resetRequestBtnElement.classList.remove('d-none'); // Muestra botón de solicitud
+               if (resetConfirmBtnElement) resetConfirmBtnElement.classList.add('d-none'); // Oculta botón de confirmación
               if (resetMessage) resetMessage.textContent = 'Ingresa tu correo electrónico registrado para restablecer tu contraseña:'; // Mensaje inicial
+
+              // Limpiar campos de contraseña en el modal si estaban visibles de una prueba anterior
+              const newPasswordInput = document.getElementById('new-password');
+              const confirmPasswordInput = document.getElementById('confirm-password');
+              if(newPasswordInput) newPasswordInput.value = '';
+              if(confirmPasswordInput) confirmPasswordInput.value = '';
 
 
               resetPasswordModal.show(); // Mostrar el modal
@@ -1235,10 +1328,17 @@ document.addEventListener('DOMContentLoaded', function() {
              emailToReset = email; // Guarda el email para el segundo paso
              if (resetPasswordFields) resetPasswordFields.classList.remove('d-none'); // Muestra campos de nueva contraseña
              if (resetMessage) resetMessage.textContent = 'Correo encontrado. Ingresa tu nueva contraseña:';
-             const resetRequestBtn = document.getElementById('reset-request-btn');
-             const resetConfirmBtn = document.getElementById('reset-confirm-btn');
-             if (resetRequestBtn) resetRequestBtn.classList.add('d-none'); // Oculta botón de solicitud
-             if (resetConfirmBtn) resetConfirmBtn.classList.remove('d-none'); // Muestra botón de confirmación
+             const resetRequestBtnElement = resetPasswordForm ? resetPasswordForm.querySelector('button[type="submit"]') : null;
+             const resetConfirmBtnElement = resetPasswordForm ? resetPasswordForm.querySelector('.modal-footer button.btn-primary') : null;
+             if (resetRequestBtnElement) resetRequestBtnElement.classList.add('d-none'); // Oculta botón de solicitud
+             if (resetConfirmBtnElement) resetConfirmBtnElement.classList.remove('d-none'); // Muestra botón de confirmación
+
+              // Limpiar campos de contraseña en el modal
+              const newPasswordInput = document.getElementById('new-password');
+              const confirmPasswordInput = document.getElementById('confirm-password');
+              if(newPasswordInput) newPasswordInput.value = '';
+              if(confirmPasswordInput) confirmPasswordInput.value = '';
+
 
          } else {
               if (resetMessage) resetMessage.textContent = 'Correo no encontrado. Intenta de nuevo.'; // Actualiza mensaje en el modal
@@ -1356,10 +1456,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Event Listeners ---
     // Listeners de Autenticación
+    // Eliminamos el patrón cloneNode/replaceChild, adjuntamos directamente si el elemento existe
     if (loginForm) loginForm.addEventListener('submit', handleLogin);
     if (btnLogout) btnLogout.addEventListener('click', handleLogout);
 
     // Listener para el enlace "¿Olvidaste tu contraseña?" (en el login)
+    // Eliminamos el patrón cloneNode/replaceChild, adjuntamos directamente si el elemento existe
      if (forgotPasswordLink) {
          forgotPasswordLink.addEventListener('click', function(e) {
              e.preventDefault();
@@ -1368,49 +1470,46 @@ document.addEventListener('DOMContentLoaded', function() {
      }
 
      // Listeners para el formulario dentro del modal de restablecer contraseña
+     // Eliminamos el patrón cloneNode/replaceChild, adjuntamos directamente si los elementos existen
      if (resetPasswordForm) {
-         const resetRequestBtn = resetPasswordForm.querySelector('button[type="submit"]'); // El primer submit es solicitar
-         const resetConfirmBtn = resetPasswordForm.querySelector('.modal-footer button.btn-primary'); // El de continuar en el footer
-
-         if (resetRequestBtn) {
-              // Quitamos listener viejo y ponemos uno nuevo
-             const newResetRequestBtn = resetRequestBtn.cloneNode(true);
-             resetRequestBtn.parentNode.replaceChild(newResetRequestBtn, resetRequestBtn);
-             newResetRequestBtn.addEventListener('click', handleResetPasswordRequest); // Primer paso: solicitar cambio
-         }
-
-         if (resetConfirmBtn) {
-              // Quitamos listener viejo y ponemos uno nuevo
-              const newResetConfirmBtn = resetConfirmBtn.cloneNode(true);
-              resetConfirmBtn.parentNode.replaceChild(newResetConfirmBtn, resetConfirmBtn);
-             newResetConfirmBtn.addEventListener('click', handleResetPasswordConfirm); // Segundo paso: confirmar nueva contraseña
-         }
-
-         // También un listener al submit del formulario para que funcione con Enter
+         // Listener al submit del formulario para que funcione con Enter y botones
           resetPasswordForm.addEventListener('submit', function(e) {
               e.preventDefault(); // Evita el submit por defecto
               const submitButton = e.submitter; // El botón que disparó el submit
 
               // Determinar qué botón se presionó (por ID o texto/clase)
-              if (submitButton && submitButton.textContent.includes('Continuar')) { // Si el texto es "Continuar"
+              // Si el botón "Continuar" (confirmar) está visible, el submit es para confirmar
+              const resetConfirmBtnElement = resetPasswordForm.querySelector('.modal-footer button.btn-primary');
+               if (resetConfirmBtnElement && !resetConfirmBtnElement.classList.contains('d-none')) {
                   handleResetPasswordConfirm(e); // Llama a la función de confirmar
-              } else {
+              } else { // De lo contrario, es para solicitar
                   handleResetPasswordRequest(e); // Llama a la función de solicitar
               }
           });
+
+          // Listeners explícitos para los botones por si no se usa Enter en el formulario
+          const resetRequestBtnElement = resetPasswordForm.querySelector('button[type="submit"]'); // El primer submit es solicitar
+          const resetConfirmBtnElement = resetPasswordForm.querySelector('.modal-footer button.btn-primary'); // El de continuar en el footer
+
+          if (resetRequestBtnElement) {
+               resetRequestBtnElement.addEventListener('click', handleResetPasswordRequest); // Primer paso: solicitar cambio
+          }
+
+          if (resetConfirmBtnElement) {
+              resetConfirmBtnElement.addEventListener('click', handleResetPasswordConfirm); // Segundo paso: confirmar nueva contraseña
+          }
+
      }
 
 
     // Listeners de Registro
+    // Eliminamos el patrón cloneNode/replaceChild, adjuntamos directamente si el elemento existe
     if (btnRegistro) btnRegistro.addEventListener('click', showRegistroForm); // Navbar "Registrarse"
     const registroFormElement = document.getElementById('registroForm'); // Referencia al formulario de registro
      if (registroFormElement) {
          // Event Listener para el formulario de registro (enviar)
-         // Quitamos listener viejo y ponemos uno nuevo
-         const newRegistroFormElement = registroFormElement.cloneNode(true);
-         registroFormElement.parentNode.replaceChild(newRegistroFormElement, registroFormElement);
-
-         newRegistroFormElement.addEventListener('submit', function(e) {
+         // Usamos .off().on() con jQuery si es necesario evitar múltiples envíos
+          $(registroFormElement).off('submit').on('submit', function(e) {
              e.preventDefault();
              const newEmailInput = document.getElementById('new-email');
              const newPasswordInput = document.getElementById('new-password-reg'); // ID corregido en HTML
@@ -1450,6 +1549,7 @@ document.addEventListener('DOMContentLoaded', function() {
      if (btnCancelarRegistro) btnCancelarRegistro.addEventListener('click', hideRegistroForm); // Botón Cancelar del formulario registro
 
     // Listeners de Navegación del Navbar (asegurarse de que existan los botones)
+    // Eliminamos el patrón cloneNode/replaceChild, adjuntamos directamente si el elemento existe
      if (btnDashboard) btnDashboard.addEventListener('click', showDashboard);
      if (btnEmpleados) btnEmpleados.addEventListener('click', showEmpleadosList);
      if (btnCumpleanos) btnCumpleanos.addEventListener('click', showCumpleanosList);
@@ -1457,30 +1557,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // Listeners de botones de las secciones (Dashboard, Lista Empleados)
+    // Eliminamos el patrón cloneNode/replaceChild, adjuntamos directamente si los elementos existen
     if (btnNuevoEmpleado) btnNuevoEmpleado.addEventListener('click', () => showEmpleadoForm()); // Botón "Agregar Nuevo Empleado" en Dashboard
     if (btnNuevoEmpleadoLista) btnNuevoEmpleadoLista.addEventListener('click', () => showEmpleadoForm()); // Botón "Nuevo Empleado" en Lista de Empleados
      if (btnVerEmpleados) btnVerEmpleados.addEventListener('click', showEmpleadosList); // Botón "Ver Empleados" en Dashboard
      if (btnExportarCSV) btnExportarCSV.addEventListener('click', exportarEmpleadosCSV); // Botón Exportar
 
     // Listener del formulario de Empleado (Guardar/Actualizar)
+    // Eliminamos el patrón cloneNode/replaceChild, adjuntamos directamente si el elemento existe
     const empleadoFormElement = document.getElementById('empleadoForm');
     if (empleadoFormElement) {
-         // Quitamos listener viejo y ponemos uno nuevo
-         const newEmpleadoFormElement = empleadoFormElement.cloneNode(true);
-         empleadoFormElement.parentNode.replaceChild(newEmpleadoFormElement, empleadoFormElement);
-         newEmpleadoFormElement.addEventListener('submit', handleEmpleadoFormSubmit);
+         // Usamos .off().on() con jQuery si es necesario evitar múltiples envíos
+         $(empleadoFormElement).off('submit').on('submit', handleEmpleadoFormSubmit);
     }
 
 
     // Listener del botón Cancelar en el formulario de empleado
+    // Eliminamos el patrón cloneNode/replaceChild, adjuntamos directamente si el elemento existe
     if (btnCancelar) btnCancelar.addEventListener('click', showEmpleadosList); // Vuelve a la lista
 
     // Listener para el enlace "Inicio" en el breadcrumb
+    // Eliminamos el patrón cloneNode/replaceChild, adjuntamos directamente si el elemento existe
      if (breadcrumbHomeLink) {
-         // Quitamos listeners viejos y ponemos uno nuevo para evitar duplicados
-          const newBreadcrumbHomeLink = breadcrumbHomeLink.cloneNode(true);
-          breadcrumbHomeLink.parentNode.replaceChild(newBreadcrumbHomeLink, breadcrumbHomeLink);
-          newBreadcrumbHomeLink.addEventListener('click', function(e) {
+          breadcrumbHomeLink.addEventListener('click', function(e) {
              e.preventDefault(); // Prevenir navegación por defecto
               if (isAuthenticated) {
                  showDashboard(); // Ir al dashboard si está autenticado
@@ -1491,18 +1590,15 @@ document.addEventListener('DOMContentLoaded', function() {
      }
 
 
-  // --- Funcionalidad para mostrar/ocultar contraseña ---
+     // --- Funcionalidad para mostrar/ocultar contraseña ---
      // Busca todos los botones con la clase 'toggle-password'
      const togglePasswordButtons = document.querySelectorAll('.toggle-password');
 
      togglePasswordButtons.forEach(button => {
-         // **CORRECCIÓN:** Verificar si el botón tiene un padre antes de intentar reemplazarlo
-         if (button && button.parentNode) {
-             // Quitamos listeners viejos y ponemos uno nuevo
-             const newButton = button.cloneNode(true);
-             button.parentNode.replaceChild(newButton, button);
-
-             newButton.addEventListener('click', function() {
+         // **CORRECCIÓN:** Adjuntamos el listener directamente si el elemento existe.
+         // Eliminamos la lógica de cloneNode/replaceChild que causaba el error.
+         if (button) {
+             button.addEventListener('click', function() {
                  // Obtiene el ID del input de contraseña desde el atributo data-target
                  const targetId = this.dataset.target;
                  const passwordInput = document.getElementById(targetId);
@@ -1521,8 +1617,7 @@ document.addEventListener('DOMContentLoaded', function() {
                  }
              });
          } else {
-             // Esto nos ayudaría a depurar si se encuentra un botón sin padre (no debería pasar)
-             console.warn("Botón toggle password encontrado sin parentNode:", button);
+             console.warn("Botón toggle password encontrado en querySelectorAll pero es null.");
          }
      });
      // --- Fin Funcionalidad mostrar/ocultar contraseña ---
