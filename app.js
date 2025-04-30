@@ -670,7 +670,7 @@ document.addEventListener('DOMContentLoaded', function() {
      }
 
 
-    function ocultarElementsAutenticados() {
+    function ocultarElementosAutenticados() {
         ocultarElements([btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias]);
         ocultarElements([btnNuevoEmpleado, btnNuevoEmpleadoLista, btnVerEmpleados, btnCancelar, btnExportarCSV]);
          ocultarElements([document.getElementById('btn-editar-desde-detalle'), document.getElementById('btn-volver-desde-detalle')]);
