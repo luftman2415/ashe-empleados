@@ -8,12 +8,17 @@
     --color-secundario-azul: #007bff; /* Un azul un poco más claro, usado en gradiente */
     --color-fondo-claro: #f4f6fa; /* Color de fondo general */
     --color-texto-oscuro: #222; /* Gris muy oscuro para texto general */
+    --color-texto-secundario: #555; /* Gris para texto secundario */
     --color-borde-divisor: #ccc; /* Un gris para bordes o líneas divisorias */
     --color-acento-verde: #8bc34a; /* Si quieres agregar un acento, como el verde de "Online" */
     --color-blanco: #fff; /* Blanco */
 
     /* Tipografía (Fuente limpia y moderna) */
     --fuente-principal: 'Roboto', Arial, sans-serif; /* Roboto es una fuente de Google Fonts */
+
+    /* Espaciado */
+    --espaciado-base: 1rem; /* 16px */
+    --espaciado-doble: 2rem; /* 32px */
 
     /* Sombras y Bordes comunes */
     --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
@@ -32,7 +37,16 @@ body {
     padding: 0; /* Elimina el padding predeterminado del body */
     line-height: 1.6; /* Mejora la legibilidad del texto */
     box-sizing: border-box; /* Incluye padding y borde en el tamaño total */
+    min-height: 100vh; /* Asegura que el body tenga al menos la altura de la ventana */
+    display: flex; /* Usamos flexbox para empujar el footer al final */
+    flex-direction: column; /* Los elementos hijos se apilan verticalmente */
 }
+
+/* Permite que el contenido principal crezca y empuje el footer */
+main {
+    flex-grow: 1;
+}
+
 
 *, *::before, *::after {
     box-sizing: inherit; /* Hereda box-sizing para todos los elementos */
@@ -40,46 +54,107 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     color: var(--color-primario-azul); /* Los títulos usan el azul principal */
-    margin-top: 1em; /* Espacio superior para títulos */
-    margin-bottom: 0.5em; /* Espacio inferior para títulos */
+    margin-top: var(--espaciado-base); /* Espacio superior para títulos */
+    margin-bottom: calc(var(--espaciado-base) / 2); /* Espacio inferior para títulos */
+    line-height: 1.2; /* Espaciado de línea más ajustado para títulos */
 }
 
-/* --- Estilos de Componentes (basados en tu código) --- */
+p {
+    margin-bottom: var(--espaciado-base);
+}
 
-.navbar, .footer {
+
+/* --- Estilos de Componentes --- */
+
+.navbar {
     background: var(--color-primario-azul); /* Usa la variable de color principal */
     color: var(--color-blanco); /* Usa la variable de color blanco */
+    padding-top: var(--espaciado-base); /* Añadido padding para que se vea mejor */
+    padding-bottom: var(--espaciado-base); /* Añadido padding */
+    /* Ajustes para que el texto del navbar y links se vean blancos */
+    .navbar-brand, .nav-link {
+        color: var(--color-blanco) !important; /* Usamos !important aquí para asegurar que Bootstrap no lo sobreescriba fácilmente */
+    }
+    .navbar-brand:hover, .nav-link:hover {
+         color: rgba(var(--color-blanco), 0.75) !important; /* Un blanco un poco transparente en hover */
+    }
+    .breadcrumb-item a {
+        color: var(--color-blanco) !important;
+    }
+    .breadcrumb-item::before {
+        color: var(--color-blanco) !important;
+    }
+     .breadcrumb-item.active {
+        color: var(--color-fondo-claro) !important; /* Color diferente para el elemento activo en el breadcrumb */
+    }
+
+
 }
 
-.logo-navbar {
+.logo-container {
+    margin-right: var(--espaciado-base); /* Espacio entre logo y texto del navbar */
+}
+
+.logo-circle {
     background: var(--color-blanco); /* Usa la variable de color blanco */
     border-radius: 50%;
     box-shadow: var(--sombra-suave); /* Usa la variable de sombra */
-    max-height: 32px;
-    width: 32px;
-    padding: 4px;
+    max-height: 40px; /* Ajustado un poco el tamaño */
+    width: 40px; /* Ajustado un poco el tamaño */
+    padding: 5px; /* Ajustado padding */
     object-fit: contain;
     display: inline-block;
 }
 
-/* Eliminado !important - generalmente no es necesario y causa problemas */
+
+/* Eliminado !important en bg-light - generalmente no es necesario y causa problemas */
 .bg-light {
-    background: #f8f9fa;
+    background: #f8f9fa; /* Mantener el color original de Bootstrap si se necesita */
 }
 
-.portal-rrhh-banner {
+/* Banner */
+#portal-banner {
     /* Puedes usar las variables aquí también si lo deseas, pero el gradiente específico está bien */
     background: linear-gradient(90deg, var(--color-primario-azul) 80%, var(--color-secundario-azul) 100%);
     font-size: 1.15rem;
     letter-spacing: 1px;
     border-radius: var(--borde-radio-redondeado); /* Usa variable */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* Ajusté la sombra, o podrías usar una variable si defines más */
-    margin-bottom: 2rem;
+    box-shadow: var(--sombra-media); /* Usa variable de sombra */
+    margin-bottom: var(--espaciado-doble);
     color: var(--color-blanco); /* Asegura que el texto en el banner sea legible */
-    padding: 1.5rem; /* Agregado padding para que el texto no esté pegado a los bordes */
+    padding: var(--espaciado-doble); /* Agregado padding */
+    text-align: center; /* Centrar texto */
 }
 
-.section-contacto {
+#portal-banner h1 {
+    color: var(--color-blanco); /* Título del banner también en blanco */
+    margin-top: 0; /* Eliminar margen superior del h1 en el banner */
+    margin-bottom: calc(var(--espaciado-base) / 2);
+}
+#portal-banner p {
+     margin-bottom: 0; /* Eliminar margen inferior del p en el banner */
+}
+
+
+/* Estilos para las secciones principales (Login, Registro, etc.) */
+/* Aplicar estilos de tarjeta a los formularios y detalles si no tienen ya la clase card */
+/* Tu HTML ya usa .card, así que estos estilos generales aplican */
+#login-form .card,
+#registro-form .card,
+#empleado-detalle .card,
+#empleado-form .card,
+#cumpleanos-list .card,
+#ausencias-list .card {
+     border-radius: var(--borde-radio-tarjeta); /* Usa variable */
+     box-shadow: var(--sombra-media); /* Usa variable de sombra */
+     border: none;
+     background: var(--color-blanco); /* Usa la variable de color blanco */
+     margin-top: var(--espaciado-doble); /* Espacio superior */
+     margin-bottom: var(--espaciado-doble); /* Espacio inferior */
+}
+
+
+.section-contacto { /* Esta clase no está en tu HTML actual, pero mantengo el estilo por si la usas */
     background: var(--color-blanco); /* Usa la variable de color blanco */
     border-radius: var(--borde-radio-tarjeta); /* Usa variable */
     box-shadow: var(--sombra-media); /* Usa variable de sombra */
@@ -88,51 +163,171 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 700px;
     border-left: 6px solid var(--color-primario-azul); /* Usa la variable de color principal */
 }
-
 .section-contacto h2 {
     color: var(--color-primario-azul); /* Usa la variable de color principal */
     font-weight: 700;
     margin-bottom: 1rem;
 }
-
 .section-contacto p {
     color: var(--color-texto-oscuro); /* Usa la variable de color de texto */
     font-size: 1.1rem;
 }
-
 .section-contacto .contact-info {
     margin-top: 1.5rem;
     font-size: 1.05rem;
 }
 
+
+/* Estilos específicos de Tarjetas (Card) */
 .card {
     border-radius: var(--borde-radio-tarjeta); /* Usa variable */
     box-shadow: var(--sombra-media); /* Usa variable de sombra */
-    border: none;
+    border: none; /* Elimina borde predeterminado de Bootstrap */
     background: var(--color-blanco); /* Usa la variable de color blanco */
+}
+
+.card-header {
+     background-color: var(--color-primario-azul) !important; /* Asegura el fondo azul en el header de la tarjeta */
+     color: var(--color-blanco) !important; /* Asegura texto blanco */
+     border-bottom: none; /* Elimina borde inferior predeterminado */
+     border-top-left-radius: var(--borde-radio-tarjeta) !important; /* Aplica radio arriba izquierda */
+     border-top-right-radius: var(--borde-radio-tarjeta) !important; /* Aplica radio arriba derecha */
+     padding: var(--espaciado-base) 1.5rem; /* Padding */
 }
 
 .card-title {
     font-weight: 700;
     color: var(--color-primario-azul); /* Usa la variable de color principal */
+    margin-bottom: var(--espaciado-base);
 }
 
+.card-body {
+    padding: 1.5rem; /* Padding del cuerpo de la tarjeta */
+}
+
+.card-footer {
+     background-color: var(--color-blanco); /* Pie de tarjeta blanco */
+     border-top: 1px solid var(--color-fondo-claro); /* Borde superior sutil */
+     border-bottom-left-radius: var(--borde-radio-tarjeta) !important; /* Aplica radio abajo izquierda */
+     border-bottom-right-radius: var(--borde-radio-tarjeta) !important; /* Aplica radio abajo derecha */
+     padding: var(--espaciado-base) 1.5rem; /* Padding */
+}
+
+/* Estilos para la sección Dashboard */
+.dashboard-cards {
+    /* Los estilos de layout (row, col-md-4) están en el HTML */
+}
+.dashboard-card {
+    /* Ya tiene las clases card, text-center, p-3 */
+}
+.dashboard-card .card-body {
+    padding: var(--espaciado-base); /* Ajusta padding si es necesario */
+}
+.dashboard-card .card-icon {
+    font-size: 2.5rem; /* Tamaño del icono */
+    color: var(--color-primario-azul); /* Color del icono */
+    margin-bottom: calc(var(--espaciado-base) / 2); /* Espacio debajo del icono */
+}
+.dashboard-card h2 {
+    margin: 0; /* Elimina márgenes del h2 dentro de la card */
+    font-size: 2rem; /* Tamaño de fuente para los números */
+}
+.dashboard-card p {
+     color: var(--color-texto-secundario); /* Color para el texto de descripción */
+     margin-bottom: 0; /* Elimina margen inferior del p */
+}
+
+
+/* Estilos para Tablas (DataTables/Bootstrap table) */
+.table {
+    /* Bootstrap ya le da estilos básicos */
+}
 .table th, .table td {
     vertical-align: middle;
-    /* Puedes añadir bordes o estilos de tabla aquí si quieres que se parezca a una tabla de datos */
-    border-bottom: 1px solid var(--color-borde-divisor); /* Ejemplo: borde inferior */
+    padding: var(--espaciado-base) 0.75rem; /* Ajusta padding de celdas */
+    border-bottom: 1px solid var(--color-borde-divisor); /* Borde inferior sutil */
 }
 
-/* Estilo para la cabecera de la tabla si usas <thead> */
 .table thead th {
     border-bottom: 2px solid var(--color-primario-azul); /* Borde más marcado para el encabezado */
+    color: var(--color-primario-azul); /* Color del texto del encabezado */
+    font-weight: 700;
 }
 
-.btn, .btn-primary, .btn-outline-light {
+.table-hover tbody tr:hover {
+    background-color: rgba(var(--color-primario-azul), 0.05); /* Fondo suave al pasar el ratón */
+}
+
+/* Estilos para Formularios */
+.form-label {
+    font-weight: 500;
+    color: var(--color-texto-oscuro);
+}
+
+.form-control, .form-select {
+    border-color: var(--color-borde-divisor); /* Color de borde */
+    border-radius: var(--borde-radio-boton); /* Usa variable para radio */
+    padding: 0.75rem 1rem; /* Ajusta padding */
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-secundario-azul); /* Color de borde al enfocar */
+    box-shadow: 0 0 0 0.25rem rgba(var(--color-secundario-azul), 0.25); /* Sombra al enfocar */
+}
+
+.input-group .form-control,
+.input-group .form-select {
+     height: calc(2.5rem + 2px); /* Altura consistente con los botones de input-group */
+}
+
+
+.input-group .form-control {
+    border-radius: var(--borde-radio-boton) 0 0 var(--borde-radio-boton); /* Usa variable */
+}
+
+.input-group > .form-control:not(:last-child),
+.input-group > .form-select:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+
+.input-group .btn {
+    border-radius: 0 var(--borde-radio-boton) var(--borde-radio-boton) 0; /* Usa variable */
+    padding: 0.5rem 1rem; /* Ajusta padding del botón en input group */
+}
+
+.toggle-password {
+    border: none;
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+    color: var(--color-texto-secundario); /* Color del icono del ojo */
+    padding: 0.5rem 1rem; /* Padding del botón */
+    /* Asegura que el botón tenga el mismo radio en el lado derecho si no está en un input-group */
+     border-radius: var(--borde-radio-boton);
+}
+.input-group .toggle-password {
+    border-radius: 0 var(--borde-radio-boton) var(--borde-radio-boton) 0; /* Radio correcto dentro de input-group */
+    border: 1px solid var(--color-borde-divisor); /* Agrega borde para que coincida con el input */
+    border-left: none; /* Elimina el borde izquierdo */
+}
+
+
+/* Estilos para Botones (Bootstrap btn) */
+.btn {
     border-radius: var(--borde-radio-boton); /* Usa variable */
     font-weight: 500;
-    transition: box-shadow 0.2s, background 0.2s, color 0.2s, border-color 0.2s; /* Añadido color y border-color a la transición */
-    box-shadow: 0 2px 8px rgba(0, 86, 179, 0.137); /* Usa una sombra suave relacionada con el azul */
+    transition: all 0.2s ease-in-out; /* Transición suave en todos los cambios */
+    box-shadow: 0 2px 8px rgba(0, 86, 179, 0.15); /* Sombra suave relacionada con el azul */
+    padding: 0.75rem 1.5rem; /* Ajusta padding del botón */
+    display: inline-flex; /* Permite alinear icono y texto */
+    align-items: center; /* Centra verticalmente icono y texto */
+    justify-content: center; /* Centra horizontalmente contenido si es necesario */
+}
+
+.btn i {
+    margin-right: 0.5rem; /* Espacio entre icono y texto */
 }
 
 .btn-primary {
@@ -141,85 +336,253 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--color-blanco); /* Asegura que el texto del botón primario sea blanco */
 }
 
-.btn-outline-primary {
-    background: transparent;
-    border-color: var(--color-primario-azul); /* Usa variable */
-    color: var(--color-primario-azul); /* El texto es azul */
-}
-
 .btn-primary:hover {
     background: #003974; /* Un azul más oscuro para el hover */
     border-color: #003974; /* Un azul más oscuro para el hover */
     color: var(--color-blanco); /* Asegura que el texto sea blanco en hover */
-    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.2); /* Sombra más pronunciada en hover */
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.25); /* Sombra más pronunciada en hover */
+    transform: translateY(-1px); /* Efecto de leve elevación en hover */
 }
+
+.btn-secondary {
+    /* Bootstrap default style, o puedes definir una variable */
+    /* background-color: var(--color-texto-secundario); border-color: var(--color-texto-secundario); */
+}
+
+.btn-info { /* Para el botón 'Ver Empleados' */
+    background-color: #17a2b8; /* Color info de Bootstrap */
+    border-color: #17a2b8;
+    color: var(--color-blanco);
+}
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+     color: var(--color-blanco);
+     box-shadow: 0 4px 12px rgba(23, 162, 184, 0.25);
+     transform: translateY(-1px);
+}
+
+.btn-success { /* Para el botón 'Exportar CSV' */
+    background-color: var(--color-acento-verde); /* Usamos la variable del verde */
+    border-color: var(--color-acento-verde);
+    color: var(--color-blanco);
+}
+.btn-success:hover {
+     background-color: #689f38; /* Verde más oscuro */
+     border-color: #689f38;
+      color: var(--color-blanco);
+     box-shadow: 0 4px 12px rgba(139, 195, 74, 0.25);
+     transform: translateY(-1px);
+}
+
+
+.btn-outline-primary {
+     border-radius: var(--borde-radio-boton); /* Usa variable */
+     font-weight: 500;
+     transition: all 0.2s ease-in-out;
+     box-shadow: none; /* Outline buttons usually don't have initial shadow */
+     background: transparent;
+     border-color: var(--color-primario-azul); /* Usa variable */
+     color: var(--color-primario-azul); /* El texto es azul */
+     padding: 0.75rem 1.5rem; /* Ajusta padding */
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+}
+
 .btn-outline-primary:hover {
      background: var(--color-primario-azul); /* Fondo azul en hover */
      border-color: var(--color-primario-azul); /* Borde azul en hover */
      color: var(--color-blanco); /* Texto blanco en hover */
-     box-shadow: 0 4px 12px rgba(0, 86, 179, 0.2); /* Sombra más pronunciada en hover */
+     box-shadow: 0 4px 12px rgba(0, 86, 179, 0.25);
+     transform: translateY(-1px);
+}
+
+/* Estilos para Footer */
+.footer {
+    background: var(--color-primario-azul); /* Usa la variable de color principal */
+    color: var(--color-blanco); /* Usa la variable de color blanco */
+    text-align: center;
+    padding: var(--espaciado-base);
+    margin-top: var(--espaciado-doble); /* Espacio superior para separarlo del contenido */
+    width: 100%; /* Asegura que ocupe todo el ancho */
+    flex-shrink: 0; /* Evita que el footer se encoja */
 }
 
 
-.input-group .form-control {
-    border-radius: var(--borde-radio-boton) 0 0 var(--borde-radio-boton); /* Usa variable */
+/* Estilos para la alerta visual (estos son básicos, puedes mejorarlos) */
+#alerta-visual {
+    /* Propiedades de posicionamiento y z-index ya definidas en el HTML inline */
+    padding: 1rem;
+    border-radius: 8px;
+    /* Los colores de fondo y texto los da Bootstrap con la clase .alert-info */
 }
 
-.input-group .btn {
-    border-radius: 0 var(--borde-radio-boton) var(--borde-radio-boton) 0; /* Usa variable */
-}
 
-.toggle-password {
-    border: none;
-    background: transparent;
-    outline: none;
-    box-shadow: none;
-    /* Puedes añadir un color si quieres, por ejemplo: color: var(--color-texto-oscuro); */
-}
-
-/* --- Responsividad Básica --- */
+/* --- Responsividad --- */
 @media (max-width: 768px) {
     /* Ajustes generales para pantallas pequeñas */
     body {
-        padding: 0.5rem; /* Añade un poco de padding al cuerpo en móviles */
+        padding-top: 0; /* Elimina padding superior si el navbar ya da espacio */
+        padding-bottom: 0; /* Elimina padding inferior si el footer ya da espacio */
+    }
+     main.container {
+        padding-left: 0.75rem; /* Ajusta padding left/right del contenedor principal */
+        padding-right: 0.75rem;
+     }
+
+    .navbar .container {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+    .footer {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
     }
 
-    .portal-rrhh-banner {
+
+    #portal-banner {
          font-size: 1rem; /* Reduce el tamaño de fuente del banner */
-         padding: 1rem; /* Reduce el padding del banner */
-         margin-bottom: 1.5rem;
+         padding: 1.5rem; /* Reduce el padding del banner */
+         margin-bottom: var(--espaciado-base);
     }
 
-    .section-contacto {
-        padding: 1.5rem 1rem; /* Reduce el padding de la sección de contacto */
-        margin: 1.5rem auto; /* Reduce el margen */
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.375rem; }
+
+
+    /* Ajusta márgenes y padding para secciones y tarjetas en móviles */
+    #login-form .card,
+    #registro-form .card,
+    #empleado-detalle .card,
+    #empleado-form .card,
+    #cumpleanos-list .card,
+    #ausencias-list .card,
+    #contacto .card {
+         margin-top: var(--espaciado-base);
+         margin-bottom: var(--espaciado-base);
+         border-radius: var(--borde-radio-redondeado); /* Bordes un poco menos redondeados en móviles */
     }
+     .card-header {
+        border-top-left-radius: var(--borde-radio-redondeado) !important;
+        border-top-right-radius: var(--borde-radio-redondeado) !important;
+     }
+     .card-footer {
+         border-bottom-left-radius: var(--borde-radio-redondeado) !important;
+         border-bottom-right-radius: var(--borde-radio-redondeado) !important;
+     }
+     .card-body {
+         padding: var(--espaciado-base); /* Reduce padding del cuerpo de la tarjeta */
+     }
 
 
     .navbar .navbar-brand span {
-        font-size: 1.1rem; /* Tamaño de fuente del navbar brand */
+        font-size: 1.1rem; /* Tamaño de fuente del navbar brand (si usas span dentro) */
     }
+
+    .logo-circle {
+        max-height: 35px; /* Tamaño del logo en navbar en móviles */
+        width: 35px;
+        padding: 4px;
+    }
+
     .card-title {
         font-size: 1.2rem; /* Tamaño de fuente del título de la tarjeta */
     }
     .footer {
         font-size: 0.9rem; /* Tamaño de fuente del footer */
+        padding: var(--espaciado-base) 0.75rem;
     }
-    .logo-navbar {
-        max-height: 28px; /* Tamaño del logo en navbar */
-        width: 28px;
-        padding: 3px;
+
+    /* Ajustes específicos para la lista de empleados y filtros en móvil */
+    #empleados-list .row.mb-3 > div {
+        margin-bottom: var(--espaciado-base); /* Espacio entre filtros y botón */
     }
-    /* Puedes añadir más reglas aquí para ajustar otros elementos en móviles */
+     #empleados-list .text-md-end {
+        text-align: center !important; /* Centra el botón "Nuevo Empleado" en móviles */
+     }
+     #empleados-list .btn-primary.w-md-auto {
+        width: 100% !important; /* Hace el botón "Nuevo Empleado" ancho en móviles */
+     }
+
+     /* Ajusta padding para inputs y botones en input-group si es necesario */
+     .form-control, .form-select {
+         padding: 0.5rem 0.75rem;
+     }
+     .input-group .form-control,
+     .input-group .form-select,
+     .input-group .btn,
+     .toggle-password {
+          padding: 0.5rem 0.75rem;
+     }
+      .btn {
+         padding: 0.6rem 1.2rem;
+      }
+       .btn i {
+         margin-right: 0.25rem; /* Reduce espacio entre icono y texto en botones móviles */
+       }
+
+
 }
 
 /* Media query para pantallas aún más pequeñas si es necesario */
 @media (max-width: 480px) {
    /* Ajustes para teléfonos muy pequeños */
-   .section-contacto, .card {
-       border-radius: 12px; /* Bordes menos redondeados en pantallas muy pequeñas */
+   .card,
+   #login-form .card,
+   #registro-form .card,
+   #empleado-detalle .card,
+   #empleado-form .card,
+   #cumpleanos-list .card,
+   #ausencias-list .card,
+    #contacto .card {
+       border-radius: var(--borde-radio-redondeado); /* Bordes menos redondeados */
    }
-   .btn, .input-group .form-control, .input-group .btn {
-       border-radius: 18px; /* Botones menos redondeados */
+
+   .card-header {
+        border-top-left-radius: var(--borde-radio-redondeado) !important;
+        border-top-right-radius: var(--borde-radio-redondeado) !important;
    }
+    .card-footer {
+         border-bottom-left-radius: var(--borde-radio-redondeado) !important;
+         border-bottom-right-radius: var(--borde-radio-redondeado) !important;
+    }
+
+   .btn, .input-group .form-control, .input-group .btn, .form-select, .toggle-password {
+       border-radius: 18px; /* Botones e inputs menos redondeados */
+        padding: 0.5rem 1rem;
+   }
+
+    .input-group .form-control {
+        border-radius: 18px 0 0 18px;
+    }
+     .input-group .btn {
+        border-radius: 0 18px 18px 0;
+    }
+     .toggle-password {
+        border-radius: 18px;
+     }
+      .input-group .toggle-password {
+        border-radius: 0 18px 18px 0;
+     }
+
+    .card-body {
+        padding: 1rem; /* Reduce aún más el padding en pantallas muy pequeñas */
+    }
+     .card-header, .card-footer {
+        padding: 1rem;
+     }
+
+     .dashboard-card h2 {
+        font-size: 1.75rem; /* Reduce tamaño de números en dashboard */
+     }
+     .dashboard-card .card-icon {
+        font-size: 2rem; /* Reduce tamaño de iconos en dashboard */
+     }
+     .dashboard-card.card {
+        padding: 1rem !important; /* Ajusta padding de la card */
+     }
+
+
 }
