@@ -95,15 +95,26 @@ p {
     margin-right: var(--espaciado-base); /* Espacio entre logo y texto del navbar */
 }
 
-.logo-circle {
-    background: var(--color-blanco); /* Usa la variable de color blanco */
-    border-radius: 50%;
-    box-shadow: var(--sombra-suave); /* Usa la variable de sombra */
-    max-height: 40px; /* Ajustado un poco el tamaño */
-    width: 40px; /* Ajustado un poco el tamaño */
-    padding: 5px; /* Ajustado padding */
-    object-fit: contain;
-    display: inline-block;
+/* Estilos para el contenedor circular del logo */
+.logo-circle-wrapper {
+    background: var(--color-blanco); /* Fondo blanco para el círculo */
+    border-radius: 50%; /* Hace el contenedor circular */
+    box-shadow: var(--sombra-suave); /* Sombra suave */
+    width: 40px; /* Define el tamaño del círculo (ajusta si quieres 32px) */
+    height: 40px; /* Define el tamaño del círculo (ajusta si quieres 32px) */
+    padding: 5px; /* Espacio blanco dentro del círculo */
+    display: flex; /* Usa flexbox para centrar la imagen */
+    justify-content: center; /* Centra horizontalmente la imagen */
+    align-items: center; /* Centra verticalmente la imagen */
+    overflow: hidden; /* Esconde cualquier parte de la imagen que se salga del círculo */
+}
+
+/* Estilos para la imagen dentro del contenedor circular */
+.logo-circle-wrapper img {
+    display: block; /* La imagen se comporta como bloque */
+    max-width: 100%; /* La imagen no sobrepasa el ancho del contenedor */
+    height: auto; /* Mantiene la proporción de la imagen */
+    /* Nota: No aplicamos border-radius a la imagen, solo a su contenedor */
 }
 
 
