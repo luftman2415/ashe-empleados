@@ -60,6 +60,109 @@
             <p>Gestión integral de empleados, documentos, ausencias y más.</p>
         </section>
 
+        <section id="empleado-form" class="mb-4 d-none">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="bi bi-person-plus"></i> Datos del Empleado
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form id="empleadoForm" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nombres" class="form-label">Nombres</label>
+                                <input type="text" class="form-control" id="nombres" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="apellidos" class="form-label">Apellidos</label>
+                                <input type="text" class="form-control" id="apellidos" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="cedula" class="form-label">Cédula</label>
+                                <input type="text" class="form-control" id="cedula" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="text" class="form-control" id="telefono" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="email-empleado" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email-empleado" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="cargo" class="form-label">Cargo</label>
+                                <input type="text" class="form-control" id="cargo">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="departamento" class="form-label">Departamento</label>
+                                <input type="text" class="form-control" id="departamento">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="tipoContrato" class="form-label">Tipo de Contrato</label>
+                                <input type="text" class="form-control" id="tipoContrato">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="salario" class="form-label">Salario</label>
+                                <input type="text" class="form-control" id="salario"
+                                       pattern="^\d{1,3}(\.\d{3})*(\,\d+)?$"
+                                       placeholder="Ej: 1.000.000">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" id="fechaNacimiento">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="fechaIngreso" class="form-label">Fecha de Ingreso</label>
+                                <input type="date" class="form-control" id="fechaIngreso">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="notas" class="form-label">Notas / Acontecimientos</label>
+                            <textarea class="form-control" id="notas" rows="3"
+                                      placeholder="Ejemplo: Ascenso, reconocimiento, amonestación, etc."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hoja-de-vida" class="form-label">Hoja de Vida</label> <input type="file" class="form-control" id="hoja-de-vida" accept=".pdf, .doc, .docx, .xls, .xlsx, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                        </div>
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">Contacto de Emergencia</h5> </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <input type="text" class="form-control" id="contactoEmergenciaNombre"
+                                               placeholder="Nombre">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <input type="text" class="form-control" id="contactoEmergenciaTelefono"
+                                               placeholder="Teléfono">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <input type="text" class="form-control" id="contactoEmergenciaParentesco"
+                                               placeholder="Parentesco">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Guardar
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="btn-cancelar">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
         <section id="login-form" class="mb-4">
             <div class="card">
                  <div class="card-body">
@@ -104,6 +207,7 @@
                     </div>
                     <form id="reset-password-form">
                         <div class="modal-body">
+                            <p id="reset-message" class="text-muted"></p>
                             <div class="mb-3">
                                  <label for="reset-email" class="form-label">Correo electrónico</label>
                                 <input type="email" class="form-control" id="reset-email" required>
@@ -130,13 +234,16 @@
                              </div>
                          </div>
                          <div class="modal-footer">
+                              <button type="submit" class="btn btn-primary" id="reset-request-btn">Continuar</button>
+                              <button type="button" class="btn btn-primary d-none" id="reset-confirm-btn">Restablecer</button>
+
                               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                              <button type="submit" class="btn btn-primary">Continuar</button>
                           </div>
                       </form>
                  </div>
              </div>
          </div>
+
 
          <section id="registro-form" class="mb-4 d-none">
              <div class="card">
@@ -192,7 +299,8 @@
                             </div>
                         </div>
                    </div>
-                    <div class="col-md-4 mb-3" id="dashboard-cumpleanos-card"> <div class="dashboard-card card text-center p-3">
+                    <div class="col-md-4 mb-3" id="dashboard-cumpleanos-card">
+                        <div class="dashboard-card card text-center p-3">
                              <div class="card-body p-2">
                                  <div class="card-icon"><i class="bi bi-gift"></i></div>
                                  <h2 class="card-title" id="dashboard-cumpleanos">0</h2>
@@ -200,7 +308,8 @@
                              </div>
                          </div>
                      </div>
-                     <div class="col-md-4 mb-3" id="dashboard-usuarios-card"> <div class="dashboard-card card text-center p-3">
+                     <div class="col-md-4 mb-3" id="dashboard-usuarios-card">
+                         <div class="dashboard-card card text-center p-3">
                               <div class="card-body p-2">
                                   <div class="card-icon"><i class="bi bi-person-check"></i></div>
                                   <h2 class="card-title" id="dashboard-usuarios">0</h2>
@@ -229,8 +338,7 @@
                 <div class="card">
                     <div class="card-header bg-primary text-white">
                         <h3 class="card-title mb-0">
-                            <i class="bi bi-people"></i> Lista de Empleados
-                        </h3>
+                            <i class="bi bi-people"></i> Lista de Empleados </h3>
                     </div>
                     <div class="card-body">
                         <div class="row mb-3 align-items-center">
@@ -296,7 +404,7 @@
                        <div class="card-body" id="empleado-detalle-body">
                            </div>
                        <div class="card-footer text-end">
-                           <button id="btn-editar-desde-detalle" class="btn btn-primary">
+                            <button id="btn-editar-desde-detalle" class="btn btn-primary">
                                <i class="bi bi-pencil"></i> Editar
                             </button>
                            <button id="btn-volver-desde-detalle" class="btn btn-secondary">
@@ -306,214 +414,117 @@
                    </div>
                </section>
 
-               <section id="empleado-form" class="mb-4 d-none">
+
+               <section id="cumpleanos-list" class="mb-4 d-none">
                    <div class="card">
                        <div class="card-header bg-primary text-white">
                            <h3 class="card-title mb-0">
-                                <i class="bi bi-person-plus"></i> Datos del Empleado
-                           </h3>
-                       </div>
-                       <div class="card-body">
-                           <form id="empleadoForm" enctype="multipart/form-data">
-                               <div class="row">
-                                   <div class="col-md-6 mb-3">
-                                       <label for="nombres" class="form-label">Nombres</label>
-                                       <input type="text" class="form-control" id="nombres" required>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="apellidos" class="form-label">Apellidos</label>
-                                        <input type="text" class="form-control" id="apellidos" required>
-                                     </div>
-                                 </div>
+                               <i class="bi bi-gift"></i> Próximos Cumpleaños </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover w-100">
+                                    <thead>
+                                         <tr>
+                                             <th>Empleado</th>
+                                             <th>Fecha de Nacimiento</th>
+                                             <th>Días Restantes</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody id="cumpleanos-table-body">
+                                      </tbody>
+                                </table>
+                             </div>
+                         </div>
+                     </div>
+                 </section>
+
+                 <section id="ausencias-list" class="mb-4 d-none">
+                     <div class="card">
+                         <div class="card-header bg-primary text-white">
+                             <h3 class="card-title mb-0">
+                                 <i class="bi bi-calendar-check"></i> Gestión de Ausencias </h3>
+                         </div>
+                         <div class="card-body">
+                             <form id="ausenciaForm" class="mb-3">
                                  <div class="row">
-                                     <div class="col-md-4 mb-3">
-                                         <label for="cedula" class="form-label">Cédula</label>
-                                         <input type="text" class="form-control" id="cedula" required>
+                                     <div class="col-md-4 mb-2">
+                                          <label for="ausencia-nombre" class="form-label visually-hidden">Nombre empleado</label>
+                                         <input type="text" class="form-control" id="ausencia-nombre"
+                                                placeholder="Nombre empleado" required>
                                       </div>
-                                      <div class="col-md-4 mb-3">
-                                          <label for="telefono" class="form-label">Teléfono</label>
-                                          <input type="text" class="form-control" id="telefono" required>
+                                      <div class="col-md-4 mb-2">
+                                          <label for="ausencia-fecha" class="form-label visually-hidden">Fecha Ausencia</label>
+                                          <input type="date" class="form-control" id="ausencia-fecha" required>
+                                      </div>
+                                      <div class="col-md-4 mb-2">
+                                          <label for="ausencia-tipo" class="form-label visually-hidden">Tipo de ausencia</label>
+                                          <select class="form-select" id="ausencia-tipo" required>
+                                              <option value="">Tipo de ausencia</option>
+                                              <option value="Vacaciones">Vacaciones</option>
+                                              <option value="Incapacidad">Incapacidad</option>
+                                              <option value="Permiso">Permiso</option>
+                                              <option value="Otro">Otro</option>
+                                           </select>
                                        </div>
-                                       <div class="col-md-4 mb-3">
-                                           <label for="email-empleado" class="form-label">Email</label>
-                                           <input type="email" class="form-control" id="email-empleado" required>
-                                        </div>
+                                   </div>
+                                   <div class="text-end mt-3">
+                                       <button type="submit" class="btn btn-primary">
+                                           <i class="bi bi-plus-circle"></i> Registrar Ausencia
+                                        </button>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-4 mb-3">
-                                             <label for="cargo" class="form-label">Cargo</label>
-                                            <input type="text" class="form-control" id="cargo">
-                                         </div>
-                                         <div class="col-md-4 mb-3">
-                                              <label for="departamento" class="form-label">Departamento</label>
-                                             <input type="text" class="form-control" id="departamento">
-                                         </div>
-                                         <div class="col-md-4 mb-3">
-                                              <label for="tipoContrato" class="form-label">Tipo de Contrato</label> <input type="text" class="form-control" id="tipoContrato"> </div>
-                                      </div>
-                                      <div class="row">
-                                          <div class="col-md-4 mb-3">
-                                               <label for="salario" class="form-label">Salario</label>
-                                              <input type="text" class="form-control" id="salario"
-                                                      pattern="^\d{1,3}(\.\d{3})*(\,\d+)?$"
-                                                       placeholder="Ej: 1.000.000">
-                                           </div>
-                                           <div class="col-md-4 mb-3">
-                                               <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label> <input type="date" class="form-control" id="fechaNacimiento"> </div>
-                                            <div class="col-md-4 mb-3">
-                                                 <label for="fechaIngreso" class="form-label">Fecha de Ingreso</label> <input type="date" class="form-control" id="fechaIngreso"> </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="notas" class="form-label">Notas / Acontecimientos</label>
-                                            <textarea class="form-control" id="notas" rows="3"
-                                                       placeholder="Ejemplo: Ascenso, reconocimiento, amonestación, etc."></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                             <label for="hoja-de-vida" class="form-label">Hoja de Vida (PDF)</label>
-                                            <input type="file" class="form-control" id="hoja-de-vida" accept=".pdf, .doc, .docx, .xls, .xlsx, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-                                        </div>
-                                        <div class="card mb-3">
-                                            <div class="card-header">
-                                                <h5 class="mb-0">Contacto de Emergencia</h5>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-md-4 mb-3">
-                                                        <input type="text" class="form-control" id="contactoEmergenciaNombre" placeholder="Nombre">
-                                                     </div>
-                                                    <div class="col-md-4 mb-3">
-                                                        <input type="text" class="form-control" id="contactoEmergenciaTelefono" placeholder="Teléfono">
-                                                    </div>
-                                                    <div class="col-md-4 mb-3">
-                                                        <input type="text" class="form-control" id="contactoEmergenciaParentesco" placeholder="Parentesco">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="text-end">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="bi bi-save"></i> Guardar
-                                            </button>
-                                            <button type="button" class="btn btn-secondary" id="btn-cancelar">
-                                                 <i class="bi bi-x-circle"></i> Cancelar
-                                            </button>
-                                        </div>
-                                     </form>
+                                </form>
+                                <div class="table-responsive">
+                                    <table class="table table-hover w-100">
+                                        <thead>
+                                             <tr>
+                                                 <th>Empleado</th>
+                                                 <th>Fecha</th>
+                                                 <th>Tipo</th>
+                                                 <th>Acciones</th>
+                                             </tr>
+                                         </thead>
+                                         <tbody id="ausencias-table-body">
+                                          </tbody>
+                                    </table>
                                  </div>
                              </div>
-                         </section>
+                         </div>
+                     </section>
 
-                         <section id="cumpleanos-list" class="mb-4 d-none">
-                             <div class="card">
-                                 <div class="card-header bg-primary text-white">
-                                     <h3 class="card-title mb-0">
-                                         <i class="bi bi-gift"></i> Próximos Cumpleaños
-                                      </h3>
-                                  </div>
-                                  <div class="card-body">
-                                      <div class="table-responsive">
-                                          <table class="table table-hover w-100">
-                                              <thead>
-                                                   <tr>
-                                                       <th>Empleado</th>
-                                                       <th>Fecha de Nacimiento</th>
-                                                       <th>Días Restantes</th>
-                                                   </tr>
-                                               </thead>
-                                               <tbody id="cumpleanos-table-body">
-                                                </tbody>
-                                          </table>
-                                       </div>
-                                   </div>
-                               </div>
-                           </section>
+                     <section id="contacto" class="mb-4">
+                         <div class="card mt-4">
+                             <div class="card-header">
+                                 <h5 class="card-title mb-0"> <i class="bi bi-person-lines-fill"></i> Contacto RRHH </h5>
+                              </div>
+                              <div class="card-body">
+                                   <p class="card-text mb-1">
+                                        <i class="bi bi-envelope me-2"></i> caccali@ashe.com.co
+                                   </p>
+                                   <p class="card-text mb-1">
+                                        <i class="bi bi-telephone me-2"></i> +57 (602) 524 40 44
+                                     </p>
+                                    <p class="card-text">
+                                         <i class="bi bi-geo-alt me-2"></i> Carrera 35 # 12 – 145, Zona Industrial, Arroyohondo, Yumbo – Valle, Colombia
+                                     </p>
+                                 </div>
+                             </div>
+                          </section>
 
-                           <section id="ausencias-list" class="mb-4 d-none">
-                               <div class="card">
-                                   <div class="card-header bg-primary text-white">
-                                       <h3 class="card-title mb-0">
-                                           <i class="bi bi-calendar-check"></i> Gestión de Ausencias
-                                       </h3>
-                                   </div>
-                                   <div class="card-body">
-                                       <form id="ausenciaForm" class="mb-3">
-                                           <div class="row">
-                                               <div class="col-md-4 mb-2">
-                                                    <label for="ausencia-nombre" class="form-label visually-hidden">Nombre empleado</label>
-                                                   <input type="text" class="form-control" id="ausencia-nombre"
-                                                          placeholder="Nombre empleado" required>
-                                                </div>
-                                                <div class="col-md-4 mb-2">
-                                                    <label for="ausencia-fecha" class="form-label visually-hidden">Fecha Ausencia</label>
-                                                    <input type="date" class="form-control" id="ausencia-fecha" required>
-                                                </div>
-                                                <div class="col-md-4 mb-2">
-                                                    <label for="ausencia-tipo" class="form-label visually-hidden">Tipo de ausencia</label>
-                                                    <select class="form-select" id="ausencia-tipo" required>
-                                                        <option value="">Tipo de ausencia</option>
-                                                        <option value="Vacaciones">Vacaciones</option>
-                                                        <option value="Incapacidad">Incapacidad</option>
-                                                        <option value="Permiso">Permiso</option>
-                                                        <option value="Otro">Otro</option>
-                                                     </select>
-                                                 </div>
-                                             </div>
-                                             <div class="text-end mt-3">
-                                                 <button type="submit" class="btn btn-primary">
-                                                     <i class="bi bi-plus-circle"></i> Registrar Ausencia
-                                                  </button>
-                                              </div>
-                                          </form>
-                                          <div class="table-responsive">
-                                              <table class="table table-hover w-100">
-                                                  <thead>
-                                                       <tr>
-                                                           <th>Empleado</th>
-                                                           <th>Fecha</th>
-                                                           <th>Tipo</th>
-                                                           <th>Acciones</th>
-                                                       </tr>
-                                                   </thead>
-                                                   <tbody id="ausencias-table-body">
-                                                    </tbody>
-                                                </table>
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </section>
+                      </main>
 
-                                  <section id="contacto" class="mb-4">
-                                     <div class="card mt-4">
-                                         <div class="card-body">
-                                             <h5 class="card-title">
-                                                 <i class="bi bi-person-lines-fill"></i> Contacto RRHH
-                                              </h5>
-                                              <p class="card-text mb-1">
-                                                  <i class="bi bi-envelope me-2"></i> caccali@ashe.com.co
-                                              </p>
-                                              <p class="card-text mb-1">
-                                                   <i class="bi bi-telephone me-2"></i> +57 (602) 524 40 44
-                                               </p>
-                                               <p class="card-text">
-                                                    <i class="bi bi-geo-alt me-2"></i> Carrera 35 # 12 – 145, Zona Industrial, Arroyohondo, Yumbo – Valle, Colombia
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </section>
-                                </main>
+                      <footer class="footer text-center p-3 mt-4">
+                           <div>© 2025 ASHE - Portal de Recursos Humanos</div>
+                       </footer>
 
-                                <footer class="footer text-center p-3 mt-4">
-                                    <div>© 2025 ASHE - Portal de Recursos Humanos</div>
-                                </footer>
-
-                                <div id="alerta-container" class="position-fixed bottom-0 end-0 m-3" style="z-index: 1050;">
-                                    </div>
+                       <div id="alerta-container" class="position-fixed bottom-0 end-0 m-3" style="z-index: 1050;">
+                            </div>
 
 
-                                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-                                 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-                                 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-                                 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-                                 <script src="app.js"></script>
-                             </body>
-                             </html>
+                           <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+                           <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+                           <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+                           <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+                           <script src="app.js"></script>
+                       </body>
+                       </html>
