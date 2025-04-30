@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
      function showRegistroForm() {
          ocultarTodo(); // Oculta todo primero
          if (registroForm) registroForm.classList.remove('d-none');
-         // ocultarElementosAutenticados(); // Mantiene ocultos los elementos autenticados (ya lo hace ocultarTodo)
+         // ocultarElements([btnLogin, btnRegistro]); // Asegura que los botones Login/Registro estén ocultos en el navbar
          actualizarBreadcrumb('Registro');
           const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
          if (breadcrumbNav) breadcrumbNav.classList.add('d-none'); // Oculta el breadcrumb en la página de registro
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
          }
          ocultarTodo(); // Oculta todo primero
          if (dashboardSection) dashboardSection.classList.remove('d-none');
-         // mostrarElementosAutenticados(); // Mantiene visibles
+         mostrarElementosAutenticados(); // Muestra los botones correctos del navbar
 
          actualizarBreadcrumb('Dashboard');
 
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         ocultarTodo(); // Oculta todo primero
         if (empleadosListSection) empleadosListSection.classList.remove('d-none');
-        // mostrarElementosAutenticados(); // Mantiene visibles
+        mostrarElementosAutenticados(); // Muestra los botones correctos del navbar
 
         actualizarBreadcrumb('Lista de Empleados');
 
@@ -295,18 +295,10 @@ document.addEventListener('DOMContentLoaded', function() {
                          const min = parseInt(minStr);
                          const max = maxStr === '+' ? Infinity : parseInt(maxStr);
 
-                         // Si es el filtro "5+", min es 5 y max es Infinity. años >= 5. OK.
-                         // Si es el filtro "1-3", min es 1 y max es 3. años >= 1 y años <= 3. OK.
-                         // Si es el filtro "0-1", min es 0 y max es 1. años >= 0 y años <= 1. OK.
-                         // NOTA: Si un empleado tiene exactamente 1 año, con "0-1" Y "1-3", aparecería en ambos.
-                         // Podríamos usar < max para rangos (ej: 1-3 años significa >=1 y <3). Usemos <= max para que 3 años exactos entre en 1-3 o 3-5.
-                         // Para "0-1", que incluya 0 y menos de 1 año. "1-3" incluya 1 y menos de 3. "3-5" incluya 3 y menos de 5. "5+" incluya 5 o más.
-                         // Cambiemos la lógica para que los rangos sean [min, max) excepto el último [5, +inf).
                          // Rango "0-1": años >= 0 && años < 1 (menos de 1 año)
                          // Rango "1-3": años >= 1 && años < 3 (1, 2 años)
                          // Rango "3-5": años >= 3 && años < 5 (3, 4 años)
                          // Rango "5+": años >= 5 (5 años o más)
-
                          if (maxStr === '+') {
                               return años >= min;
                          } else {
@@ -358,6 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ocultarTodo(); // Oculta todo primero
         if (empleadoFormSection) empleadoFormSection.classList.remove('d-none');
         actualizarBreadcrumb(editId !== null && editId !== undefined ? 'Editar Empleado' : 'Nuevo Empleado');
+         mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
     }
 
      function mostrarDetalleEmpleado(id) {
@@ -407,6 +400,8 @@ document.addEventListener('DOMContentLoaded', function() {
          ocultarTodo(); // Oculta todo primero
          if (empleadoDetalleSection) empleadoDetalleSection.classList.remove('d-none');
          actualizarBreadcrumb('Detalle de Empleado');
+         mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
+
 
          // Event listener para el botón Editar desde Detalle
          const btnEditarDesdeDetalle = document.getElementById('btn-editar-desde-detalle');
@@ -440,6 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
          ocultarTodo(); // Oculta todo primero
           if (cumpleanosListSection) cumpleanosListSection.classList.remove('d-none');
          actualizarBreadcrumb('Próximos Cumpleaños');
+         mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
 
          // Renderizar lista de cumpleaños (puedes mejorar esto con DataTables si quieres)
          renderCumpleanos();
@@ -483,6 +479,8 @@ document.addEventListener('DOMContentLoaded', function() {
         ocultarTodo(); // Oculta todo primero
          if (ausenciasListSection) ausenciasListSection.classList.remove('d-none');
         actualizarBreadcrumb('Gestión de Ausencias');
+         mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
+
 
          // Renderizar lista de ausencias (puedes mejorar esto con DataTables)
          renderAusencias();
@@ -522,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function() {
      }
 
      function eliminarAusencia(id) {
-          if (confirm('¿Está seguro de que desea eliminar esta ausencia?')) {
+          if (confirm('¿Está seguro de que desea eliminar esta ausencia? Esta acción es irreversible.')) {
              ausencias = ausencias.filter(a => a.id != id);
              localStorage.setItem('ausencias', JSON.stringify(ausencias));
              mostrarAlerta('Ausencia eliminada correctamente', 'success');
@@ -855,6 +853,8 @@ document.addEventListener('DOMContentLoaded', function() {
          ocultarTodo(); // Oculta todo primero
          if (empleadoDetalleSection) empleadoDetalleSection.classList.remove('d-none');
          actualizarBreadcrumb('Detalle de Empleado');
+         mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
+
 
          // Event listener para el botón Editar desde Detalle
          const btnEditarDesdeDetalle = document.getElementById('btn-editar-desde-detalle');
