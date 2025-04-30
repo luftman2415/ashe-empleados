@@ -597,3 +597,9 @@ p {
 
 
 }
+/* Asegura que el texto de los títulos dentro de los encabezados de tarjeta azules sea blanco */
+.card-header.bg-primary .card-title,
+.card-header.bg-primary h3,
+.card-header.bg-primary h5 {
+    color: white !important; /* Usamos !important para asegurar que sobrescriba otras reglas */
+}
