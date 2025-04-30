@@ -25,14 +25,14 @@ document.addEventListener('DOMContentLoaded', function() {
     let usuarioActual = null; // Se establece al hacer login
 
     // Elementos del DOM - Obtenemos referencias
-    const loginForm = document.getElementById('loginForm');
-    const registroForm = document.getElementById('registroForm');
-    const empleadosListSection = document.getElementById('empleados-list'); // Renombrado para evitar conflicto con variable de tabla
-    const empleadoFormSection = document.getElementById('empleado-form'); // Renombrado
-    const empleadoDetalleSection = document.getElementById('empleado-detalle'); // Renombrado
-    const cumpleanosListSection = document.getElementById('cumpleanos-list'); // Renombrado
-    const dashboardSection = document.getElementById('dashboard'); // Renombrado
-    const ausenciasListSection = document.getElementById('ausencias-list'); // Renombrado
+    const loginForm = document.getElementById('login-form'); // <-- CORREGIDO a 'login-form'
+    const registroForm = document.getElementById('registro-form'); // <-- CORREGIDO a 'registro-form'
+    const empleadosListSection = document.getElementById('empleados-list'); // Esta está bien
+    const empleadoFormSection = document.getElementById('empleado-form'); // Esta está bien
+    const empleadoDetalleSection = document.getElementById('empleado-detalle'); // Esta está bien
+    const cumpleanosListSection = document.getElementById('cumpleanos-list'); // Esta está bien
+    const dashboardSection = document.getElementById('dashboard'); // Esta está bien
+    const ausenciasListSection = document.getElementById('ausencias-list'); // Esta está bien
 
     const btnNuevoEmpleado = document.getElementById('btn-nuevo-empleado');
     const btnNuevoEmpleadoLista = document.getElementById('btn-nuevo-empleado-lista');
