@@ -123,16 +123,15 @@ section {
 }
 
 /* Asegura que los títulos en cualquier card-header (no solo los azules) tengan un color legible */
+/* Esta regla asegura que los títulos en encabezados con fondo blanco se vean */
 .card-header h3,
 .card-header h5,
 .card-header .card-title { /* Incluye .card-title por si se usa */
     color: #333; /* Un color oscuro legible */
-    /* Si prefieres que TODOS los títulos de encabezado de tarjeta (azules y blancos) sean blancos, usa: */
-    /* color: white !important; */
 }
 
-/* Regla específica para los encabezados azules (bg-primary) si quieres que solo estos tengan texto blanco */
-/* Si usas la regla de arriba con !important white, puedes comentar o eliminar esta */
+/* Regla específica para los encabezados azules (bg-primary) */
+/* Esta regla asegura que los títulos en encabezados con fondo azul sean blancos */
 .card-header.bg-primary h3,
 .card-header.bg-primary h5,
 .card-header.bg-primary .card-title {
