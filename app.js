@@ -1491,33 +1491,39 @@ document.addEventListener('DOMContentLoaded', function() {
      }
 
 
-     // --- Funcionalidad para mostrar/ocultar contraseña ---
+  // --- Funcionalidad para mostrar/ocultar contraseña ---
      // Busca todos los botones con la clase 'toggle-password'
      const togglePasswordButtons = document.querySelectorAll('.toggle-password');
 
      togglePasswordButtons.forEach(button => {
-         // Quitamos listeners viejos y ponemos uno nuevo
-         const newButton = button.cloneNode(true);
-         button.parentNode.replaceChild(newButton, button);
+         // **CORRECCIÓN:** Verificar si el botón tiene un padre antes de intentar reemplazarlo
+         if (button && button.parentNode) {
+             // Quitamos listeners viejos y ponemos uno nuevo
+             const newButton = button.cloneNode(true);
+             button.parentNode.replaceChild(newButton, button);
 
-         newButton.addEventListener('click', function() {
-             // Obtiene el ID del input de contraseña desde el atributo data-target
-             const targetId = this.dataset.target;
-             const passwordInput = document.getElementById(targetId);
+             newButton.addEventListener('click', function() {
+                 // Obtiene el ID del input de contraseña desde el atributo data-target
+                 const targetId = this.dataset.target;
+                 const passwordInput = document.getElementById(targetId);
 
-             if (passwordInput) {
-                 // Alterna el tipo de input entre 'password' y 'text'
-                 const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                 passwordInput.setAttribute('type', type);
+                 if (passwordInput) {
+                     // Alterna el tipo de input entre 'password' y 'text'
+                     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                     passwordInput.setAttribute('type', type);
 
-                 // Opcional: Cambia el icono del ojo (de bi-eye a bi-eye-slash y viceversa)
-                 const icon = this.querySelector('i');
-                 if (icon) {
-                     icon.classList.toggle('bi-eye');
-                     icon.classList.toggle('bi-eye-slash');
+                     // Opcional: Cambia el icono del ojo (de bi-eye a bi-eye-slash y viceversa)
+                     const icon = this.querySelector('i');
+                     if (icon) {
+                         icon.classList.toggle('bi-eye');
+                         icon.classList.toggle('bi-eye-slash');
+                     }
                  }
-             }
-         });
+             });
+         } else {
+             // Esto nos ayudaría a depurar si se encuentra un botón sin padre (no debería pasar)
+             console.warn("Botón toggle password encontrado sin parentNode:", button);
+         }
      });
      // --- Fin Funcionalidad mostrar/ocultar contraseña ---
 
