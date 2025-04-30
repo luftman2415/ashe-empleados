@@ -38,15 +38,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnNuevoEmpleadoLista = document.getElementById('btn-nuevo-empleado-lista');
     const btnVerEmpleados = document.getElementById('btn-ver-empleados');
     const btnCancelar = document.getElementById('btn-cancelar');
-    const btnRegistro = document.getElementById('btn-registro');
-    const btnCancelarRegistro = document.getElementById('btn-cancelar-registro');
+    const btnRegistro = document.getElementById('btn-registro'); // Botón "Registrarse" del navbar
+    const btnCancelarRegistro = document.getElementById('btn-cancelar-registro'); // Botón cancelar formulario registro
     const btnLogin = document.getElementById('btn-login'); // Botón "Iniciar Sesión" del navbar
-    const btnLogout = document.getElementById('btn-logout');
-    const btnDashboard = document.getElementById('btn-dashboard');
-    const btnEmpleados = document.getElementById('btn-empleados');
-    const btnCumpleanos = document.getElementById('btn-cumpleanos');
-    const btnAusencias = document.getElementById('btn-ausencias');
-    const btnExportarCSV = document.getElementById('btn-exportar-csv');
+    const btnLogout = document.getElementById('btn-logout'); // Botón "Cerrar Sesión" del navbar
+    const btnDashboard = document.getElementById('btn-dashboard'); // Botón "Dashboard" del navbar
+    const btnEmpleados = document.getElementById('btn-empleados'); // Botón "Empleados" del navbar
+    const btnCumpleanos = document.getElementById('btn-cumpleanos'); // Botón "Cumpleaños" del navbar
+    const btnAusencias = document.getElementById('btn-ausencias'); // Botón "Ausencias" del navbar
+    const btnExportarCSV = document.getElementById('btn-exportar-csv'); // Botón "Exportar CSV"
 
     // Elementos de filtro y búsqueda externos a la tabla
     const busquedaEmpleadosInput = document.getElementById('busqueda-empleados');
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const filtroAntiguedadSelect = document.getElementById('filtro-antiguedad');
 
     const breadcrumbSection = document.getElementById('breadcrumb-section');
-    const breadcrumbHome = document.getElementById('breadcrumb-home'); // El enlace de "Inicio" en el breadcrumb
+    const breadcrumbHomeLink = document.getElementById('breadcrumb-home-link'); // El enlace de "Inicio" en el breadcrumb
 
 
     // Modal de restablecer contraseña
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const resetPasswordModal = resetPasswordModalElement ? new bootstrap.Modal(resetPasswordModalElement) : null; // Inicialización segura
     const resetPasswordForm = document.getElementById('reset-password-form');
     const resetPasswordFields = document.getElementById('reset-password-fields');
-    const forgotPasswordLink = document.getElementById('forgot-password-link');
+    const forgotPasswordLink = document.getElementById('forgot-password-link'); // Enlace "¿Olvidaste tu contraseña?"
     let emailToReset = '';
 
     // Estado de autenticación
@@ -84,7 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (breadcrumbSection) {
             breadcrumbSection.textContent = seccion;
              // Asegurarse de que el breadcrumb principal es visible si una sección está activa
-             if (document.querySelector('.breadcrumb')) document.querySelector('.breadcrumb').classList.remove('d-none');
+             const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]'); // Seleccionar la navegación del breadcrumb
+              if (breadcrumbNav) breadcrumbNav.classList.remove('d-none');
         }
     }
 
@@ -94,6 +95,8 @@ document.addEventListener('DOMContentLoaded', function() {
          ocultarElementosAutenticados(); // Oculta elementos del navbar autenticado
          actualizarBreadcrumb('Inicio de Sesión');
          limpiarLogin(); // Limpia el formulario de login
+          const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
+         if (breadcrumbNav) breadcrumbNav.classList.add('d-none'); // Oculta el breadcrumb en la página de login
      }
 
      function showRegistroForm() {
@@ -101,6 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
          if (registroForm) registroForm.classList.remove('d-none');
          // ocultarElementosAutenticados(); // Mantiene ocultos los elementos autenticados (ya lo hace ocultarTodo)
          actualizarBreadcrumb('Registro');
+          const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
+         if (breadcrumbNav) breadcrumbNav.classList.add('d-none'); // Oculta el breadcrumb en la página de registro
      }
 
      function hideRegistroForm() {
@@ -116,7 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
          }
          ocultarTodo(); // Oculta todo primero
          if (dashboardSection) dashboardSection.classList.remove('d-none');
-         // mostrarElementosAutenticados(); // Mantiene visibles elementos autenticados (ya lo hace login/estado inicial)
+         // mostrarElementosAutenticados(); // Mantiene visibles
+
          actualizarBreadcrumb('Dashboard');
 
          // Actualizar estadísticas (basado en tu lógica existente)
@@ -166,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
                          data: 'nombres',
                          render: function(data, type, row) {
                              // Renderiza el nombre como un enlace para ver detalles
-                             return `<a href="#" class="ver-empleado" data-id="${row.id}">${data || ''}</a>`;
+                             return `<a href="#" class="ver-empleado" data-id="<span class="math-inline">\{row\.id\}"\></span>{data || ''}</a>`;
                          }
                      },
                     { data: 'apellidos', defaultContent: '' },
@@ -188,10 +194,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         render: function(data, type, row) {
                             // Renderiza los botones de editar y eliminar
                             return `
-                                <button class="btn btn-sm btn-primary editar-empleado-btn" data-id="${data}">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger eliminar-empleado-btn" data-id="${data}">
+                                <button class="btn btn-sm btn-primary editar-empleado-btn" data-id="<span class="math-inline">\{data\}"\>
+<i class\="bi bi\-pencil"\></i\>
+</button\>
+<button class\="btn btn\-sm btn\-danger eliminar\-empleado\-btn" data\-id\="</span>{data}">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             `;
@@ -257,7 +263,8 @@ document.addEventListener('DOMContentLoaded', function() {
                  filtroDepartamentoSelect.addEventListener('change', function () {
                      const searchValue = this.value;
                      // La columna de departamento es la 7ma (índice 6, contando desde 0)
-                     empleadosTable.column(6).search(searchValue ? '^'+searchValue+'$' : '', true, false).draw(); // Busca valor exacto o vacio si "Todos"
+                     // ^value$ busca el valor exacto en la columna. '' busca cualquier cosa (quita filtro)
+                     empleadosTable.column(6).search(searchValue ? '^'+searchValue+'$' : '', true, false).draw();
                  });
              }
 
@@ -282,13 +289,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
                          if (!fechaIngreso) return false; // Ocultar si no hay fecha de ingreso
 
-                         const años = calcularAntiguedad(fechaIngreso); // Calcula la antigüedad exacta
+                         const años = calcularAntiguedad(fechaIngreso); // Calcula la antigüedad exacta (puede ser flotante)
 
                          const [minStr, maxStr] = antiguedadFiltro.split('-');
                          const min = parseInt(minStr);
                          const max = maxStr === '+' ? Infinity : parseInt(maxStr);
 
-                         return años >= min && años < max; // Usar < max para rangos (ej: 1-3 años significa >=1 y <3)
+                         // Si es el filtro "5+", min es 5 y max es Infinity. años >= 5. OK.
+                         // Si es el filtro "1-3", min es 1 y max es 3. años >= 1 y años <= 3. OK.
+                         // Si es el filtro "0-1", min es 0 y max es 1. años >= 0 y años <= 1. OK.
+                         // NOTA: Si un empleado tiene exactamente 1 año, con "0-1" Y "1-3", aparecería en ambos.
+                         // Podríamos usar < max para rangos (ej: 1-3 años significa >=1 y <3). Usemos <= max para que 3 años exactos entre en 1-3 o 3-5.
+                         // Para "0-1", que incluya 0 y menos de 1 año. "1-3" incluya 1 y menos de 3. "3-5" incluya 3 y menos de 5. "5+" incluya 5 o más.
+                         // Cambiemos la lógica para que los rangos sean [min, max) excepto el último [5, +inf).
+                         // Rango "0-1": años >= 0 && años < 1 (menos de 1 año)
+                         // Rango "1-3": años >= 1 && años < 3 (1, 2 años)
+                         // Rango "3-5": años >= 3 && años < 5 (3, 4 años)
+                         // Rango "5+": años >= 5 (5 años o más)
+
+                         if (maxStr === '+') {
+                              return años >= min;
+                         } else {
+                              return años >= min && años < max;
+                         }
                      }
                  );
 
@@ -307,9 +330,15 @@ document.addEventListener('DOMContentLoaded', function() {
             // Si DataTables ya está inicializado, solo actualizamos los datos
             empleadosTable.clear().rows.add(empleados).draw(); // Borra datos viejos, añade nuevos y redibuja
              // Aplicar filtros actuales al redibujar (en caso de que los selectores tengan valores)
-             empleadosTable.search(busquedaEmpleadosInput.value).draw();
-             empleadosTable.column(6).search(filtroDepartamentoSelect.value ? '^'+filtroDepartamentoSelect.value+'$' : '', true, false).draw();
-             empleadosTable.draw(); // Esto re-aplica el filtro personalizado de antigüedad
+             // Primero búsqueda global
+             if (busquedaEmpleadosInput) empleadosTable.search(busquedaEmpleadosInput.value).draw();
+             // Luego filtro de columna por departamento
+             if (filtroDepartamentoSelect) {
+                  const searchValue = filtroDepartamentoSelect.value;
+                  empleadosTable.column(6).search(searchValue ? '^'+searchValue+'$' : '', true, false).draw();
+             }
+             // El filtro de antigüedad es personalizado, solo necesitamos redibujar
+             if (filtroAntiguedadSelect) empleadosTable.draw();
 
         }
     }
@@ -355,13 +384,13 @@ document.addEventListener('DOMContentLoaded', function() {
                          <p><strong>Fecha de Nacimiento:</strong> ${formatearFecha(empleado.fechaNacimiento)}</p>
                          <p><strong>Fecha de Ingreso:</strong> ${formatearFecha(empleado.fechaIngreso)}</p>
                          <p><strong>Antigüedad:</strong> ${calcularAntiguedadTexto(empleado.fechaIngreso)}</p>
-                         <p><strong>Salario:</strong> ${usuarioActual && usuarioActual.rol === 'admin' ? formatearMiles(empleado.salario) : '****'}</p>
-                     </div>
-                 </div>
-                 <div class="row mt-3">
-                     <div class="col-12">
-                         <h5>Notas / Acontecimientos</h5>
-                         <p>${empleado.notas || 'Sin notas registradas'}</p>
+                         <p><strong>Salario:</strong> <span class="math-inline">\{usuarioActual && usuarioActual\.rol \=\=\= 'admin' ? formatearMiles\(empleado\.salario\) \: '\*\*\*\*'\}</p\>
+</div\>
+</div\>
+<div class\="row mt\-3"\>
+<div class\="col\-12"\>
+<h5\>Notas / Acontecimientos</h5\>
+<p\></span>{empleado.notas || 'Sin notas registradas'}</p>
                      </div>
                  </div>
                  <div class="row mt-3">
@@ -395,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
           if (btnVolverDesdeDetalle) {
               // Quitamos listener viejo y ponemos uno nuevo
               const newBtnVolverDesdeDetalle = btnVolverDesdeDetalle.cloneNode(true);
-              btnVolverDesdeDetalle.parentNode.replaceChild(newBtnVolverDesdeDetalle, btnVolverDesdeDetalle);
+              btnVolverDesdeDetalle.parentNode.replaceChild(newBtnVolverDesdeDetelle, btnVolverDesdeDetalle);
                newBtnVolverDesdeDetalle.addEventListener('click', function() {
                   showEmpleadosList(); // Vuelve a la lista de empleados
               });
@@ -437,8 +466,8 @@ document.addEventListener('DOMContentLoaded', function() {
          proximosCumpleanos.forEach(emp => {
              const tr = document.createElement('tr');
              tr.innerHTML = `
-                 <td>${emp.nombres || ''} ${emp.apellidos || ''}</td>
-                 <td>${formatearFecha(emp.fechaNacimiento)}</td>
+                 <td>${emp.nombres || ''} <span class="math-inline">\{emp\.apellidos \|\| ''\}</td\>
+<td\></span>{formatearFecha(emp.fechaNacimiento)}</td>
                  <td>${emp.diasRestantes === 0 ? 'Hoy!' : (emp.diasRestantes === 1 ? 'Mañana' : `${emp.diasRestantes} días`)}</td>
              `;
              tbody.appendChild(tr);
@@ -465,16 +494,18 @@ document.addEventListener('DOMContentLoaded', function() {
          tbody.innerHTML = ''; // Limpia la tabla actual
 
          // Ordenar ausencias por fecha descendente
-         const ausenciasOrdenadas = ausencias.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+         // Usar slice() para no mutar el array original si se necesita
+         const ausenciasOrdenadas = ausencias.slice().sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
 
          ausenciasOrdenadas.forEach(ausencia => {
              const tr = document.createElement('tr');
              tr.innerHTML = `
-                 <td>${ausencia.nombreEmpleado || ''}</td>
-                 <td>${formatearFecha(ausencia.fecha)}</td>
-                 <td>${ausencia.tipo || ''}</td>
-                 <td>
-                      <button class="btn btn-sm btn-danger eliminar-ausencia-btn" data-id="${ausencia.id}">
+                 <td><span class="math-inline">\{ausencia\.nombreEmpleado \|\| ''\}</td\>
+<td\></span>{formatearFecha(ausencia.fecha)}</td>
+                 <td><span class="math-inline">\{ausencia\.tipo \|\| ''\}</td\>
+<td\>
+<button class\="btn btn\-sm btn\-danger eliminar\-ausencia\-btn" data\-id\="</span>{ausencia.id}">
                           <i class="bi bi-trash"></i>
                       </button>
                  </td>
@@ -539,8 +570,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
 
-        const email = emailInput ? emailInput.value : '';
-        const password = passwordInput ? passwordInput.value : '';
+        const email = emailInput ? emailInput.value.trim() : ''; // Limpiar email
+        const password = passwordInput ? passwordInput.value : ''; // No limpiar password
 
 
         const usuario = usuariosPermitidos.find(u => u.email === email && u.password === password);
@@ -548,6 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (usuario) {
             isAuthenticated = true;
             usuarioActual = usuario;
+             // localStorage.setItem('usuarioActual', JSON.stringify(usuarioActual)); // Opcional: guardar sesión (menos seguro en localStorage)
             mostrarElementosAutenticados(); // Muestra botones de navegación
             showDashboard(); // Va al dashboard
             notificarCumpleanos(); // Muestra notificaciones
@@ -563,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleLogout() {
         isAuthenticated = false;
         usuarioActual = null;
-        // Opcional: Limpiar localStorage si queremos que el logout sea "completo"
+        // Opcional: Limpiar localStorage si implementaste guardar sesión
         // localStorage.removeItem('usuarioActual');
         ocultarElementosAutenticados(); // Oculta botones de navegación
         showLoginForm(); // Vuelve al login
@@ -581,18 +613,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function mostrarElementosAutenticados() {
         // Mostrar botones de navegación principales si existen
-         mostrarElements([btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias, btnExportarCSV]);
+         mostrarElements([btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias]);
 
-        // Mostrar botones específicos de la lista de empleados (si existen)
-         if (empleadosListSection) mostrarElements([btnNuevoEmpleadoLista]);
-          if (dashboardSection) mostrarElements([btnNuevoEmpleado, btnVerEmpleados, btnExportarCSV]);
+        // Mostrar botones específicos del dashboard o lista de empleados (depende de la sección)
+         if (dashboardSection && !dashboardSection.classList.contains('d-none')) { // Si el dashboard está visible
+             mostrarElements([btnNuevoEmpleado, btnVerEmpleados, btnExportarCSV]);
+         } else if (empleadosListSection && !empleadosListSection.classList.contains('d-none')) { // Si la lista de empleados está visible
+             mostrarElements([btnNuevoEmpleadoLista]); // Mostrar solo el botón de "Nuevo Empleado" en la lista
+             ocultarElements([btnNuevoEmpleado, btnVerEmpleados, btnExportarCSV]); // Asegurar que los otros estén ocultos
+         } else { // Si ninguna sección principal está visible (ej: formulario, detalle)
+              ocultarElements([btnNuevoEmpleado, btnVerEmpleados, btnExportarCSV, btnNuevoEmpleadoLista]); // Ocultar todos los botones específicos
+         }
 
 
         // Ocultar botones de login/registro
         ocultarElements([btnLogin, btnRegistro]);
 
         // Mostrar breadcrumb
-        if (document.querySelector('.breadcrumb')) document.querySelector('.breadcrumb').classList.remove('d-none');
+        const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
+        if (breadcrumbNav) breadcrumbNav.classList.remove('d-none');
     }
 
     function ocultarElementosAutenticados() {
@@ -606,7 +645,8 @@ document.addEventListener('DOMContentLoaded', function() {
         mostrarElements([btnLogin, btnRegistro]);
 
          // Ocultar breadcrumb
-         if (document.querySelector('.breadcrumb')) document.querySelector('.breadcrumb').classList.add('d-none');
+         const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
+         if (breadcrumbNav) breadcrumbNav.classList.add('d-none');
     }
 
 
@@ -626,6 +666,11 @@ document.addEventListener('DOMContentLoaded', function() {
             mostrarAlerta('Las contraseñas no coinciden', 'danger');
             return;
         }
+        if (password.length < 6) { // Validación simple de longitud
+             mostrarAlerta('La contraseña debe tener al menos 6 caracteres', 'danger');
+            return;
+        }
+
 
         if (usuariosPermitidos.some(u => u.email === email)) {
             mostrarAlerta('El correo electrónico ya está registrado', 'danger');
@@ -635,7 +680,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Guardar usuario con rol 'rrhh' (puedes cambiar el rol si es necesario)
         usuariosPermitidos.push({ email: email, password: password, rol: 'rrhh' }); // Guardamos el nuevo usuario
         localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos)); // Guardamos la lista actualizada en localStorage
-        mostrarAlerta('Usuario registrado exitosamente', 'success');
+        mostrarAlerta('Usuario registrado exitosamente. Ya puedes iniciar sesión.', 'success');
         hideRegistroForm(); // Ir al login después de registrar
     }
 
@@ -654,7 +699,7 @@ document.addEventListener('DOMContentLoaded', function() {
              const editId = this.getAttribute('data-edit-id');
 
              const empleado = {
-                 id: editId ? parseInt(editId) : Date.now(), // Usa Date.now() como ID para nuevos
+                 id: editId ? parseInt(editId) : Date.now(), // Usa Date.now() como ID para nuevos (simple)
                  nombres: document.getElementById('nombres').value.trim(), // Añade trim para limpiar espacios
                  apellidos: document.getElementById('apellidos').value.trim(),
                  cedula: document.getElementById('cedula').value.trim(),
@@ -673,10 +718,21 @@ document.addEventListener('DOMContentLoaded', function() {
                  // Hoja de vida no se guarda en localStorage directamente (es un File)
              };
 
+             if (!empleado.nombres || !empleado.apellidos || !empleado.cedula || !empleado.telefono || !empleado.email) {
+                  mostrarAlerta('Los campos Nombre, Apellido, Cédula, Teléfono y Email son obligatorios.', 'warning');
+                  return; // Detiene el proceso de guardar si faltan campos requeridos
+             }
+
+
              if (editId) {
                  // Actualizar empleado existente
                  const index = empleados.findIndex(e => e.id == editId);
                  if (index !== -1) {
+                      // Verificar si la cédula ya existe en otro empleado (si se cambió la cédula)
+                      if (empleados.some(e => e.cedula === empleado.cedula && e.id != editId && e.cedula !== '')) {
+                           mostrarAlerta(`Ya existe otro empleado con la cédula ${empleado.cedula}`, 'warning');
+                           return; // Detiene el proceso de guardar
+                      }
                      empleados[index] = empleado;
                      mostrarAlerta('Empleado actualizado correctamente', 'success');
                  } else {
@@ -684,7 +740,7 @@ document.addEventListener('DOMContentLoaded', function() {
                  }
              } else {
                  // Añadir nuevo empleado
-                  // Verificar si ya existe un empleado con la misma cédula (ejemplo de validación simple)
+                  // Verificar si ya existe un empleado con la misma cédula
                   if (empleados.some(e => e.cedula === empleado.cedula && e.cedula !== '')) {
                        mostrarAlerta(`Ya existe un empleado con la cédula ${empleado.cedula}`, 'warning');
                        return; // Detiene el proceso de guardar
@@ -711,9 +767,10 @@ document.addEventListener('DOMContentLoaded', function() {
              if (document.getElementById('departamento')) document.getElementById('departamento').value = empleado.departamento || '';
              if (document.getElementById('tipo-contrato')) document.getElementById('tipo-contrato').value = empleado.tipoContrato || '';
              // Formatear salario al cargar solo si tiene un valor numérico
-             if (document.getElementById('salario')) {
+             const salarioInput = document.getElementById('salario');
+             if (salarioInput) {
                  const salarioNum = parseFloat(empleado.salario);
-                 document.getElementById('salario').value = isNaN(salarioNum) ? (empleado.salario || '') : formatearMiles(salarioNum);
+                 salarioInput.value = isNaN(salarioNum) ? (empleado.salario || '') : formatearMiles(salarioNum);
              }
              if (document.getElementById('fecha-nacimiento')) document.getElementById('fecha-nacimiento').value = empleado.fechaNacimiento || '';
              if (document.getElementById('fecha-ingreso')) document.getElementById('fecha-ingreso').value = empleado.fechaIngreso || '';
@@ -731,7 +788,7 @@ document.addEventListener('DOMContentLoaded', function() {
      // Eliminar empleado
      // La función ahora se llama desde el evento de delegación de DataTables
      window.eliminarEmpleado = function(id) { // Hacemos la función global para que onclick en el HTML funcione (aunque delegación es mejor)
-         if (confirm('¿Está seguro de que desea eliminar este empleado?')) {
+         if (confirm('¿Está seguro de que desea eliminar este empleado? Esta acción es irreversible.')) { // Mensaje más claro
              empleados = empleados.filter(e => e.id != id); // Filtra el array, creando uno nuevo sin el empleado eliminado
              localStorage.setItem('empleados', JSON.stringify(empleados)); // Guarda el nuevo array en localStorage
              mostrarAlerta('Empleado eliminado correctamente', 'success');
@@ -775,13 +832,13 @@ document.addEventListener('DOMContentLoaded', function() {
                          <p><strong>Fecha de Nacimiento:</strong> ${formatearFecha(empleado.fechaNacimiento)}</p>
                          <p><strong>Fecha de Ingreso:</strong> ${formatearFecha(empleado.fechaIngreso)}</p>
                          <p><strong>Antigüedad:</strong> ${calcularAntiguedadTexto(empleado.fechaIngreso)}</p>
-                         <p><strong>Salario:</strong> ${usuarioActual && usuarioActual.rol === 'admin' ? formatearMiles(empleado.salario) : '****'}</p>
-                     </div>
-                 </div>
-                 <div class="row mt-3">
-                     <div class="col-12">
-                         <h5>Notas / Acontecimientos</h5>
-                         <p>${empleado.notas || 'Sin notas registradas'}</p>
+                         <p><strong>Salario:</strong> <span class="math-inline">\{usuarioActual && usuarioActual\.rol \=\=\= 'admin' ? formatearMiles\(empleado\.salario\) \: '\*\*\*\*'\}</p\>
+</div\>
+</div\>
+<div class\="row mt\-3"\>
+<div class\="col\-12"\>
+<h5\>Notas / Acontecimientos</h5\>
+<p\></span>{empleado.notas || 'Sin notas registradas'}</p>
                      </div>
                  </div>
                  <div class="row mt-3">
@@ -835,25 +892,31 @@ document.addEventListener('DOMContentLoaded', function() {
          const inicio = new Date(fechaIngreso);
          const hoy = new Date();
          // Calcula la diferencia en milisegundos, luego convierte a años exactos (flotante)
-         const diffTime = Math.abs(hoy - inicio);
+         const diffTime = Math.abs(hoy.getTime() - inicio.getTime()); // Usar getTime() para milisegundos
          const diffYears = diffTime / (1000 * 60 * 60 * 24 * 365.25); // Considera años bisiestos
          return diffYears; // Retorna un número (puede tener decimales) para comparación precisa
      }
 
      function calcularAntiguedadTexto(fechaIngreso) {
          if (!fechaIngreso) return 'No registrada';
-         const diffTime = Math.abs(new Date() - new Date(fechaIngreso));
+         const diffTime = Math.abs(new Date().getTime() - new Date(fechaIngreso).getTime());
 
          const years = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365.25));
          const remainingTime = diffTime % (1000 * 60 * 60 * 24 * 365.25);
          const months = Math.floor(remainingTime / (1000 * 60 * 60 * 24 * 30.44)); // Promedio de días al mes
 
+         let texto = '';
          if (years > 0) {
-             return `${years} año${years > 1 ? 's' : ''}${months > 0 ? ` y ${months} mes${months > 1 ? 'es' : ''}` : ''}`;
+             texto += `<span class="math-inline">\{years\} año</span>{years > 1 ? 's' : ''}`;
+             if (months > 0) {
+                 texto += ` y <span class="math-inline">\{months\} mes</span>{months > 1 ? 'es' : ''}`;
+             }
+         } else if (months > 0) {
+             texto += `<span class="math-inline">\{months\} mes</span>{months > 1 ? 'es' : ''}`;
          } else {
-              // Si son menos de un año, mostrar solo meses si hay
-             return months > 0 ? `${months} mes${months > 1 ? 'es' : ''}` : 'Menos de un mes';
+             texto = 'Menos de un mes';
          }
+         return texto;
      }
 
 
@@ -863,16 +926,27 @@ document.addEventListener('DOMContentLoaded', function() {
         hoy.setHours(0, 0, 0, 0); // Reiniciar horas para comparación de días precisos
         const cumple = new Date(fechaNacimiento);
 
+        // Si el cumpleaños cae en un año bisiesto (29 de febrero) y el año actual/próximo no lo es, ajustar la fecha
+         const year = hoy.getFullYear();
+         const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+         if (!isLeap && cumple.getMonth() === 1 && cumple.getDate() === 29) {
+             cumple.setDate(28); // En años no bisiestos, 29 Feb es tratado como 28 Feb
+         }
+
+
         // Si el cumpleaños de este año ya pasó, considerar el próximo año
-        // Comparamos el día y mes del cumpleaños con el día y mes de hoy
+        // Comparamos la fecha del cumpleaños con el día de hoy
         cumple.setFullYear(hoy.getFullYear()); // Ponemos el año actual al cumpleaños
          if (cumple < hoy) {
              cumple.setFullYear(hoy.getFullYear() + 1); // Si ya pasó este año, usamos el próximo
+              // Si el próximo año no es bisiesto y el cumpleaños original era 29 Feb, ajustar
+              const nextYear = cumple.getFullYear();
+               const isNextYearLeap = (nextYear % 4 === 0 && nextYear % 100 !== 0) || (nextYear % 400 === 0);
+               if (!isNextYearLeap && new Date(fechaNacimiento).getMonth() === 1 && new Date(fechaNacimiento).getDate() === 29) {
+                   cumple.setDate(28);
+               }
          }
 
-         // Si el cumpleaños cae en un año bisiesto (29 de febrero) y el año actual/próximo no lo es, ajustar la fecha
-         // (Esto es una simplificación, Date objects manejan bien los bisiestos pero puede haber edge cases)
-         // No es estrictamente necesario para la demo, Date() generalmente lo maneja.
 
          // Calcular la diferencia en días
         const diffTime = cumple.getTime() - hoy.getTime(); // Usar getTime() para milisegundos
@@ -884,358 +958,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function formatearFecha(fecha) {
         if (!fecha) return 'No registrada';
-        // Intentar parsear la fecha en formato YYYY-MM-DD (como viene del input type="date")
-        try {
-             const [year, month, day] = fecha.split('-');
-             if (year && month && day) {
-                 return `${day}/${month}/${year}`; // Formato DD/MM/YYYY
-             } else {
-                 // Si el split falla o no produce 3 partes, intentar parsear directamente
-                 const dateObj = new Date(fecha);
-                  if (!isNaN(dateObj.getTime())) { // Verificar si la fecha es válida
-                       return dateObj.toLocaleDateString(); // Usar el formato local del navegador
-                   } else {
-                       return 'Fecha inválida';
-                   }
-             }
-        } catch (e) {
-             // Si hay algún error, usar el método por defecto de Date
-             try {
-                 const dateObj = new Date(fecha);
-                 if (!isNaN(dateObj.getTime())) {
-                      return dateObj.toLocaleDateString();
-                  } else {
-                      return 'Fecha inválida';
-                  }
-             } catch (e2) {
-                  return 'Fecha inválida';
-             }
-        }
-    }
-
-
-    function formatearMiles(valor) {
-        if (valor === null || valor === undefined || valor === '') return ''; // Maneja valores nulos o vacíos
-         // Asegurarse de que es un número antes de formatear
-        const numero = parseFloat(valor);
-        if (isNaN(numero)) return valor; // Devuelve el valor original si no es un número válido
-
-        // Formatear con puntos como separador de miles y coma para decimales
-        return numero.toLocaleString('es-CO', { // 'es-CO' para formato colombiano
-             minimumFractionDigits: 0, // Mínimo de decimales (cambia si necesitas mostrar céntimos)
-             maximumFractionDigits: 2 // Máximo de decimales visibles
-         });
-    }
-
-
-    function limpiarMiles(valor) {
-         if (!valor) return '';
-         // Convertir a string si no lo es, luego eliminar puntos (separador de miles)
-         // y reemplazar coma por punto (separador de decimales) para obtener un número válido para parseFloat
-         return String(valor).replace(/\./g, '').replace(/,/g, '.');
-     }
-
-    function mostrarAlerta(mensaje, tipo = 'success') {
-        const alertaContainer = document.getElementById('alerta-visual'); // Usamos el contenedor en el HTML
-         if (!alertaContainer) {
-             console.error("Contenedor #alerta-visual no encontrado.");
-             // Si el contenedor no existe, mostramos una alerta básica del navegador (menos ideal)
-             alert(mensaje);
-             return;
-         }
-
-         // Limpiamos el contenedor por si había otra alerta y añadimos el contenido
-         alertaContainer.innerHTML = `
-             ${mensaje}
-             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-         `;
-
-         // Establecemos las clases de Bootstrap para el estilo y la visibilidad
-         alertaContainer.className = `alert alert-${tipo} alert-dismissible fade`; // Clases base
-         alertaContainer.style.display = 'block'; // Aseguramos que sea visible para la transición
-         alertaContainer.classList.add('show'); // Agregamos 'show' para activar la transición fade-in
-
-         // Configuramos un temporizador para ocultar la alerta
-         setTimeout(() => {
-             alertaContainer.classList.remove('show'); // Remueve 'show' para activar la transición fade-out
-             // Opcional: Esperar un poco más antes de ocultar completamente si la transición toma tiempo
-             // setTimeout(() => { alertaContainer.style.display = 'none'; }, 150); // 150ms es una duración común para fade
-         }, 4000); // Ocultar después de 4 segundos
-    }
-
-
-    function actualizarFiltroDepartamentos() {
-        // Obtiene una lista única y ordenada de departamentos de los empleados, excluyendo valores vacíos
-        const departamentos = [...new Set(empleados.map(emp => emp.departamento).filter(dep => dep && dep.trim() !== '').sort())]; // Obtiene, filtra vacíos y ordena
-         if (filtroDepartamentoSelect) {
-             const selectedValue = filtroDepartamentoSelect.value; // Guarda la selección actual del usuario
-             filtroDepartamentoSelect.innerHTML = '<option value="">Todos los departamentos</option>'; // Reinicia las opciones
-
-             // Añade las nuevas opciones ordenadas
-             departamentos.forEach(dep => {
-                 const option = document.createElement('option');
-                 option.value = dep;
-                 option.textContent = dep;
-                 filtroDepartamentoSelect.appendChild(option);
-             });
-
-              // Intenta restaurar la selección anterior del usuario si todavía existe en la nueva lista
-              if (departamentos.includes(selectedValue)) {
-                   filtroDepartamentoSelect.value = selectedValue;
-              } else {
-                   filtroDepartamentoSelect.value = ""; // Si la opción anterior no existe, selecciona "Todos"
-              }
-         }
-    }
-
-     // Exportar a CSV
-     function exportarEmpleadosCSV() {
-         // Considerar exportar solo los datos visibles si se aplican filtros en DataTables
-         // Para simplificar, por ahora exportamos todos los datos del array 'empleados'
-         const datosAExportar = empleados; // O empleadosTable.rows({ search: 'applied' }).data().toArray(); para solo visibles
-
-
-         if (!datosAExportar.length) {
-             mostrarAlerta('No hay empleados para exportar', 'warning');
-             return;
-         }
-
-         const headers = [
-             'ID', 'Nombres', 'Apellidos', 'Cédula', 'Teléfono', 'Email', 'Cargo',
-             'Departamento', 'Tipo de Contrato', 'Salario', 'Fecha de Nacimiento',
-             'Fecha de Ingreso', 'Antigüedad', 'Notas', 'Contacto Emergencia Nombre',
-             'Contacto Emergencia Teléfono', 'Contacto Emergencia Parentesco'
-         ];
-
-         // Crear filas de datos, escapando comas y comillas dobles
-         const rows = datosAExportar.map(emp => [
-             emp.id,
-             emp.nombres,
-             emp.apellidos,
-             emp.cedula,
-             emp.telefono,
-             emp.email,
-             emp.cargo || '',
-             emp.departamento || '',
-             emp.tipoContrato || '',
-             formatearMiles(limpiarMiles(emp.salario)) || '', // Limpiar y luego formatear para exportar
-             formatearFecha(emp.fechaNacimiento) || '', // Exportar fecha formateada
-             formatearFecha(emp.fechaIngreso) || '', // Exportar fecha formateada
-             calcularAntiguedadTexto(emp.fechaIngreso),
-             (emp.notas || '').replace(/"/g, '""'), // Escapa comillas dobles en notas
-             emp.contactoEmergenciaNombre || '',
-             emp.contactoEmergenciaTelefono || '',
-             emp.contactoEmergenciaParentesco || ''
-         ].map(field => `"${String(field).replace(/"/g, '""')}"`)); // Envuelve cada campo en comillas y escapa comillas internas
-
-
-         let csvContent = "\ufeff" + headers.join(',') + '\n'; // Agrega BOM para compatibilidad con Excel y encabezados
-         rows.forEach(row => {
-             csvContent += row.join(',') + '\n';
-         });
-
-         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-         const link = document.createElement('a');
-         const url = URL.createObjectURL(blob);
-
-         link.setAttribute('href', url);
-         link.setAttribute('download', 'empleados_ashe.csv');
-         link.style.visibility = 'hidden'; // No mostrar el enlace
-         document.body.appendChild(link);
-         link.click(); // Simular clic para descargar
-         document.body.removeChild(link); // Limpiar
-
-         // La alerta se mostrará ANTES de la descarga en algunos navegadores
-         mostrarAlerta('Preparando descarga de datos de empleados...', 'info');
-     }
-
-
-    // Notificaciones de cumpleaños
-    function notificarCumpleanos() {
-        // Asegurarse de que esta notificación solo se muestre una vez por sesión o página cargada si es posible
-        // (La lógica actual la llama en cada login exitoso)
-         const today = new Date();
-         const todayKey = today.toISOString().slice(0, 10); // Formato YYYY-MM-DD
-
-         // Usar localStorage para trackear si ya notificamos hoy
-         const lastNotificationDate = localStorage.getItem('lastCumpleanosNotification');
-
-         if (lastNotificationDate === todayKey) {
-             return; // Ya notificamos hoy
-         }
-
-        empleados.forEach(emp => {
-            if (emp.fechaNacimiento) {
-                const dias = calcularDiasParaCumpleanos(emp.fechaNacimiento);
-                // Mostramos notificaciones para cumpleaños hoy (0 días) o mañana (1 día)
-                if (dias === 0) {
-                    mostrarAlerta(`🎉 ¡Hoy es el cumpleaños de ${emp.nombres || ''} ${emp.apellidos || ''}!`, 'info');
-                } else if (dias === 1) {
-                    mostrarAlerta(`🎂 ¡Mañana es el cumpleaños de ${emp.nombres || ''} ${emp.apellidos || ''}!`, 'info');
-                }
-            }
-        });
-
-         // Marcar que ya notificamos hoy
-         localStorage.setItem('lastCumpleanosNotification', todayKey);
-    }
-
-
-    // --- Inicialización ---
-
-    // Toggle de contraseña - Asegurarnos de que solo se añade un listener por botón
-    // Usamos delegación de eventos en el body para manejar todos los botones .toggle-password
-    document.body.addEventListener('click', function(event) {
-         const btn = event.target.closest('.toggle-password'); // Busca el botón .toggle-password más cercano
-         if (btn) {
-             const targetId = btn.getAttribute('data-target');
-             const input = document.getElementById(targetId);
-             const icon = btn.querySelector('i');
-
-             if (input && icon) {
-                 if (input.type === 'password') {
-                     input.type = 'text';
-                     icon.classList.remove('bi-eye');
-                     icon.classList.add('bi-eye-slash');
-                 } else {
-                     input.type = 'password';
-                     icon.classList.remove('bi-eye-slash');
-                     icon.classList.add('bi-eye');
-                 }
-             }
-         }
-    });
-
-
-    // Restablecer contraseña - Event listener para el enlace "Olvidaste tu contraseña"
-    if (forgotPasswordLink) {
-         forgotPasswordLink.addEventListener('click', function(e) {
-             e.preventDefault();
-             if (resetPasswordForm) resetPasswordForm.reset();
-             if (resetPasswordFields) resetPasswordFields.classList.add('d-none');
-             emailToReset = ''; // Limpiar email a restablecer
-             const resetEmailInput = document.getElementById('reset-email');
-             if (resetEmailInput) resetEmailInput.readOnly = false; // Asegurarse de que el email input sea editable
-             if (resetPasswordModal) resetPasswordModal.show();
-         });
-    }
-
-     // Restablecer contraseña - Event listener para el formulario del modal
-     if (resetPasswordForm) {
-         resetPasswordForm.addEventListener('submit', function(e) {
-             e.preventDefault();
-             const emailInput = document.getElementById('reset-email');
-             const email = emailInput ? emailInput.value.trim() : '';
-
-
-             if (resetPasswordFields && !resetPasswordFields.classList.contains('d-none')) {
-                 // Lógica para cambiar contraseña
-                 const newPasswordInput = document.getElementById('reset-password');
-                 const confirmPasswordInput = document.getElementById('reset-password-confirm');
-                 const newPassword = newPasswordInput ? newPasswordInput.value : '';
-                 const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
-
-
-                 if (newPassword !== confirmPassword) {
-                     mostrarAlerta('Las contraseñas no coinciden', 'danger');
-                     return;
-                 }
-                 if (newPassword.length < 6) { // Validación simple de contraseña
-                      mostrarAlerta('La contraseña debe tener al menos 6 caracteres', 'danger');
-                     return;
-                 }
-
-                 // Buscar y actualizar usuario por el email guardado previamente (emailToReset)
-                 const userIndex = usuariosPermitidos.findIndex(u => u.email === emailToReset);
-                 if (userIndex !== -1) {
-                     usuariosPermitidos[userIndex].password = newPassword; // Actualiza la contraseña
-                     localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos)); // Guarda en localStorage
-                     mostrarAlerta('Contraseña restablecida con éxito. Ya puedes iniciar sesión.', 'success');
-                     if (resetPasswordModal) resetPasswordModal.hide(); // Cierra el modal
-                 } else {
-                     // Esto no debería pasar si el flujo es correcto, pero como seguridad
-                     mostrarAlerta('Error al encontrar usuario para restablecer', 'danger');
-                 }
-             } else {
-                 // Lógica para verificar email y mostrar campos de nueva contraseña
-                 const usuario = usuariosPermitidos.find(u => u.email === email);
-                 if (usuario) {
-                     emailToReset = email; // Guardar email para el siguiente paso
-                     if (resetPasswordFields) resetPasswordFields.classList.remove('d-none'); // Muestra los campos de contraseña
-                     if (emailInput) emailInput.readOnly = true; // Hacer el input de email de solo lectura
-                 } else {
-                     mostrarAlerta('El correo no está registrado', 'danger');
-                 }
-             }
-         });
-     }
-
-
-    // Asignar Event Listeners a botones de navegación/acción principales (Usando addEventListener)
-    if (loginForm) loginForm.addEventListener('submit', handleLogin);
-    if (registroForm) registroForm.addEventListener('submit', handleRegistro);
-
-    // Botones de navegación en el navbar o dashboard
-    if (btnNuevoEmpleado) btnNuevoEmpleado.addEventListener('click', () => showEmpleadoForm());
-    if (btnNuevoEmpleadoLista) btnNuevoEmpleadoLista.addEventListener('click', () => showEmpleadoForm());
-    if (btnVerEmpleados) btnVerEmpleados.addEventListener('click', showEmpleadosList);
-    if (btnCancelar) btnCancelar.addEventListener('click', cancelarFormulario); // Botón cancelar formulario empleado
-    if (btnRegistro) btnRegistro.addEventListener('click', showRegistroForm); // Botón "Registrarse" del navbar
-    if (btnCancelarRegistro) btnCancelarRegistro.addEventListener('click', hideRegistroForm); // Botón cancelar formulario registro
-    if (btnLogin) btnLogin.addEventListener('click', showLoginForm); // Botón "Iniciar Sesión" del navbar
-    if (btnLogout) btnLogout.addEventListener('click', handleLogout); // Botón "Cerrar Sesión" del navbar
-    if (btnDashboard) btnDashboard.addEventListener('click', showDashboard); // Botón "Dashboard" del navbar
-    if (btnEmpleados) btnEmpleados.addEventListener('click', showEmpleadosList); // Botón "Empleados" del navbar
-    if (btnCumpleanos) btnCumpleanos.addEventListener('click', showCumpleanosList); // Botón "Cumpleaños" del navbar
-    if (btnAusencias) btnAusencias.addEventListener('click', showAusenciasList); // Botón "Ausencias" del navbar
-    if (btnExportarCSV) btnExportarCSV.addEventListener('click', exportarEmpleadosCSV); // Botón "Exportar CSV"
-
-
-    // Listener para el enlace "Inicio" en el breadcrumb
-    if (breadcrumbHome) {
-         breadcrumbHome.addEventListener('click', function(e) {
-             e.preventDefault(); // Previene la navegación por defecto del enlace
-             if (isAuthenticated) {
-                 showDashboard(); // Ir al dashboard si está autenticado
-             } else {
-                 showLoginForm(); // Ir al login si no está autenticado
-             }
-         });
-         // Asegurarse de que el enlace de inicio sea visible si el breadcrumb es visible
-         const homeLinkInBreadcrumb = breadcrumbHome.querySelector('a');
-         if(homeLinkInBreadcrumb) homeLinkInBreadcrumb.style.display = 'inline'; // Asegurar que el enlace sea visible
-    } else {
-         console.warn("Elemento #breadcrumb-home no encontrado.");
-    }
-
-
-    // --- Inicio de la aplicación ---
-    // Al cargar la página, verificar si hay un usuario autenticado (simulado)
-    // Para esta demo, siempre empezamos en el login a menos que ya hubiéramos implementado un login persistente.
-    // Iniciamos en el login y si el usuario ingresa credenciales correctas, mostramos el dashboard.
-
-    // Check if there's a stored 'usuarioActual' from a previous session (optional for demo)
-    // let storedUser = JSON.parse(localStorage.getItem('usuarioActual'));
-    // if (storedUser) {
-    //     usuarioActual = storedUser;
-    //     isAuthenticated = true;
-    //     mostrarElementosAutenticados();
-    //     showDashboard();
-    //     notificarCumpleanos();
-    // } else {
-         isAuthenticated = false;
-         usuarioActual = null;
-         ocultarElementosAutenticados(); // Asegura que solo se vean login/registro al inicio
-         showLoginForm(); // Muestra el formulario de login al cargar la página
-    // }
-
-    // La notificacion de cumpleaños se llama en el login exitoso ahora
-    // notificarCumpleanos();
-
-
-}); // Fin de DOMContentLoaded
-
-// Nota de seguridad: Almacenar contraseñas y datos sensibles (como datos de empleados si son confidenciales)
-// en localStorage del navegador NO es seguro para una aplicación de producción.
-// Para una propuesta, puede ser aceptable para demostrar funcionalidad, pero una aplicación real requiere un backend seguro
-// para la autenticación, el almacenamiento de datos y el manejo de archivos (hojas de vida).
+        // Intentar parsear la fecha en formatoญี่ป
