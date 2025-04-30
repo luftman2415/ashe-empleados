@@ -155,16 +155,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function showDashboard() {
          if (!isAuthenticated) {
-             showLoginForm(); // Redirigir al login si no está autenticado
+             showLoginForm();
              return;
          }
-         ocultarTodo(); // Oculta todo primero
-         if (dashboardSection) dashboardSection.classList.remove('d-none'); // Muestra la sección del dashboard
-         mostrarElementosAutenticados(); // Muestra los botones correctos del navbar y esconde login/registro
+         ocultarTodo();
+         if (dashboardSection) dashboardSection.classList.remove('d-none');
+         mostrarElementosAutenticados();
 
-         actualizarBreadcrumb('Dashboard'); // Muestra y actualiza breadcrumb en navbar
+         actualizarBreadcrumb('Dashboard');
 
-         // Actualizar estadísticas
          if (document.getElementById('dashboard-total-empleados')) {
              document.getElementById('dashboard-total-empleados').textContent = empleados.length;
          }
@@ -173,17 +172,15 @@ document.addEventListener('DOMContentLoaded', function() {
            }
 
 
-         // Próximos cumpleaños para dashboard
          const proximosCumpleanosCount = empleados.filter(emp => {
              if (!emp.fechaNacimiento) return false;
              const diasRestantes = calcularDiasParaCumpleanos(emp.fechaNacimiento);
-             return diasRestantes >= 0 && diasRestantes <= 30; // Cumpleaños hoy o en los próximos 30 días
+             return diasRestantes >= 0 && diasRestantes <= 30;
          }).length;
           if (document.getElementById('dashboard-cumpleanos')) {
              document.getElementById('dashboard-cumpleanos').textContent = proximosCumpleanosCount;
           }
 
-          // Muestra las notificaciones detalladas en el div correspondiente
           notificarCumpleanos();
 
      }
@@ -193,13 +190,12 @@ document.addEventListener('DOMContentLoaded', function() {
             showLoginForm();
             return;
         }
-        ocultarTodo(); // Oculta todo primero
-        if (empleadosListSection) empleadosListSection.classList.remove('d-none'); // Muestra la sección de la lista de empleados
-        mostrarElementsAutenticados(); // Muestra los botones correctos del navbar
+        ocultarTodo();
+        if (empleadosListSection) empleadosListSection.classList.remove('d-none');
+        mostrarElementsAutenticados();
 
-        actualizarBreadcrumb('Lista de Empleados'); // Muestra y actualiza breadcrumb en navbar
+        actualizarBreadcrumb('Lista de Empleados');
 
-        // Si los filtros desplegables están vacíos, los poblamos
         if (filtroDepartamentoSelect && filtroDepartamentoSelect.options.length <= 1) {
              actualizarFiltroDepartamentos();
         }
@@ -207,14 +203,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // --- Inicializar o actualizar DataTables ---
         if (empleadosTable === null) {
-            // Si es la primera vez que mostramos la lista, inicializamos DataTables
             empleadosTable = $('#empleados-table').DataTable({
-                 data: empleados, // Carga los datos iniciales
+                 data: empleados,
                  columns: [
                      {
                           data: 'nombres',
                           render: function(data, type, row) {
-                              // Renderiza el nombre como un enlace para ver detalles
                               return `<a href="#" class="ver-empleado" data-id="${row.id}">${data || ''}</a>`;
                           }
                       },
@@ -263,7 +257,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             });
 
-            // --- Eventos de delegación para los botones dentro de la tabla (Usando jQuery .off().on()) ---
              $('#empleados-table-body').off('click', '.ver-empleado').on('click', '.ver-empleado', function(e) {
                  e.preventDefault();
                  const rowData = empleadosTable.row($(this).parents('tr')).data();
@@ -285,7 +278,6 @@ document.addEventListener('DOMContentLoaded', function() {
              });
 
 
-             // --- Vincula los filtros y búsqueda externos a DataTables (Usando jQuery .off().on()) ---
              if (busquedaEmpleadosInput) {
                   $(busquedaEmpleadosInput).off('keyup search').on('keyup search', function () {
                       empleadosTable.search(this.value).draw();
@@ -331,7 +323,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
         } else {
-            // Si DataTables ya está inicializado, solo actualizamos los datos y redibujamos
              empleadosTable.clear().rows.add(empleados).draw();
              empleadosTable.draw();
         }
@@ -343,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showLoginForm();
             return;
         }
-        if (empleadoFormElement) { // Usar la referencia directa al formulario
+        if (empleadoFormElement) {
             empleadoFormElement.reset();
              if (editId !== null && editId !== undefined) {
                  empleadoFormElement.setAttribute('data-edit-id', editId);
@@ -357,9 +348,9 @@ document.addEventListener('DOMContentLoaded', function() {
              }
         }
         ocultarTodo();
-        if (empleadoFormSection) empleadoFormSection.classList.remove('d-none'); // Muestra la sección del formulario
+        if (empleadoFormSection) empleadoFormSection.classList.remove('d-none');
         actualizarBreadcrumb(editId !== null && editId !== undefined ? 'Editar Empleado' : 'Nuevo Empleado');
-         mostrarElementosAutenticados();
+         mostrarElementsAutenticados();
     }
 
      function mostrarDetalleEmpleado(id) {
@@ -394,6 +385,12 @@ document.addEventListener('DOMContentLoaded', function() {
                       </div>
                   </div>
                   <div class="row mt-3">
+                       <div class="col-12">
+                            <h5>Dirección</h5>
+                            <p>${empleado.direccion || 'No especificada'}</p>
+                        </div>
+                   </div>
+                  <div class="row mt-3">
                       <div class="col-12">
                           <h5>Notas / Acontecimientos</h5>
                           <p>${empleado.notas || 'Sin notas registradas'}</p>
@@ -421,9 +418,9 @@ document.addEventListener('DOMContentLoaded', function() {
           }
 
           ocultarTodo();
-          if (empleadoDetalleSection) empleadoDetalleSection.classList.remove('d-none'); // Muestra la sección de detalle
+          if (empleadoDetalleSection) empleadoDetalleSection.classList.remove('d-none');
           actualizarBreadcrumb('Detalle de Empleado');
-           mostrarElementosAutenticados();
+           mostrarElementsAutenticados();
 
           if (empleadoDetalleSection) empleadoDetalleSection.setAttribute('data-current-empleado-id', empleado.id);
 
@@ -454,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
           ocultarTodo();
            if (cumpleanosListSection) cumpleanosListSection.classList.remove('d-none');
           actualizarBreadcrumb('Próximos Cumpleaños');
-          mostrarElementosAutenticados();
+          mostrarElementsAutenticados();
 
           renderCumpleanos();
      }
@@ -502,7 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ocultarTodo();
          if (ausenciasListSection) ausenciasListSection.classList.remove('d-none');
         actualizarBreadcrumb('Gestión de Ausencias');
-         mostrarElementosAutenticados();
+         mostrarElementsAutenticados();
 
          renderAusencias();
     }
@@ -612,8 +609,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
      function limpiarLogin() {
-          // Limpia solo el formulario de login
-          // Usamos la referencia correcta al elemento FORMULARIO con id="loginForm"
           if (loginFormElement) loginFormElement.reset();
      }
 
@@ -675,7 +670,7 @@ document.addEventListener('DOMContentLoaded', function() {
      }
 
 
-    function ocultarElementosAutenticados() {
+    function ocultarElementsAutenticados() {
         ocultarElements([btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias]);
         ocultarElements([btnNuevoEmpleado, btnNuevoEmpleadoLista, btnVerEmpleados, btnCancelar, btnExportarCSV]);
          ocultarElements([document.getElementById('btn-editar-desde-detalle'), document.getElementById('btn-volver-desde-detalle')]);
@@ -692,11 +687,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // --- Event Listeners ---
-    // Listeners de Autenticación (Adjuntamos directamente si el elemento existe)
     if (loginFormElement) loginFormElement.addEventListener('submit', handleLogin);
     if (btnLogout) btnLogout.addEventListener('click', handleLogout);
 
-    // Listener para el enlace "¿Olvidaste tu contraseña?"
      if (forgotPasswordLink) {
          forgotPasswordLink.addEventListener('click', function(e) {
              e.preventDefault();
@@ -704,7 +697,6 @@ document.addEventListener('DOMContentLoaded', function() {
          });
      }
 
-     // Listeners para el formulario y botones dentro del modal de restablecer contraseña
      if (resetPasswordForm) {
           resetPasswordForm.addEventListener('submit', function(e) {
               e.preventDefault();
@@ -730,8 +722,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
      }
 
-
-    // Listeners de Registro
     if (btnRegistro) btnRegistro.addEventListener('click', showRegistroForm);
 
      if (registroFormElement) {
@@ -773,29 +763,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
      if (btnCancelarRegistro) btnCancelarRegistro.addEventListener('click', hideRegistroForm);
 
-    // Listeners de Navegación del Navbar
      if (btnDashboard) btnDashboard.addEventListener('click', showDashboard);
      if (btnEmpleados) btnEmpleados.addEventListener('click', showEmpleadosList);
      if (btnCumpleanos) btnCumpleanos.addEventListener('click', showCumpleanosList);
      if (btnAusencias) btnAusencias.addEventListener('click', showAusenciasList);
 
 
-    // Listeners de botones de las secciones
     if (btnNuevoEmpleado) btnNuevoEmpleado.addEventListener('click', () => showEmpleadoForm());
     if (btnNuevoEmpleadoLista) btnNuevoEmpleadoLista.addEventListener('click', () => showEmpleadoForm());
      if (btnVerEmpleados) btnVerEmpleados.addEventListener('click', showEmpleadosList);
      if (btnExportarCSV) btnExportarCSV.addEventListener('click', exportarEmpleadosCSV);
 
-    // Listener del formulario de Empleado (Guardar/Actualizar)
     if (empleadoFormElement) {
          $(empleadoFormElement).off('submit').on('submit', handleEmpleadoFormSubmit);
     }
 
 
-    // Listener del botón Cancelar en el formulario de empleado
     if (btnCancelar) btnCancelar.addEventListener('click', showEmpleadosList);
 
-    // Listener para el enlace "Inicio" en el breadcrumb
      if (breadcrumbHomeLink) {
           breadcrumbHomeLink.addEventListener('click', function(e) {
              e.preventDefault();
@@ -812,7 +797,7 @@ document.addEventListener('DOMContentLoaded', function() {
      const togglePasswordButtons = document.querySelectorAll('.toggle-password');
 
      togglePasswordButtons.forEach(button => {
-         if (button && button.parentNode) { // Verificamos que el botón y su padre existan
+         if (button && button.parentNode) {
              button.addEventListener('click', function() {
                  const targetId = this.dataset.target;
                  const passwordInput = document.getElementById(targetId);
@@ -836,5 +821,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // --- Inicialización ---
-    showLoginForm(); // Redirigir a la página de login al cargar la aplicación
+    showLoginForm();
 }); // Fin del DOMContentLoaded
