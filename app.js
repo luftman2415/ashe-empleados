@@ -880,82 +880,804 @@ document.addEventListener('DOMContentLoaded', function() {
      }
 
 
-     function cancelarFormulario() {
-         // Simplemente vuelve a mostrar la lista de empleados
-         showEmpleadosList();
+     function showCumpleanosList() {
+         if (!isAuthenticated) {
+             showLoginForm();
+             return;
+         }
+         ocultarTodo(); // Oculta todo primero
+          if (cumpleanosListSection) cumpleanosListSection.classList.remove('d-none');
+         actualizarBreadcrumb('Próximos Cumpleaños');
+         mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
+
+         // Renderizar lista de cumpleaños (puedes mejorar esto con DataTables si quieres)
+         renderCumpleanos();
+     }
+
+     function renderCumpleanos() {
+         const tbody = document.getElementById('cumpleanos-table-body');
+         if (!tbody) return;
+         tbody.innerHTML = ''; // Limpia la tabla actual
+
+         const proximosCumpleanos = empleados
+             .filter(emp => emp.fechaNacimiento) // Solo empleados con fecha de nacimiento válida
+             .map(emp => { // Calcular días y añadir al objeto temporal
+                 const dias = calcularDiasParaCumpleanos(emp.fechaNacimiento);
+                 // Solo incluir cumpleaños que faltan o son hoy (dias >= 0)
+                 if (dias >= 0) {
+                     return { ...emp, diasRestantes: dias };
+                 }
+                 return null; // Excluir si ya pasaron este año
+             })
+             .filter(emp => emp !== null) // Eliminar los null
+             .sort((a, b) => a.diasRestantes - b.diasRestantes); // Ordenar por los días restantes
+
+         proximosCumpleanos.forEach(emp => {
+             const tr = document.createElement('tr');
+             tr.innerHTML = `
+                 <td>${emp.nombres || ''} <span class="math-inline">\{emp\.apellidos \|\| ''\}</td\>
+<td\></span>{formatearFecha(emp.fechaNacimiento)}</td>
+                 <td>${emp.diasRestantes === 0 ? 'Hoy!' : (emp.diasRestantes === 1 ? 'Mañana' : `${emp.diasRestantes} días`)}</td>
+             `;
+             tbody.appendChild(tr);
+         });
      }
 
 
-    // --- Funciones de Utilidad ---
-     function calcularAntiguedad(fechaIngreso) {
-         if (!fechaIngreso) return 0;
-         const inicio = new Date(fechaIngreso);
-         const hoy = new Date();
-         // Calcula la diferencia en milisegundos, luego convierte a años exactos (flotante)
-         const diffTime = Math.abs(hoy.getTime() - inicio.getTime()); // Usar getTime() para milisegundos
-         const diffYears = diffTime / (1000 * 60 * 60 * 24 * 365.25); // Considera años bisiestos
-         return diffYears; // Retorna un número (puede tener decimales) para comparación precisa
+    function showAusenciasList() {
+        if (!isAuthenticated) {
+            showLoginForm();
+            return;
+        }
+        ocultarTodo(); // Oculta todo primero
+         if (ausenciasListSection) ausenciasListSection.classList.remove('d-none');
+        actualizarBreadcrumb('Gestión de Ausencias');
+         mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
+
+
+         // Renderizar lista de ausencias (puedes mejorar esto con DataTables)
+         renderAusencias();
+    }
+
+    function renderAusencias() {
+         const tbody = document.getElementById('ausencias-table-body');
+         if (!tbody) return;
+         tbody.innerHTML = ''; // Limpia la tabla actual
+
+         // Ordenar ausencias por fecha descendente
+         // Usar slice() para no mutar el array original si se necesita
+         const ausenciasOrdenadas = ausencias.slice().sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+
+         ausenciasOrdenadas.forEach(ausencia => {
+             const tr = document.createElement('tr');
+             tr.innerHTML = `
+                 <td><span class="math-inline">\{ausencia\.nombreEmpleado \|\| ''\}</td\>
+<td\></span>{formatearFecha(ausencia.fecha)}</td>
+                 <td><span class="math-inline">\{ausencia\.tipo \|\| ''\}</td\>
+<td\>
+<button class\="btn btn\-sm btn\-danger eliminar\-ausencia\-btn" data\-id\="</span>{ausencia.id}">
+                          <i class="bi bi-trash"></i>
+                      </button>
+                 </td>
+             `;
+             tbody.appendChild(tr);
+         });
+
+         // Evento de delegación para eliminar ausencias
+         // Quitamos listener viejo y ponemos uno nuevo
+         $('#ausencias-list .table tbody').off('click', '.eliminar-ausencia-btn').on('click', '.eliminar-ausencia-btn', function() {
+             const ausenciaId = $(this).data('id'); // Usamos jQuery data para obtener el id
+             eliminarAusencia(ausenciaId);
+         });
      }
 
-     function calcularAntiguedadTexto(fechaIngreso) {
-         if (!fechaIngreso) return 'No registrada';
-         const diffTime = Math.abs(new Date().getTime() - new Date(fechaIngreso).getTime());
+     function eliminarAusencia(id) {
+          if (confirm('¿Está seguro de que desea eliminar esta ausencia? Esta acción es irreversible.')) {
+             ausencias = ausencias.filter(a => a.id != id);
+             localStorage.setItem('ausencias', JSON.stringify(ausencias));
+             mostrarAlerta('Ausencia eliminada correctamente', 'success');
+             renderAusencias(); // Volver a renderizar la lista de ausencias
+         }
+     }
 
-         const years = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365.25));
-         const remainingTime = diffTime % (1000 * 60 * 60 * 24 * 365.25);
-         const months = Math.floor(remainingTime / (1000 * 60 * 60 * 24 * 30.44)); // Promedio de días al mes
+     // Event listener para el formulario de Ausencias
+     const ausenciaFormElement = document.getElementById('ausenciaForm');
+     if (ausenciaFormElement) {
+          // Quitamos listener viejo y ponemos uno nuevo
+          const newAusenciaForm = ausenciaFormElement.cloneNode(true);
+          ausenciaFormElement.parentNode.replaceChild(newAusenciaForm, ausenciaFormElement);
 
-         let texto = '';
-         if (years > 0) {
-             texto += `<span class="math-inline">\{years\} año</span>{years > 1 ? 's' : ''}`;
-             if (months > 0) {
-                 texto += ` y <span class="math-inline">\{months\} mes</span>{months > 1 ? 'es' : ''}`;
+         newAusenciaForm.addEventListener('submit', function(e) {
+             e.preventDefault();
+             const nombreInput = document.getElementById('ausencia-nombre');
+             const fechaInput = document.getElementById('ausencia-fecha');
+             const tipoSelect = document.getElementById('ausencia-tipo');
+
+             const nuevaAusencia = {
+                 id: Date.now(), // Generar un ID simple basado en el tiempo
+                 nombreEmpleado: nombreInput ? nombreInput.value.trim() : '',
+                 fecha: fechaInput ? fechaInput.value : '',
+                 tipo: tipoSelect ? tipoSelect.value : '',
+             };
+
+             if (!nuevaAusencia.nombreEmpleado || !nuevaAusencia.fecha || !nuevaAusencia.tipo) {
+                  mostrarAlerta('Por favor, complete todos los campos de la ausencia.', 'warning');
+                 return;
              }
-         } else if (months > 0) {
-             texto += `<span class="math-inline">\{months\} mes</span>{months > 1 ? 'es' : ''}`;
-         } else {
-             texto = 'Menos de un mes';
-         }
-         return texto;
+
+             ausencias.push(nuevaAusencia);
+             localStorage.setItem('ausencias', JSON.stringify(ausencias));
+             mostrarAlerta('Ausencia registrada correctamente', 'success');
+             newAusenciaForm.reset(); // Limpiar formulario
+             renderAusencias(); // Actualizar lista de ausencias
+         });
      }
 
 
-    function calcularDiasParaCumpleanos(fechaNacimiento) {
-        if (!fechaNacimiento) return Infinity; // Si no hay fecha, consideramos que no tiene cumpleaños próximo
-        const hoy = new Date();
-        hoy.setHours(0, 0, 0, 0); // Reiniciar horas para comparación de días precisos
-        const cumple = new Date(fechaNacimiento);
+    // --- Funciones de Autenticación ---
+    function handleLogin(e) {
+        e.preventDefault(); // Previene el envío del formulario
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
 
-        // Si el cumpleaños cae en un año bisiesto (29 de febrero) y el año actual/próximo no lo es, ajustar la fecha
-         const year = hoy.getFullYear();
-         const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-         if (!isLeap && cumple.getMonth() === 1 && cumple.getDate() === 29) {
-             cumple.setDate(28); // En años no bisiestos, 29 Feb es tratado como 28 Feb
+        const email = emailInput ? emailInput.value.trim() : ''; // Limpiar email
+        const password = passwordInput ? passwordInput.value : ''; // No limpiar password
+
+
+        const usuario = usuariosPermitidos.find(u => u.email === email && u.password === password);
+
+        if (usuario) {
+            isAuthenticated = true;
+            usuarioActual = usuario;
+             // localStorage.setItem('usuarioActual', JSON.stringify(usuarioActual)); // Opcional: guardar sesión (menos seguro en localStorage)
+            mostrarElementosAutenticados(); // Muestra botones de navegación
+            showDashboard(); // Va al dashboard
+            notificarCumpleanos(); // Muestra notificaciones
+        } else {
+            mostrarAlerta('Credenciales incorrectas', 'danger');
+        }
+    }
+
+     function limpiarLogin() {
+         if (loginForm) loginForm.reset(); // Limpia el formulario de login
+     }
+
+    function handleLogout() {
+        isAuthenticated = false;
+        usuarioActual = null;
+        // Opcional: Limpiar localStorage si implementaste guardar sesión
+        // localStorage.removeItem('usuarioActual');
+        ocultarElementosAutenticados(); // Oculta botones de navegación
+        showLoginForm(); // Vuelve al login
+        mostrarAlerta('Sesión cerrada correctamente', 'success');
+    }
+
+    function mostrarElements(elements) {
+         elements.forEach(el => { if(el) el.classList.remove('d-none'); });
+    }
+
+     function ocultarElements(elements) {
+         elements.forEach(el => { if(el) el.classList.add('d-none'); });
+     }
+
+
+    function mostrarElementosAutenticados() {
+        // Mostrar botones de navegación principales si existen
+         mostrarElements([btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias]);
+
+        // Mostrar botones específicos del dashboard o lista de empleados (depende de la sección)
+         if (dashboardSection && !dashboardSection.classList.contains('d-none')) { // Si el dashboard está visible
+             mostrarElements([btnNuevoEmpleado, btnVerEmpleados, btnExportarCSV]);
+         } else if (empleadosListSection && !empleadosListSection.classList.contains('d-none')) { // Si la lista de empleados está visible
+             mostrarElements([btnNuevoEmpleadoLista]); // Mostrar solo el botón de "Nuevo Empleado" en la lista
+             ocultarElements([btnNuevoEmpleado, btnVerEmpleados, btnExportarCSV]); // Asegurar que los otros estén ocultos
+         } else { // Si ninguna sección principal está visible (ej: formulario, detalle)
+              ocultarElements([btnNuevoEmpleado, btnVerEmpleados, btnExportarCSV, btnNuevoEmpleadoLista]); // Ocultar todos los botones específicos
          }
 
 
-        // Si el cumpleaños de este año ya pasó, considerar el próximo año
-        // Comparamos la fecha del cumpleaños con el día de hoy
-        cumple.setFullYear(hoy.getFullYear()); // Ponemos el año actual al cumpleaños
-         if (cumple < hoy) {
-             cumple.setFullYear(hoy.getFullYear() + 1); // Si ya pasó este año, usamos el próximo
-              // Si el próximo año no es bisiesto y el cumpleaños original era 29 Feb, ajustar
-              const nextYear = cumple.getFullYear();
-               const isNextYearLeap = (nextYear % 4 === 0 && nextYear % 100 !== 0) || (nextYear % 400 === 0);
-               if (!isNextYearLeap && new Date(fechaNacimiento).getMonth() === 1 && new Date(fechaNacimiento).getDate() === 29) {
-                   cumple.setDate(28);
-               }
-         }
+        // Ocultar botones de login/registro
+        ocultarElements([btnLogin, btnRegistro]);
 
+        // Mostrar breadcrumb
+        const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
+        if (breadcrumbNav) breadcrumbNav.classList.remove('d-none');
+    }
 
-         // Calcular la diferencia en días
-        const diffTime = cumple.getTime() - hoy.getTime(); // Usar getTime() para milisegundos
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Redondeamos hacia arriba para incluir el día actual/próximo
+    function ocultarElementosAutenticados() {
+         // Ocultar todos los botones de navegación/acción
+         ocultarElements([
+             btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias,
+             btnExportarCSV, btnNuevoEmpleado, btnNuevoEmpleadoLista, btnVerEmpleados
+         ]);
 
-        return diffDays;
+        // Mostrar botones de login/registro
+        mostrarElements([btnLogin, btnRegistro]);
+
+         // Ocultar breadcrumb
+         const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
+         if (breadcrumbNav) breadcrumbNav.classList.add('d-none');
     }
 
 
-    function formatearFecha(fecha) {
-        if (!fecha) return 'No registrada';
-        // Intentar parsear la fecha en formatoญี่ป
+     // Funciones de registro (ya estaban bien)
+    function handleRegistro(e) {
+        e.preventDefault();
+        const emailInput = document.getElementById('reg-email');
+        const passwordInput = document.getElementById('reg-password');
+        const confirmPasswordInput = document.getElementById('reg-confirm-password');
+
+        const email = emailInput ? emailInput.value.trim() : '';
+        const password = passwordInput ? passwordInput.value : '';
+        const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
+
+
+        if (password !== confirmPassword) {
+            mostrarAlerta('Las contraseñas no coinciden', 'danger');
+            return;
+        }
+        if (password.length < 6) { // Validación simple de longitud
+             mostrarAlerta('La contraseña debe tener al menos 6 caracteres', 'danger');
+            return;
+        }
+
+
+        if (usuariosPermitidos.some(u => u.email === email)) {
+            mostrarAlerta('El correo electrónico ya está registrado', 'danger');
+            return;
+        }
+
+        // Guardar usuario con rol 'rrhh' (puedes cambiar el rol si es necesario)
+        usuariosPermitidos.push({ email: email, password: password, rol: 'rrhh' }); // Guardamos el nuevo usuario
+        localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos)); // Guardamos la lista actualizada en localStorage
+        mostrarAlerta('Usuario registrado exitosamente. Ya puedes iniciar sesión.', 'success');
+        hideRegistroForm(); // Ir al login después de registrar
+    }
+
+
+    // --- Funciones de Empleados (CRUD y Lógica) ---
+
+     // Guardar empleado
+     const empleadoFormElement = document.getElementById('empleadoForm');
+     if (empleadoFormElement) {
+         // Quitamos listener viejo y ponemos uno nuevo
+          const newEmpleadoFormElement = empleadoFormElement.cloneNode(true);
+          empleadoFormElement.parentNode.replaceChild(newEmpleadoFormElement, empleadoFormElement);
+
+         newEmpleadoFormElement.addEventListener('submit', function(e) {
+             e.preventDefault();
+             const editId = this.getAttribute('data-edit-id');
+
+             const empleado = {
+                 id: editId ? parseInt(editId) : Date.now(), // Usa Date.now() como ID para nuevos (simple)
+                 nombres: document.getElementById('nombres').value.trim(), // Añade trim para limpiar espacios
+                 apellidos: document.getElementById('apellidos').value.trim(),
+                 cedula: document.getElementById('cedula').value.trim(),
+                 telefono: document.getElementById('telefono').value.trim(),
+                 email: document.getElementById('email-empleado').value.trim(),
+                 cargo: document.getElementById('cargo').value.trim(),
+                 departamento: document.getElementById('departamento').value.trim(),
+                 tipoContrato: document.getElementById('tipo-contrato').value.trim(),
+                 salario: limpiarMiles(document.getElementById('salario').value.trim()), // Limpia miles y trim
+                 fechaNacimiento: document.getElementById('fecha-nacimiento').value,
+                 fechaIngreso: document.getElementById('fecha-ingreso').value,
+                 notas: document.getElementById('notas').value.trim(),
+                 contactoEmergenciaNombre: document.getElementById('contacto-emergencia-nombre').value.trim(),
+                 contactoEmergenciaTelefono: document.getElementById('contacto-emergencia-telefono').value.trim(),
+                 contactoEmergenciaParentesco: document.getElementById('contacto-emergencia-parentesco').value.trim()
+                 // Hoja de vida no se guarda en localStorage directamente (es un File)
+             };
+
+             if (!empleado.nombres || !empleado.apellidos || !empleado.cedula || !empleado.telefono || !empleado.email) {
+                  mostrarAlerta('Los campos Nombre, Apellido, Cédula, Teléfono y Email son obligatorios.', 'warning');
+                  return; // Detiene el proceso de guardar si faltan campos requeridos
+             }
+
+
+             if (editId) {
+                 // Actualizar empleado existente
+                 const index = empleados.findIndex(e => e.id == editId);
+                 if (index !== -1) {
+                      // Verificar si la cédula ya existe en otro empleado (si se cambió la cédula)
+                      if (empleados.some(e => e.cedula === empleado.cedula && e.id != editId && e.cedula !== '')) {
+                           mostrarAlerta(`Ya existe otro empleado con la cédula ${empleado.cedula}`, 'warning');
+                           return; // Detiene el proceso de guardar
+                      }
+                     empleados[index] = empleado;
+                     mostrarAlerta('Empleado actualizado correctamente', 'success');
+                 } else {
+                      mostrarAlerta('Error: Empleado a editar no encontrado.', 'danger');
+                 }
+             } else {
+                 // Añadir nuevo empleado
+                  // Verificar si ya existe un empleado con la misma cédula
+                  if (empleados.some(e => e.cedula === empleado.cedula && e.cedula !== '')) {
+                       mostrarAlerta(`Ya existe un empleado con la cédula ${empleado.cedula}`, 'warning');
+                       return; // Detiene el proceso de guardar
+                  }
+                 empleados.push(empleado);
+                 mostrarAlerta('Empleado guardado correctamente', 'success');
+             }
+
+             localStorage.setItem('empleados', JSON.stringify(empleados)); // Guarda la lista de empleados actualizada
+             showEmpleadosList(); // Vuelve a la lista después de guardar/actualizar
+         });
+     }
+
+     function cargarDatosEmpleado(id) {
+         const empleado = empleados.find(e => e.id == id);
+         if (empleado) {
+             // Cargar todos los campos del formulario (asegurando que los elementos existan)
+             if (document.getElementById('nombres')) document.getElementById('nombres').value = empleado.nombres || '';
+             if (document.getElementById('apellidos')) document.getElementById('apellidos').value = empleado.apellidos || '';
+             if (document.getElementById('cedula')) document.getElementById('cedula').value = empleado.cedula || '';
+             if (document.getElementById('telefono')) document.getElementById('telefono').value = empleado.telefono || '';
+             if (document.getElementById('email-empleado')) document.getElementById('email-empleado').value = empleado.email || '';
+             if (document.getElementById('cargo')) document.getElementById('cargo').value = empleado.cargo || '';
+             if (document.getElementById('departamento')) document.getElementById('departamento').value = empleado.departamento || '';
+             if (document.getElementById('tipo-contrato')) document.getElementById('tipo-contrato').value = empleado.tipoContrato || '';
+             // Formatear salario al cargar solo si tiene un valor numérico
+             const salarioInput = document.getElementById('salario');
+             if (salarioInput) {
+                 const salarioNum = parseFloat(empleado.salario);
+                 salarioInput.value = isNaN(salarioNum) ? (empleado.salario || '') : formatearMiles(salarioNum);
+             }
+             if (document.getElementById('fecha-nacimiento')) document.getElementById('fecha-nacimiento').value = empleado.fechaNacimiento || '';
+             if (document.getElementById('fecha-ingreso')) document.getElementById('fecha-ingreso').value = empleado.fechaIngreso || '';
+             if (document.getElementById('notas')) document.getElementById('notas').value = empleado.notas || '';
+             if (document.getElementById('contacto-emergencia-nombre')) document.getElementById('contacto-emergencia-nombre').value = empleado.contactoEmergenciaNombre || '';
+             if (document.getElementById('contacto-emergencia-telefono')) document.getElementById('contacto-emergencia-telefono').value = empleado.contactoEmergenciaTelefono || '';
+             if (document.getElementById('contacto-emergencia-parentesco')) document.getElementById('contacto-emergencia-parentesco').value = empleado.contactoEmergenciaParentesco || '';
+
+             // Nota: La hoja de vida no se puede cargar directamente en un input type="file" por seguridad
+         } else {
+              mostrarAlerta('Error: Datos del empleado no encontrados para cargar en el formulario.', 'danger');
+         }
+     }
+
+     // Eliminar empleado
+     // La función ahora se llama desde el evento de delegación de DataTables
+     window.eliminarEmpleado = function(id) { // Hacemos la función global para que onclick en el HTML funcione (aunque delegación es mejor)
+         if (confirm('¿Está seguro de que desea eliminar este empleado? Esta acción es irreversible.')) { // Mensaje más claro
+             empleados = empleados.filter(e => e.id != id); // Filtra el array, creando uno nuevo sin el empleado eliminado
+             localStorage.setItem('empleados', JSON.stringify(empleados)); // Guarda el nuevo array en localStorage
+             mostrarAlerta('Empleado eliminado correctamente', 'success');
+             // Actualizar DataTables después de eliminar
+             if (empleadosTable) {
+                empleadosTable.clear().rows.add(empleados).draw(); // Carga el array actualizado en DataTables y redibuja la tabla
+             }
+             // No es necesario llamar a showEmpleadosList a menos que quieras cambiar de sección
+         }
+     }
+
+     // Editar empleado
+      // La función ahora se llama desde el evento de delegación de DataTables (en el enlace del nombre)
+     window.editarEmpleado = function(id) { // Hacemos la función global
+         showEmpleadoForm(id); // Muestra el formulario y carga los datos
+     }
+
+     // Mostrar detalle de empleado
+      // La función ahora se llama desde el evento de delegación de DataTables (en el enlace del nombre)
+     window.mostrarDetalleEmpleado = function(id) { // Hacemos la función global
+          const empleado = empleados.find(e => e.id == id); // Usamos == para comparar number con string si es necesario
+         if (!empleado) {
+              mostrarAlerta('Empleado no encontrado', 'danger');
+             return;
+         }
+
+         const detalleBody = document.getElementById('empleado-detalle-body');
+         if (detalleBody) {
+             detalleBody.innerHTML = `
+                 <div class="row">
+                     <div class="col-md-6 mb-3">
+                         <h4>${empleado.nombres || ''} ${empleado.apellidos || ''}</h4>
+                         <p><strong>Cédula:</strong> ${empleado.cedula || ''}</p>
+                         <p><strong>Teléfono:</strong> ${empleado.telefono || ''}</p>
+                         <p><strong>Email:</strong> ${empleado.email || ''}</p>
+                         <p><strong>Cargo:</strong> ${empleado.cargo || ''}</p>
+                         <p><strong>Departamento:</strong> ${empleado.departamento || ''}</p>
+                     </div>
+                     <div class="col-md-6 mb-3">
+                         <p><strong>Tipo de Contrato:</strong> ${empleado.tipoContrato || ''}</p>
+                         <p><strong>Fecha de Nacimiento:</strong> ${formatearFecha(empleado.fechaNacimiento)}</p>
+                         <p><strong>Fecha de Ingreso:</strong> ${formatearFecha(empleado.fechaIngreso)}</p>
+                         <p><strong>Antigüedad:</strong> ${calcularAntiguedadTexto(empleado.fechaIngreso)}</p>
+                         <p><strong>Salario:</strong> <span class="math-inline">\{usuarioActual && usuarioActual\.rol \=\=\= 'admin' ? formatearMiles\(empleado\.salario\) \: '\*\*\*\*'\}</p\>
+</div\>
+</div\>
+<div class\="row mt\-3"\>
+<div class\="col\-12"\>
+<h5\>Notas / Acontecimientos</h5\>
+<p\></span>{empleado.notas || 'Sin notas registradas'}</p>
+                     </div>
+                 </div>
+                 <div class="row mt-3">
+                     <div class="col-12">
+                         <h5>Contacto de Emergencia</h5>
+                         <p><strong>Nombre:</strong> ${empleado.contactoEmergenciaNombre || ''}</p>
+                         <p><strong>Teléfono:</strong> ${empleado.contactoEmergenciaTelefono || ''}</p>
+                         <p><strong>Parentesco:</strong> ${empleado.contactoEmergenciaParentesco || ''}</p>
+                     </div>
+                 </div>
+             `;
+         }
+
+         ocultarTodo(); // Oculta todo primero
+         if (empleadoDetalleSection) empleadoDetalleSection.classList.remove('d-none');
+         actualizarBreadcrumb('Detalle de Empleado');
+         mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
+
+
+         // Event listener para el botón Editar desde Detalle
+         const btnEditarDesdeDetalle = document.getElementById('btn-editar-desde-detalle');
+         if (btnEditarDesdeDetalle) {
+              // Quitamos listener viejo y ponemos uno nuevo para evitar duplicados
+             const newBtnEditarDesdeDetalle = btnEditarDesdeDetalle.cloneNode(true);
+             btnEditarDesdeDetalle.parentNode.replaceChild(newBtnEditarDesdeDetalle, btnEditarDesdeDetalle);
+             newBtnEditarDesdeDetalle.addEventListener('click', function() {
+                 editarEmpleado(empleado.id); // Llama a la función editarEmpleado
+             });
+         }
+
+          // Event listener para el botón Volver desde Detalle
+          const btnVolverDesdeDetalle = document.getElementById('btn-volver-desde-detalle');
+          if (btnVolverDesdeDetalle) {
+              // Quitamos listener viejo y ponemos uno nuevo
+              const newBtnVolverDesdeDetalle = btnVolverDesdeDetalle.cloneNode(true);
+              btnVolverDesdeDetalle.parentNode.replaceChild(newBtnVolverDesdeDetelle, btnVolverDesdeDetalle);
+               newBtnVolverDesdeDetalle.addEventListener('click', function() {
+                  showEmpleadosList(); // Vuelve a la lista de empleados
+              });
+          }
+     }
+
+
+     function showCumpleanosList() {
+         if (!isAuthenticated) {
+             showLoginForm();
+             return;
+         }
+         ocultarTodo(); // Oculta todo primero
+          if (cumpleanosListSection) cumpleanosListSection.classList.remove('d-none');
+         actualizarBreadcrumb('Próximos Cumpleaños');
+         mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
+
+         // Renderizar lista de cumpleaños (puedes mejorar esto con DataTables si quieres)
+         renderCumpleanos();
+     }
+
+     function renderCumpleanos() {
+         const tbody = document.getElementById('cumpleanos-table-body');
+         if (!tbody) return;
+         tbody.innerHTML = ''; // Limpia la tabla actual
+
+         const proximosCumpleanos = empleados
+             .filter(emp => emp.fechaNacimiento) // Solo empleados con fecha de nacimiento válida
+             .map(emp => { // Calcular días y añadir al objeto temporal
+                 const dias = calcularDiasParaCumpleanos(emp.fechaNacimiento);
+                 // Solo incluir cumpleaños que faltan o son hoy (dias >= 0)
+                 if (dias >= 0) {
+                     return { ...emp, diasRestantes: dias };
+                 }
+                 return null; // Excluir si ya pasaron este año
+             })
+             .filter(emp => emp !== null) // Eliminar los null
+             .sort((a, b) => a.diasRestantes - b.diasRestantes); // Ordenar por los días restantes
+
+         proximosCumpleanos.forEach(emp => {
+             const tr = document.createElement('tr');
+             tr.innerHTML = `
+                 <td>${emp.nombres || ''} <span class="math-inline">\{emp\.apellidos \|\| ''\}</td\>
+<td\></span>{formatearFecha(emp.fechaNacimiento)}</td>
+                 <td>${emp.diasRestantes === 0 ? 'Hoy!' : (emp.diasRestantes === 1 ? 'Mañana' : `${emp.diasRestantes} días`)}</td>
+             `;
+             tbody.appendChild(tr);
+         });
+     }
+
+
+    function showAusenciasList() {
+        if (!isAuthenticated) {
+            showLoginForm();
+            return;
+        }
+        ocultarTodo(); // Oculta todo primero
+         if (ausenciasListSection) ausenciasListSection.classList.remove('d-none');
+        actualizarBreadcrumb('Gestión de Ausencias');
+         mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
+
+
+         // Renderizar lista de ausencias (puedes mejorar esto con DataTables)
+         renderAusencias();
+    }
+
+    function renderAusencias() {
+         const tbody = document.getElementById('ausencias-table-body');
+         if (!tbody) return;
+         tbody.innerHTML = ''; // Limpia la tabla actual
+
+         // Ordenar ausencias por fecha descendente
+         // Usar slice() para no mutar el array original si se necesita
+         const ausenciasOrdenadas = ausencias.slice().sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+
+         ausenciasOrdenadas.forEach(ausencia => {
+             const tr = document.createElement('tr');
+             tr.innerHTML = `
+                 <td><span class="math-inline">\{ausencia\.nombreEmpleado \|\| ''\}</td\>
+<td\></span>{formatearFecha(ausencia.fecha)}</td>
+                 <td><span class="math-inline">\{ausencia\.tipo \|\| ''\}</td\>
+<td\>
+<button class\="btn btn\-sm btn\-danger eliminar\-ausencia\-btn" data\-id\="</span>{ausencia.id}">
+                          <i class="bi bi-trash"></i>
+                      </button>
+                 </td>
+             `;
+             tbody.appendChild(tr);
+         });
+
+         // Evento de delegación para eliminar ausencias
+         // Quitamos listener viejo y ponemos uno nuevo
+         $('#ausencias-list .table tbody').off('click', '.eliminar-ausencia-btn').on('click', '.eliminar-ausencia-btn', function() {
+             const ausenciaId = $(this).data('id'); // Usamos jQuery data para obtener el id
+             eliminarAusencia(ausenciaId);
+         });
+     }
+
+     function eliminarAusencia(id) {
+          if (confirm('¿Está seguro de que desea eliminar esta ausencia? Esta acción es irreversible.')) {
+             ausencias = ausencias.filter(a => a.id != id);
+             localStorage.setItem('ausencias', JSON.stringify(ausencias));
+             mostrarAlerta('Ausencia eliminada correctamente', 'success');
+             renderAusencias(); // Volver a renderizar la lista de ausencias
+         }
+     }
+
+     // Event listener para el formulario de Ausencias
+     const ausenciaFormElement = document.getElementById('ausenciaForm');
+     if (ausenciaFormElement) {
+          // Quitamos listener viejo y ponemos uno nuevo
+          const newAusenciaForm = ausenciaFormElement.cloneNode(true);
+          ausenciaFormElement.parentNode.replaceChild(newAusenciaForm, ausenciaFormElement);
+
+         newAusenciaForm.addEventListener('submit', function(e) {
+             e.preventDefault();
+             const nombreInput = document.getElementById('ausencia-nombre');
+             const fechaInput = document.getElementById('ausencia-fecha');
+             const tipoSelect = document.getElementById('ausencia-tipo');
+
+             const nuevaAusencia = {
+                 id: Date.now(), // Generar un ID simple basado en el tiempo
+                 nombreEmpleado: nombreInput ? nombreInput.value.trim() : '',
+                 fecha: fechaInput ? fechaInput.value : '',
+                 tipo: tipoSelect ? tipoSelect.value : '',
+             };
+
+             if (!nuevaAusencia.nombreEmpleado || !nuevaAusencia.fecha || !nuevaAusencia.tipo) {
+                  mostrarAlerta('Por favor, complete todos los campos de la ausencia.', 'warning');
+                 return;
+             }
+
+             ausencias.push(nuevaAusencia);
+             localStorage.setItem('ausencias', JSON.stringify(ausencias));
+             mostrarAlerta('Ausencia registrada correctamente', 'success');
+             newAusenciaForm.reset(); // Limpiar formulario
+             renderAusencias(); // Actualizar lista de ausencias
+         });
+     }
+
+
+    // --- Funciones de Autenticación ---
+    function handleLogin(e) {
+        e.preventDefault(); // Previene el envío del formulario
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        const email = emailInput ? emailInput.value.trim() : ''; // Limpiar email
+        const password = passwordInput ? passwordInput.value : ''; // No limpiar password
+
+
+        const usuario = usuariosPermitidos.find(u => u.email === email && u.password === password);
+
+        if (usuario) {
+            isAuthenticated = true;
+            usuarioActual = usuario;
+             // localStorage.setItem('usuarioActual', JSON.stringify(usuarioActual)); // Opcional: guardar sesión (menos seguro en localStorage)
+            mostrarElementosAutenticados(); // Muestra botones de navegación
+            showDashboard(); // Va al dashboard
+            notificarCumpleanos(); // Muestra notificaciones
+        } else {
+            mostrarAlerta('Credenciales incorrectas', 'danger');
+        }
+    }
+
+     function limpiarLogin() {
+         if (loginForm) loginForm.reset(); // Limpia el formulario de login
+     }
+
+    function handleLogout() {
+        isAuthenticated = false;
+        usuarioActual = null;
+        // Opcional: Limpiar localStorage si implementaste guardar sesión
+        // localStorage.removeItem('usuarioActual');
+        ocultarElementosAutenticados(); // Oculta botones de navegación
+        showLoginForm(); // Vuelve al login
+        mostrarAlerta('Sesión cerrada correctamente', 'success');
+    }
+
+    function mostrarElements(elements) {
+         elements.forEach(el => { if(el) el.classList.remove('d-none'); });
+    }
+
+     function ocultarElements(elements) {
+         elements.forEach(el => { if(el) el.classList.add('d-none'); });
+     }
+
+
+    function mostrarElementosAutenticados() {
+        // Mostrar botones de navegación principales si existen
+         mostrarElements([btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias]);
+
+        // Mostrar botones específicos del dashboard o lista de empleados (depende de la sección)
+         if (dashboardSection && !dashboardSection.classList.contains('d-none')) { // Si el dashboard está visible
+             mostrarElements([btnNuevoEmpleado, btnVerEmpleados, btnExportarCSV]);
+         } else if (empleadosListSection && !empleadosListSection.classList.contains('d-none')) { // Si la lista de empleados está visible
+             mostrarElements([btnNuevoEmpleadoLista]); // Mostrar solo el botón de "Nuevo Empleado" en la lista
+             ocultarElements([btnNuevoEmpleado, btnVerEmpleados, btnExportarCSV]); // Asegurar que los otros estén ocultos
+         } else { // Si ninguna sección principal está visible (ej: formulario, detalle)
+              ocultarElements([btnNuevoEmpleado, btnVerEmpleados, btnExportarCSV, btnNuevoEmpleadoLista]); // Ocultar todos los botones específicos
+         }
+
+
+        // Ocultar botones de login/registro
+        ocultarElements([btnLogin, btnRegistro]);
+
+        // Mostrar breadcrumb
+        const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
+        if (breadcrumbNav) breadcrumbNav.classList.remove('d-none');
+    }
+
+    function ocultarElementosAutenticados() {
+         // Ocultar todos los botones de navegación/acción
+         ocultarElements([
+             btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias,
+             btnExportarCSV, btnNuevoEmpleado, btnNuevoEmpleadoLista, btnVerEmpleados
+         ]);
+
+        // Mostrar botones de login/registro
+        mostrarElements([btnLogin, btnRegistro]);
+
+         // Ocultar breadcrumb
+         const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
+         if (breadcrumbNav) breadcrumbNav.classList.add('d-none');
+    }
+
+
+     // Funciones de registro (ya estaban bien)
+    function handleRegistro(e) {
+        e.preventDefault();
+        const emailInput = document.getElementById('reg-email');
+        const passwordInput = document.getElementById('reg-password');
+        const confirmPasswordInput = document.getElementById('reg-confirm-password');
+
+        const email = emailInput ? emailInput.value.trim() : '';
+        const password = passwordInput ? passwordInput.value : '';
+        const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
+
+
+        if (password !== confirmPassword) {
+            mostrarAlerta('Las contraseñas no coinciden', 'danger');
+            return;
+        }
+        if (password.length < 6) { // Validación simple de longitud
+             mostrarAlerta('La contraseña debe tener al menos 6 caracteres', 'danger');
+            return;
+        }
+
+
+        if (usuariosPermitidos.some(u => u.email === email)) {
+            mostrarAlerta('El correo electrónico ya está registrado', 'danger');
+            return;
+        }
+
+        // Guardar usuario con rol 'rrhh' (puedes cambiar el rol si es necesario)
+        usuariosPermitidos.push({ email: email, password: password, rol: 'rrhh' }); // Guardamos el nuevo usuario
+        localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos)); // Guardamos la lista actualizada en localStorage
+        mostrarAlerta('Usuario registrado exitosamente. Ya puedes iniciar sesión.', 'success');
+        hideRegistroForm(); // Ir al login después de registrar
+    }
+
+
+    // --- Funciones de Empleados (CRUD y Lógica) ---
+
+     // Guardar empleado
+     const empleadoFormElement = document.getElementById('empleadoForm');
+     if (empleadoFormElement) {
+         // Quitamos listener viejo y ponemos uno nuevo
+          const newEmpleadoFormElement = empleadoFormElement.cloneNode(true);
+          empleadoFormElement.parentNode.replaceChild(newEmpleadoFormElement, empleadoFormElement);
+
+         newEmpleadoFormElement.addEventListener('submit', function(e) {
+             e.preventDefault();
+             const editId = this.getAttribute('data-edit-id');
+
+             const empleado = {
+                 id: editId ? parseInt(editId) : Date.now(), // Usa Date.now() como ID para nuevos (simple)
+                 nombres: document.getElementById('nombres').value.trim(), // Añade trim para limpiar espacios
+                 apellidos: document.getElementById('apellidos').value.trim(),
+                 cedula: document.getElementById('cedula').value.trim(),
+                 telefono: document.getElementById('telefono').value.trim(),
+                 email: document.getElementById('email-empleado').value.trim(),
+                 cargo: document.getElementById('cargo').value.trim(),
+                 departamento: document.getElementById('departamento').value.trim(),
+                 tipoContrato: document.getElementById('tipo-contrato').value.trim(),
+                 salario: limpiarMiles(document.getElementById('salario').value.trim()), // Limpia miles y trim
+                 fechaNacimiento: document.getElementById('fecha-nacimiento').value,
+                 fechaIngreso: document.getElementById('fecha-ingreso').value,
+                 notas: document.getElementById('notas').value.trim(),
+                 contactoEmergenciaNombre: document.getElementById('contacto-emergencia-nombre').value.trim(),
+                 contactoEmergenciaTelefono: document.getElementById('contacto-emergencia-telefono').value.trim(),
+                 contactoEmergenciaParentesco: document.getElementById('contacto-emergencia-parentesco').value.trim()
+                 // Hoja de vida no se guarda en localStorage directamente (es un File)
+             };
+
+             if (!empleado.nombres || !empleado.apellidos || !empleado.cedula || !empleado.telefono || !empleado.email) {
+                  mostrarAlerta('Los campos Nombre, Apellido, Cédula, Teléfono y Email son obligatorios.', 'warning');
+                  return; // Detiene el proceso de guardar si faltan campos requeridos
+             }
+
+
+             if (editId) {
+                 // Actualizar empleado existente
+                 const index = empleados.findIndex(e => e.id == editId);
+                 if (index !== -1) {
+                      // Verificar si la cédula ya existe en otro empleado (si se cambió la cédula)
+                      if (empleados.some(e => e.cedula === empleado.cedula && e.id != editId && e.cedula !== '')) {
+                           mostrarAlerta(`Ya existe otro empleado con la cédula ${empleado.cedula}`, 'warning');
+                           return; // Detiene el proceso de guardar
+                      }
+                     empleados[index] = empleado;
+                     mostrarAlerta('Empleado actualizado correctamente', 'success');
+                 } else {
+                      mostrarAlerta('Error: Empleado a editar no encontrado.', 'danger');
+                 }
+             } else {
+                 // Añadir nuevo empleado
+                  // Verificar si ya existe un empleado con la misma cédula
+                  if (empleados.some(e => e.cedula === empleado.cedula && e.cedula !== '')) {
+                       mostrarAlerta(`Ya existe un empleado con la cédula ${empleado.cedula}`, 'warning');
+                       return; // Detiene el proceso de guardar
+                  }
+                 empleados.push(empleado);
+                 mostrarAlerta('Empleado guardado correctamente', 'success');
+             }
+
+             localStorage.setItem('empleados', JSON.stringify(empleados)); // Guarda la lista de empleados actualizada
+             showEmpleadosList(); // Vuelve a la lista después de guardar/actualizar
+         });
+     }
+
+     function cargarDatosEmpleado(id) {
+         const empleado = empleados.find(e => e.id == id);
+         if (empleado) {
+             // Cargar todos los campos del formulario (asegurando que los elementos existan)
+             if (document.getElementById('nombres')) document.getElementById('nombres').value = empleado.nombres || '';
+             if (document.getElementById('apellidos')) document.getElementById('apellidos').value = empleado.apellidos || '';
+             if (document.getElementById('cedula')) document.getElementById('cedula').value = empleado.cedula || '';
+             if (document.getElementById('telefono')) document.getElementById('telefono').value = empleado.telefono || '';
+             if (document.getElementById('email-empleado')) document.getElementById('email-empleado').value = empleado.email || '';
+             if (document.getElementById('cargo')) document.getElementById('cargo').value = empleado.cargo || '';
+             if (document.getElementById('departamento')) document.getElementById('departamento').value = empleado.departamento || '';
+             if (document.getElementById('tipo-contrato')) document.getElementById('tipo-contrato').value = empleado.tipoContrato || '';
+             // Formatear salario al cargar solo si tiene un valor numérico
+             const salarioInput = document.getElementById('salario');
+             if (salarioInput) {
+                 const salarioNum = parseFloat(empleado.salario);
+                 salarioInput.value = isNaN(salarioNum) ? (empleado.salario || '') : formatearMiles(salarioNum);
+             }
+             if (document.getElementById('fecha-nacimiento')) document.getElementById('fecha-nacimiento').value = empleado.fechaNacimiento || '';
+             if (document.getElementById('fecha-ingreso')) document.getElementById('fecha-ingreso').value = empleado.fechaIngreso || '';
+             if (document.getElementById('notas')) document.getElementById('notas').value = empleado.notas || '';
+             if (document.getElementById('contacto-emergencia-nombre')) document.getElementById('contacto-emergencia-nombre').value = empleado.contactoEmergenciaNombre || '';
+             if (document.getElementById('contacto-emergencia-telefono')) document.getElementById('contacto-emergencia-telefono').value = empleado.contacto
