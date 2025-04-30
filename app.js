@@ -112,9 +112,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    function showLoginForm() {
+   function showLoginForm() {
          ocultarTodo(); // Oculta todo primero
-         if (loginForm) loginForm.classList.remove('d-none');
+         if (loginForm) loginForm.classList.remove('d-none'); // Muestra el formulario de login
+
+         // --- NUEVA LÍNEA: Mostrar también la sección de contacto ---
+         const contactoSection = document.getElementById('contacto');
+         if (contactoSection) contactoSection.classList.remove('d-none');
+         // --------------------------------------------------------
+
+
          ocultarElementosAutenticados(); // Oculta elementos del navbar autenticado
          actualizarBreadcrumb('Inicio de Sesión'); // Actualiza breadcrumb (luego se ocultará en el mismo actualizarBreadcrumb)
          limpiarLogin(); // Limpia el formulario de login
