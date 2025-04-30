@@ -662,9 +662,9 @@ document.addEventListener('DOMContentLoaded', function() {
           const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
           if (breadcrumbNav) {
                if (loginFormSection.classList.contains('d-none') && registroFormSection.classList.contains('d-none')) {
-                   breadcrumbNav.classList.remove('d-none');
+                   breadcrumbNav.classList.add('d-none'); // Ocultar breadcrumb si estamos en login/registro
                } else {
-                   breadcrumbNav.classList.add('d-none');
+                   breadcrumbNav.classList.remove('d-none'); // Mostrarlo en secciones autenticadas
                }
           }
      }
@@ -682,7 +682,7 @@ document.addEventListener('DOMContentLoaded', function() {
         mostrarElements([btnLogin, btnRegistro]);
 
           const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
-          if (breadcrumbNav) breadcrumbNav.classList.add('d-none');
+          if (breadcrumbNav) breadcrumbNav.classList.add('d-none'); // Ocultar breadcrumb si no está autenticado
     }
 
 
