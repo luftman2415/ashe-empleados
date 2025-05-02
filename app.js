@@ -24,20 +24,28 @@ document.addEventListener('DOMContentLoaded', function() {
     let ausencias = JSON.parse(localStorage.getItem('ausencias')) || [];
     let usuarioActual = null; // Se establece al hacer login
 
-    // Elementos del DOM - Obtenemos referencias
-    const loginForm = document.getElementById('loginForm');
-    const registroForm = document.getElementById('registroForm');
-    const empleadosListSection = document.getElementById('empleados-list'); // Renombrado para evitar conflicto con variable de tabla
-    const empleadoFormSection = document.getElementById('empleado-form'); // Renombrado
-    const empleadoDetalleSection = document.getElementById('empleado-detalle'); // Renombrado
-    const cumpleanosListSection = document.getElementById('cumpleanos-list'); // Renombrado
-    const dashboardSection = document.getElementById('dashboard'); // Renombrado
-    const ausenciasListSection = document.getElementById('ausencias-list'); // Renombrado
+    // Elementos del DOM - Obtenemos referencias (VERIFICADOS - Los IDs coinciden con HTML)
+    const loginFormSection = document.getElementById('login-form'); // La sección que contiene el formulario de login
+    const registroFormSection = document.getElementById('registro-form'); // La sección que contiene el formulario de registro
+    const empleadosListSection = document.getElementById('empleados-list');
+    const empleadoFormSection = document.getElementById('empleado-form');
+    const empleadoDetalleSection = document.getElementById('empleado-detalle');
+    const cumpleanosListSection = document.getElementById('cumpleanos-list');
+    const dashboardSection = document.getElementById('dashboard');
+    const ausenciasListSection = document.getElementById('ausencias-list');
+    const contactoSection = document.getElementById('contacto'); // La sección de contacto
 
-    const btnNuevoEmpleado = document.getElementById('btn-nuevo-empleado');
-    const btnNuevoEmpleadoLista = document.getElementById('btn-nuevo-empleado-lista');
-    const btnVerEmpleados = document.getElementById('btn-ver-empleados');
-    const btnCancelar = document.getElementById('btn-cancelar');
+    // Referencias directas a los formularios (usando sus IDs de <form>)
+    const loginFormElement = document.getElementById('loginForm'); // El formulario de login
+    const registroFormElement = document.getElementById('registroForm'); // El formulario de registro
+    const empleadoFormElement = document.getElementById('empleadoForm'); // El formulario de empleado
+    const ausenciaFormElement = document.getElementById('ausenciaForm'); // El formulario de ausencia
+
+
+    const btnNuevoEmpleado = document.getElementById('btn-nuevo-empleado'); // Botón en Dashboard
+    const btnNuevoEmpleadoLista = document.getElementById('btn-nuevo-empleado-lista'); // Botón en Lista Empleados
+    const btnVerEmpleados = document.getElementById('btn-ver-empleados'); // Botón en Dashboard
+    const btnCancelar = document.getElementById('btn-cancelar'); // Botón en Form Empleado
     const btnRegistro = document.getElementById('btn-registro'); // Botón "Registrarse" del navbar
     const btnCancelarRegistro = document.getElementById('btn-cancelar-registro'); // Botón cancelar formulario registro
     const btnLogin = document.getElementById('btn-login'); // Botón "Iniciar Sesión" del navbar
@@ -48,22 +56,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnAusencias = document.getElementById('btn-ausencias'); // Botón "Ausencias" del navbar
     const btnExportarCSV = document.getElementById('btn-exportar-csv'); // Botón "Exportar CSV"
 
-    // Elementos de filtro y búsqueda externos a la tabla
+    // Elementos de filtro y búsqueda externos a la tabla (En sección empleados-list)
     const busquedaEmpleadosInput = document.getElementById('busqueda-empleados');
     const filtroDepartamentoSelect = document.getElementById('filtro-departamento');
     const filtroAntiguedadSelect = document.getElementById('filtro-antiguedad');
 
-    const breadcrumbSection = document.getElementById('breadcrumb-section');
+    const breadcrumbSection = document.getElementById('breadcrumb-section'); // El último item activo del breadcrumb
     const breadcrumbHomeLink = document.getElementById('breadcrumb-home-link'); // El enlace de "Inicio" en el breadcrumb
 
 
     // Modal de restablecer contraseña
     const resetPasswordModalElement = document.getElementById('reset-password-modal');
-    const resetPasswordModal = resetPasswordModalElement ? new bootstrap.Modal(resetPasswordModalElement) : null; // Inicialización segura
-    const resetPasswordForm = document.getElementById('reset-password-form');
-    const resetPasswordFields = document.getElementById('reset-password-fields');
+    const resetPasswordModal = resetPasswordModalElement ? new bootstrap.Modal(resetPasswordModalElement) : null; // Inicialización segura con Bootstrap
+    const resetPasswordForm = document.getElementById('reset-password-form'); // El formulario dentro del modal
+
+    const resetPasswordFields = document.getElementById('reset-password-fields'); // Div que contiene campos de nueva contraseña
     const forgotPasswordLink = document.getElementById('forgot-password-link'); // Enlace "¿Olvidaste tu contraseña?"
-    let emailToReset = '';
+    const resetMessage = document.getElementById('reset-message'); // Elemento para mensajes en el modal
+
+
+    let emailToReset = ''; // Variable para guardar el email en el proceso de reset
+
 
     // Estado de autenticación
     let isAuthenticated = false;
@@ -74,58 +87,83 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Funciones de Visualización de Secciones ---
     function ocultarTodo() {
         // Ocultamos todas las secciones principales
-        [loginForm, registroForm, empleadosListSection, empleadoFormSection,
-         empleadoDetalleSection, cumpleanosListSection, dashboardSection, ausenciasListSection].forEach(section => {
+        [loginFormSection, registroFormSection, empleadosListSection, empleadoFormSection,
+         empleadoDetalleSection, cumpleanosListSection, dashboardSection, ausenciasListSection, contactoSection].forEach(section => {
              if (section) section.classList.add('d-none');
          });
     }
 
     function actualizarBreadcrumb(seccion) {
+        const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]'); // Seleccionar la navegación del breadcrumb
+
         if (breadcrumbSection) {
-            breadcrumbSection.textContent = seccion;
+            // Limpia los elementos breadcrumb existentes excepto el primero (Inicio)
+            while (breadcrumbSection.nextElementSibling) {
+                breadcrumbSection.nextElementSibling.remove();
+            }
+
+            // Añade el nuevo elemento breadcrumb
+            const li = document.createElement('li');
+            li.classList.add('breadcrumb-item', 'active'); // Marcar como activo
+            li.textContent = seccion;
+            breadcrumbSection.parentNode.appendChild(li);
+
+
              // Asegurarse de que el breadcrumb principal es visible si una sección está activa
-             const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]'); // Seleccionar la navegación del breadcrumb
               if (breadcrumbNav) breadcrumbNav.classList.remove('d-none');
+
+              // Ocultar el breadcrumb principal si estamos en login/registro (ya que el breadcrumb de navbar se oculta)
+             if (seccion === 'Inicio de Sesión' || seccion === 'Registro') {
+                 // La barra de breadcrumb en el navbar se oculta en mostrarElementosAutenticados/ocultarElementosAutenticados
+                 // y se muestra en las funciones show... de secciones autenticadas.
+                 // Aquí solo nos aseguramos de que no se muestre en las vistas no autenticadas
+                 // if (breadcrumbNav) breadcrumbNav.classList.add('d-none'); // Ya se maneja globalmente
+             } else {
+                  // Para cualquier otra sección (autenticada), asegurarse de que el breadcrumb del navbar esté visible
+                   // if (breadcrumbNav) breadcrumbNav.classList.remove('d-none'); // Ya se maneja globalmente
+             }
         }
     }
 
+
     function showLoginForm() {
          ocultarTodo(); // Oculta todo primero
-         if (loginForm) loginForm.classList.remove('d-none');
-         ocultarElementosAutenticados(); // Oculta elementos del navbar autenticado
-         actualizarBreadcrumb('Inicio de Sesión');
+
+         // Muestra la sección de login Y la sección de contacto
+         if (loginFormSection) loginFormSection.classList.remove('d-none'); // Muestra la sección del formulario de login
+         if (contactoSection) contactoSection.classList.remove('d-none'); // Mostrar también la sección de contacto
+
+
+         ocultarElementosAutenticados(); // Oculta elementos del navbar autenticado (botones dashboard, empleados, etc.)
+         actualizarBreadcrumb('Inicio de Sesión'); // Actualiza breadcrumb (luego se ocultará el breadcrumb del navbar)
          limpiarLogin(); // Limpia el formulario de login
-          const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
-         if (breadcrumbNav) breadcrumbNav.classList.add('d-none'); // Oculta el breadcrumb en la página de login
      }
 
       function showRegistroForm() {
           ocultarTodo(); // Oculta todo primero
-          if (registroForm) registroForm.classList.remove('d-none');
-          // ocultarElements([btnLogin, btnRegistro]); // Asegura que los botones Login/Registro estén ocultos en el navbar
-          actualizarBreadcrumb('Registro');
-           const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
-          if (breadcrumbNav) breadcrumbNav.classList.add('d-none'); // Oculta el breadcrumb en la página de registro
+          if (registroFormSection) registroFormSection.classList.remove('d-none'); // Muestra la sección de registro
+          // La sección de contacto no se muestra en el registro, solo en login
+          actualizarBreadcrumb('Registro'); // Actualiza breadcrumb (luego se ocultará)
+          ocultarElementosAutenticados(); // Oculta elementos autenticados, muestra login/registro navbar
       }
 
       function hideRegistroForm() {
-          if (registroForm) registroForm.classList.add('d-none');
+          if (registroFormSection) registroFormSection.classList.add('d-none');
           showLoginForm(); // Volver al login después de cancelar/registrar
       }
 
 
     function showDashboard() {
          if (!isAuthenticated) {
-             showLoginForm(); // Redirigir al login si no está autenticado
+             showLoginForm();
              return;
          }
-         ocultarTodo(); // Oculta todo primero
+         ocultarTodo();
          if (dashboardSection) dashboardSection.classList.remove('d-none');
-         mostrarElementosAutenticados(); // Muestra los botones correctos del navbar
+         mostrarElementosAutenticados();
 
          actualizarBreadcrumb('Dashboard');
 
-         // Actualizar estadísticas (basado en tu lógica existente)
          if (document.getElementById('dashboard-total-empleados')) {
              document.getElementById('dashboard-total-empleados').textContent = empleados.length;
          }
@@ -134,15 +172,17 @@ document.addEventListener('DOMContentLoaded', function() {
            }
 
 
-         // Próximos cumpleaños para dashboard
-         const proximosCumpleanos = empleados.filter(emp => {
+         const proximosCumpleanosCount = empleados.filter(emp => {
              if (!emp.fechaNacimiento) return false;
              const diasRestantes = calcularDiasParaCumpleanos(emp.fechaNacimiento);
-             return diasRestantes >= 0 && diasRestantes <= 30; // Cumpleaños hoy o en los próximos 30 días
-         });
+             return diasRestantes >= 0 && diasRestantes <= 30;
+         }).length;
           if (document.getElementById('dashboard-cumpleanos')) {
-             document.getElementById('dashboard-cumpleanos').textContent = proximosCumpleanos.length;
+             document.getElementById('dashboard-cumpleanos').textContent = proximosCumpleanosCount;
           }
+
+          notificarCumpleanos();
+
      }
 
     function showEmpleadosList() {
@@ -150,28 +190,25 @@ document.addEventListener('DOMContentLoaded', function() {
             showLoginForm();
             return;
         }
-        ocultarTodo(); // Oculta todo primero
+        ocultarTodo();
         if (empleadosListSection) empleadosListSection.classList.remove('d-none');
-        mostrarElementosAutenticados(); // Muestra los botones correctos del navbar
+        mostrarElementsAutenticados();
 
         actualizarBreadcrumb('Lista de Empleados');
 
-        // Si los filtros desplegables están vacíos, los poblamos
         if (filtroDepartamentoSelect && filtroDepartamentoSelect.options.length <= 1) {
-             actualizarFiltroDepartamentos(); // Mantener la actualización del dropdown
+             actualizarFiltroDepartamentos();
         }
 
 
         // --- Inicializar o actualizar DataTables ---
         if (empleadosTable === null) {
-            // Si es la primera vez que mostramos la lista, inicializamos DataTables
             empleadosTable = $('#empleados-table').DataTable({
-                 data: empleados, // Carga los datos iniciales
+                 data: empleados,
                  columns: [
                      {
                           data: 'nombres',
                           render: function(data, type, row) {
-                              // Renderiza el nombre como un enlace para ver detalles
                               return `<a href="#" class="ver-empleado" data-id="${row.id}">${data || ''}</a>`;
                           }
                       },
@@ -179,182 +216,149 @@ document.addEventListener('DOMContentLoaded', function() {
                      { data: 'cedula', defaultContent: '' },
                      { data: 'telefono', defaultContent: '' },
                      { data: 'email', defaultContent: '' },
-                     { data: 'cargo', defaultContent: '' }, // Muestra "" si el dato es null/undefined
+                     { data: 'cargo', defaultContent: '' },
                      { data: 'departamento', defaultContent: '' },
                      {
                          data: 'fechaIngreso',
                          render: function(data, type, row) {
-                             // Renderiza la antigüedad calculada
                             return calcularAntiguedadTexto(data);
                          },
-                          orderSequence: ['asc', 'desc'] // Permite ordenar por esta columna
+                          orderSequence: ['asc', 'desc']
                      },
                      {
-                         data: 'id', // Columna para los botones de acción
+                         data: 'id',
                          render: function(data, type, row) {
-                             // Renderiza los botones de editar y eliminar
+                             const eliminarBtnHtml = (usuarioActual && usuarioActual.rol === 'admin') ?
+                                 `<button class="btn btn-sm btn-danger eliminar-empleado-btn" data-id="${data}" title="Eliminar Empleado">
+                                     <i class="bi bi-trash"></i>
+                                 </button>` : '';
+
                              return `
-                                 <button class="btn btn-sm btn-primary editar-empleado-btn" data-id="${data}">
+                                 <button class="btn btn-sm btn-primary editar-empleado-btn" data-id="${data}" title="Editar Empleado">
                                      <i class="bi bi-pencil"></i>
                                  </button>
-                                 <button class="btn btn-sm btn-danger eliminar-empleado-btn" data-id="${data}">
-                                     <i class="bi bi-trash"></i>
-                                 </button>
+                                 ${eliminarBtnHtml}
                              `;
                          },
-                         orderable: false // Deshabilita el ordenamiento en esta columna
+                         orderable: false
                      }
                  ],
-                 language: { // Configuración de idioma a español
+                 language: {
                       url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json',
                  },
-                 // Opciones adicionales de DataTables
-                 paging: true, // Habilita paginación
-                 lengthChange: true, // Permite cambiar el número de elementos por página
-                 searching: true, // Habilita búsqueda (aunque usaremos nuestro input externo para la global)
-                 info: true, // Muestra información de la tabla
-                 ordering: true, // Habilita ordenamiento
-                 pageLength: 10, // Número de filas por defecto
-                 // Layout de los elementos (l=lengthChange, f=filtering, t=table, i=info, p=pagination, r=processing)
-                 // Esto configura DataTables para NO usar su input de búsqueda interna, usaremos el nuestro
-                 dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6">><"row"<"col-sm-12"t>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>', // f removed from first row
+                 paging: true,
+                 lengthChange: true,
+                 searching: true,
+                 info: true,
+                 ordering: true,
+                 pageLength: 10,
+                 dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6">><"row"<"col-sm-12"t>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
 
 
             });
 
-            // --- Eventos de delegación para los botones dentro de la tabla ---
-            // Usamos delegación porque DataTables recarga el contenido del tbody
-             $('#empleados-table-body').on('click', '.ver-empleado', function(e) {
-                 e.preventDefault(); // Previene la navegación del enlace
-                 // Obtenemos el objeto de datos asociado a la fila clicada
+             $('#empleados-table-body').off('click', '.ver-empleado').on('click', '.ver-empleado', function(e) {
+                 e.preventDefault();
                  const rowData = empleadosTable.row($(this).parents('tr')).data();
                  if (rowData && rowData.id !== undefined) {
                       mostrarDetalleEmpleado(rowData.id);
                  }
              });
-             $('#empleados-table-body').on('click', '.editar-empleado-btn', function() {
-                  // Obtenemos el objeto de datos asociado al botón
+             $('#empleados-table-body').off('click', '.editar-empleado-btn').on('click', '.editar-empleado-btn', function() {
                   const rowData = empleadosTable.row($(this).parents('tr')).data();
                   if (rowData && rowData.id !== undefined) {
                        editarEmpleado(rowData.id);
                   }
              });
-             $('#empleados-table-body').on('click', '.eliminar-empleado-btn', function() {
-                  // Obtenemos el objeto de datos asociado al botón
+             $('#empleados-table-body').off('click', '.eliminar-empleado-btn').on('click', '.eliminar-empleado-btn', function() {
                   const rowData = empleadosTable.row($(this).parents('tr')).data();
                  if (rowData && rowData.id !== undefined) {
                       eliminarEmpleado(rowData.id);
                  }
              });
 
-             // --- Vincula los filtros y búsqueda externos a DataTables ---
-             // Búsqueda global (vinculada al input que ya tienes)
+
              if (busquedaEmpleadosInput) {
-                  busquedaEmpleadosInput.addEventListener('keyup', function () {
-                      empleadosTable.search(this.value).draw(); // Aplica la búsqueda global y redibuja
-                  });
-                   busquedaEmpleadosInput.addEventListener('search', function () { // Evento para limpiar búsqueda con X
-                      empleadosTable.search('').draw();
+                  $(busquedaEmpleadosInput).off('keyup search').on('keyup search', function () {
+                      empleadosTable.search(this.value).draw();
                   });
              }
 
-             // Filtro por Departamento (aplicado a la columna de departamento)
              if (filtroDepartamentoSelect) {
-                  filtroDepartamentoSelect.addEventListener('change', function () {
+                  $(filtroDepartamentoSelect).off('change').on('change', function () {
                       const searchValue = this.value;
-                      // La columna de departamento es la 7ma (índice 6, contando desde 0)
-                      // ^value$ busca el valor exacto en la columna. '' busca cualquier cosa (quita filtro)
                       empleadosTable.column(6).search(searchValue ? '^'+searchValue+'$' : '', true, false).draw();
                   });
              }
 
-             // Filtro por Antigüedad (filtro personalizado en DataTables)
              if (filtroAntiguedadSelect) {
-                  // Agregamos la lógica del filtro personalizado de DataTables
-                  $.fn.dataTable.ext.search.push(
-                      function( settings, data, dataIndex ) {
-                          // Asegura que este filtro solo se aplique a nuestra tabla de empleados
-                          if ( settings.sTableId !== 'empleados-table' ) {
-                              return true; // No aplicar a otras tablas si las hubiera
+                  if (!$.fn.dataTable.ext.search.some(fn => fn.name === 'antiguedadFilterFn')) {
+                      $.fn.dataTable.ext.search.push(
+                          function antiguedadFilterFn( settings, data, dataIndex ) {
+                              if ( settings.sTableId !== 'empleados-table' ) {
+                                  return true;
+                              }
+                              const antiguedadFiltroElement = document.getElementById('filtro-antiguedad');
+                              if (!antiguedadFiltroElement) return true;
+                              const antiguedadFiltro = antiguedadFiltroElement.value;
+                              if (antiguedadFiltro === "") { return true; }
+                              const rowData = settings.aoData[dataIndex]._aData;
+                              const fechaIngreso = rowData.fechaIngreso;
+                              if (!fechaIngreso) return false;
+                              const años = calcularAntiguedad(fechaIngreso);
+                              const [minStr, maxStr] = antiguedadFiltro.split('-');
+                              const min = parseInt(minStr);
+                              const max = maxStr === '+' ? Infinity : parseInt(maxStr);
+                              if (maxStr === '+') { return años >= min; }
+                              else { return años >= min && años < max; }
                           }
-
-                          const antiguedadFiltro = filtroAntiguedadSelect.value;
-                          if (antiguedadFiltro === "") {
-                              return true; // Mostrar todos si no hay filtro seleccionado
-                          }
-
-                          // Obtenemos el objeto de datos original de la fila que DataTables está evaluando
-                          const rowData = settings.aoData[dataIndex]._aData;
-                          const fechaIngreso = rowData.fechaIngreso; // Obtiene la fecha original
-
-                          if (!fechaIngreso) return false; // Ocultar si no hay fecha de ingreso
-
-                          const años = calcularAntiguedad(fechaIngreso); // Calcula la antigüedad exacta (puede ser flotante)
-
-                          const [minStr, maxStr] = antiguedadFiltro.split('-');
-                          const min = parseInt(minStr);
-                          const max = maxStr === '+' ? Infinity : parseInt(maxStr);
-
-                          // Rango "0-1": años >= 0 && años < 1 (menos de 1 año)
-                          // Rango "1-3": años >= 1 && años < 3 (1, 2 años)
-                          // Rango "3-5": años >= 3 && años < 5 (3, 4 años)
-                          // Rango "5+": años >= 5 (5 años o más)
-                          if (maxStr === '+') {
-                               return años >= min;
-                          } else {
-                               return años >= min && años < max;
-                          }
-                      }
-                  );
-
-                  // El evento de cambio en el select de antigüedad solo necesita redibujar la tabla,
-                  // el filtro personalizado de DataTables se encargará de la lógica.
-                  filtroAntiguedadSelect.addEventListener('change', function () {
-                      empleadosTable.draw(); // Redibuja la tabla para aplicar el filtro personalizado
+                      );
+                  }
+                  $(filtroAntiguedadSelect).off('change').on('change', function () {
+                      empleadosTable.draw();
                   });
              }
 
-             // Aplicar Bootstrap classes al selector de paginación de DataTables
-              $('.dataTables_length select').addClass('form-select form-select-sm');
+             $('.dataTables_length select').addClass('form-select form-select-sm');
 
 
         } else {
-            // Si DataTables ya está inicializado, solo actualizamos los datos
-             empleadosTable.clear().rows.add(empleados).draw(); // Borra datos viejos, añade nuevos y redibuja
-             // Aplicar filtros actuales al redibujar (en caso de que los selectores tengan valores)
-             // Primero búsqueda global
-             if (busquedaEmpleadosInput) empleadosTable.search(busquedaEmpleadosInput.value).draw();
-             // Luego filtro de columna por departamento
-             if (filtroDepartamentoSelect) {
-                  const searchValue = filtroDepartamentoSelect.value;
-                  empleadosTable.column(6).search(searchValue ? '^'+searchValue+'$' : '', true, false).draw();
-             }
-             // El filtro de antigüedad es personalizado, solo necesitamos redibujar
-             if (filtroAntiguedadSelect) empleadosTable.draw();
-
+             empleadosTable.clear().rows.add(empleados).draw();
+             empleadosTable.draw();
         }
     }
 
 
     function showEmpleadoForm(editId = null) {
-        const form = document.getElementById('empleadoForm');
-        if (form) {
-            form.reset(); // Limpia el formulario
-             if (editId !== null && editId !== undefined) { // Usamos !== null/undefined para permitir editId = 0 si fuera el caso
-                 form.setAttribute('data-edit-id', editId);
-                 cargarDatosEmpleado(editId); // Carga datos si es edición
+        if (!isAuthenticated) {
+            showLoginForm();
+            return;
+        }
+        if (empleadoFormElement) {
+            empleadoFormElement.reset();
+             if (editId !== null && editId !== undefined) {
+                 empleadoFormElement.setAttribute('data-edit-id', editId);
+                 cargarDatosEmpleado(editId);
+                 const saveButton = empleadoFormElement.querySelector('button[type="submit"]');
+                 if(saveButton) saveButton.innerHTML = '<i class="bi bi-save"></i> Actualizar';
              } else {
-                 form.removeAttribute('data-edit-id'); // Remueve atributo si es nuevo empleado
+                 empleadoFormElement.removeAttribute('data-edit-id');
+                 const saveButton = empleadoFormElement.querySelector('button[type="submit"]');
+                 if(saveButton) saveButton.innerHTML = '<i class="bi bi-save"></i> Guardar';
              }
         }
-        ocultarTodo(); // Oculta todo primero
+        ocultarTodo();
         if (empleadoFormSection) empleadoFormSection.classList.remove('d-none');
         actualizarBreadcrumb(editId !== null && editId !== undefined ? 'Editar Empleado' : 'Nuevo Empleado');
-         mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
+         mostrarElementsAutenticados();
     }
 
      function mostrarDetalleEmpleado(id) {
-          const empleado = empleados.find(e => e.id == id); // Usamos == para comparar number con string si es necesario
+          if (!isAuthenticated) {
+              showLoginForm();
+              return;
+          }
+          const empleado = empleados.find(e => e.id == id);
           if (!empleado) {
                mostrarAlerta('Empleado no encontrado', 'danger');
               return;
@@ -381,6 +385,12 @@ document.addEventListener('DOMContentLoaded', function() {
                       </div>
                   </div>
                   <div class="row mt-3">
+                       <div class="col-12">
+                            <h5>Dirección</h5>
+                            <p>${empleado.direccion || 'No especificada'}</p>
+                        </div>
+                   </div>
+                  <div class="row mt-3">
                       <div class="col-12">
                           <h5>Notas / Acontecimientos</h5>
                           <p>${empleado.notas || 'Sin notas registradas'}</p>
@@ -394,35 +404,41 @@ document.addEventListener('DOMContentLoaded', function() {
                           <p><strong>Parentesco:</strong> ${empleado.contactoEmergenciaParentesco || ''}</p>
                       </div>
                   </div>
-              `;
+                  `;
+
+              const btnEditar = document.getElementById('btn-editar-desde-detalle');
+              if (btnEditar) {
+                  if (usuarioActual && usuarioActual.rol !== 'admin') {
+                      btnEditar.classList.add('d-none');
+                  } else {
+                       btnEditar.classList.remove('d-none');
+                  }
+              }
+
           }
 
-          ocultarTodo(); // Oculta todo primero
+          ocultarTodo();
           if (empleadoDetalleSection) empleadoDetalleSection.classList.remove('d-none');
           actualizarBreadcrumb('Detalle de Empleado');
-          mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
+           mostrarElementsAutenticados();
 
+          if (empleadoDetalleSection) empleadoDetalleSection.setAttribute('data-current-empleado-id', empleado.id);
 
-          // Event listener para el botón Editar desde Detalle
-          const btnEditarDesdeDetalle = document.getElementById('btn-editar-desde-detalle');
-          if (btnEditarDesdeDetalle) {
-               // Quitamos listener viejo y ponemos uno nuevo para evitar duplicados
-               const newBtnEditarDesdeDetalle = btnEditarDesdeDetalle.cloneNode(true);
-               btnEditarDesdeDetalle.parentNode.replaceChild(newBtnEditarDesdeDetalle, btnEditarDesdeDetalle);
-               newBtnEditarDesdeDetalle.addEventListener('click', function() {
-                   editarEmpleado(empleado.id); // Llama a la función editarEmpleado
+           const btnEditarDesdeDetalle = document.getElementById('btn-editar-desde-detalle');
+           if (btnEditarDesdeDetalle) {
+               btnEditarDesdeDetalle.addEventListener('click', function() {
+                   const empleadoId = empleadoDetalleSection ? empleadoDetalleSection.getAttribute('data-current-empleado-id') : null;
+                   if (empleadoId) {
+                       editarEmpleado(parseInt(empleadoId));
+                   } else {
+                       console.error("No se pudo obtener el ID del empleado desde la sección de detalle.");
+                   }
                });
-          }
+           }
 
-           // Event listener para el botón Volver desde Detalle
            const btnVolverDesdeDetalle = document.getElementById('btn-volver-desde-detalle');
            if (btnVolverDesdeDetalle) {
-              // Quitamos listener viejo y ponemos uno nuevo
-              const newBtnVolverDesdeDetalle = btnVolverDesdeDetalle.cloneNode(true);
-              btnVolverDesdeDetalle.parentNode.replaceChild(newBtnVolverDesdeDetalle, btnVolverDesdeDetalle);
-               newBtnVolverDesdeDetalle.addEventListener('click', function() {
-                   showEmpleadosList(); // Vuelve a la lista de empleados
-               });
+               btnVolverDesdeDetalle.addEventListener('click', showEmpleadosList);
            }
      }
 
@@ -432,42 +448,46 @@ document.addEventListener('DOMContentLoaded', function() {
               showLoginForm();
               return;
           }
-          ocultarTodo(); // Oculta todo primero
+          ocultarTodo();
            if (cumpleanosListSection) cumpleanosListSection.classList.remove('d-none');
           actualizarBreadcrumb('Próximos Cumpleaños');
-          mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
+          mostrarElementsAutenticados();
 
-          // Renderizar lista de cumpleaños (puedes mejorar esto con DataTables si quieres)
           renderCumpleanos();
      }
 
      function renderCumpleanos() {
           const tbody = document.getElementById('cumpleanos-table-body');
           if (!tbody) return;
-          tbody.innerHTML = ''; // Limpia la tabla actual
+          tbody.innerHTML = '';
 
           const proximosCumpleanos = empleados
-              .filter(emp => emp.fechaNacimiento) // Solo empleados con fecha de nacimiento válida
-              .map(emp => { // Calcular días y añadir al objeto temporal
+              .filter(emp => emp.fechaNacimiento)
+              .map(emp => {
                   const dias = calcularDiasParaCumpleanos(emp.fechaNacimiento);
-                  // Solo incluir cumpleaños que faltan o son hoy (dias >= 0)
-                  if (dias >= 0) {
+                   if (dias >= 0) {
                       return { ...emp, diasRestantes: dias };
                   }
-                  return null; // Excluir si ya pasaron este año
+                  return null;
               })
-              .filter(emp => emp !== null) // Eliminar los null
-              .sort((a, b) => a.diasRestantes - b.diasRestantes); // Ordenar por los días restantes
+              .filter(emp => emp !== null)
+              .sort((a, b) => a.diasRestantes - b.diasRestantes);
 
-          proximosCumpleanos.forEach(emp => {
-              const tr = document.createElement('tr');
-              tr.innerHTML = `
-                  <td>${emp.nombres || ''} ${emp.apellidos || ''}</td>
-                  <td>${formatearFecha(emp.fechaNacimiento)}</td>
-                  <td>${emp.diasRestantes === 0 ? 'Hoy!' : (emp.diasRestantes === 1 ? 'Mañana' : `${emp.diasRestantes} días`)}</td>
-              `;
-              tbody.appendChild(tr);
-          });
+          if (proximosCumpleanos.length === 0) {
+               const tr = document.createElement('tr');
+               tr.innerHTML = `<td colspan="3" class="text-center">No hay próximos cumpleaños registrados en los siguientes 365 días.</td>`;
+               tbody.appendChild(tr);
+          } else {
+               proximosCumpleanos.forEach(emp => {
+                   const tr = document.createElement('tr');
+                   tr.innerHTML = `
+                       <td>${emp.nombres || ''} ${emp.apellidos || ''}</td>
+                       <td>${formatearFecha(emp.fechaNacimiento)}</td>
+                       <td>${emp.diasRestantes === 0 ? 'Hoy!' : (emp.diasRestantes === 1 ? 'Mañana' : `${emp.diasRestantes} días`)}</td>
+                   `;
+                   tbody.appendChild(tr);
+               });
+          }
      }
 
 
@@ -476,73 +496,78 @@ document.addEventListener('DOMContentLoaded', function() {
             showLoginForm();
             return;
         }
-        ocultarTodo(); // Oculta todo primero
+        ocultarTodo();
          if (ausenciasListSection) ausenciasListSection.classList.remove('d-none');
         actualizarBreadcrumb('Gestión de Ausencias');
-         mostrarElementosAutenticados(); // Asegura que los botones correctos del navbar se muestren
+         mostrarElementsAutenticados();
 
-
-         // Renderizar lista de ausencias (puedes mejorar esto con DataTables)
          renderAusencias();
     }
 
     function renderAusencias() {
          const tbody = document.getElementById('ausencias-table-body');
          if (!tbody) return;
-         tbody.innerHTML = ''; // Limpia la tabla actual
+         tbody.innerHTML = '';
 
-         // Ordenar ausencias por fecha descendente
-         // Usar slice() para no mutar el array original si se necesita
          const ausenciasOrdenadas = ausencias.slice().sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
 
-         ausenciasOrdenadas.forEach(ausencia => {
-             const tr = document.createElement('tr');
-             tr.innerHTML = `
-                 <td>${ausencia.nombreEmpleado || ''}</td>
-                 <td>${formatearFecha(ausencia.fecha)}</td>
-                 <td>${ausencia.tipo || ''}</td>
-                 <td>
-                     <button class="btn btn-sm btn-danger eliminar-ausencia-btn" data-id="${ausencia.id}">
-                          <i class="bi bi-trash"></i>
-                      </button>
-                  </td>
-              `;
-             tbody.appendChild(tr);
-         });
+         if (ausenciasOrdenadas.length === 0) {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `<td colspan="4" class="text-center">No hay ausencias registradas.</td>`;
+              tbody.appendChild(tr);
+         } else {
+              ausenciasOrdenadas.forEach(ausencia => {
+                  const tr = document.createElement('tr');
+                  const eliminarBtnHtml = (usuarioActual && usuarioActual.rol === 'admin') ?
+                      `<button class="btn btn-sm btn-danger eliminar-ausencia-btn" data-id="${ausencia.id}" title="Eliminar Ausencia">
+                           <i class="bi bi-trash"></i>
+                       </button>` : '';
 
-         // Evento de delegación para eliminar ausencias
-         // Quitamos listener viejo y ponemos uno nuevo
+                  tr.innerHTML = `
+                      <td>${ausencia.nombreEmpleado || ''}</td>
+                      <td>${formatearFecha(ausencia.fecha)}</td>
+                      <td>${ausencia.tipo || ''}</td>
+                      <td>${eliminarBtnHtml}</td>
+                   `;
+                  tbody.appendChild(tr);
+              });
+         }
+
          $('#ausencias-list .table tbody').off('click', '.eliminar-ausencia-btn').on('click', '.eliminar-ausencia-btn', function() {
-             const ausenciaId = $(this).data('id'); // Usamos jQuery data para obtener el id
+             const ausenciaId = $(this).data('id');
              eliminarAusencia(ausenciaId);
          });
      }
 
      function eliminarAusencia(id) {
+          if (!(usuarioActual && usuarioActual.rol === 'admin')) {
+               mostrarAlerta('No tienes permiso para eliminar ausencias.', 'danger');
+              return;
+          }
           if (confirm('¿Está seguro de que desea eliminar esta ausencia? Esta acción es irreversible.')) {
              ausencias = ausencias.filter(a => a.id != id);
              localStorage.setItem('ausencias', JSON.stringify(ausencias));
              mostrarAlerta('Ausencia eliminada correctamente', 'success');
-             renderAusencias(); // Volver a renderizar la lista de ausencias
+             renderAusencias();
           }
      }
 
-     // Event listener para el formulario de Ausencias
-     const ausenciaFormElement = document.getElementById('ausenciaForm');
-     if (ausenciaFormElement) {
-          // Quitamos listener viejo y ponemos uno nuevo
-          const newAusenciaForm = ausenciaFormElement.cloneNode(true);
-          ausenciaFormElement.parentNode.replaceChild(newAusenciaForm, ausenciaFormElement);
 
-         newAusenciaForm.addEventListener('submit', function(e) {
+     if (ausenciaFormElement) {
+         $(ausenciaFormElement).off('submit').on('submit', function(e) {
               e.preventDefault();
+              if (!(usuarioActual && usuarioActual.rol === 'admin')) {
+                   mostrarAlerta('No tienes permiso para registrar ausencias.', 'danger');
+                  return;
+              }
+
               const nombreInput = document.getElementById('ausencia-nombre');
               const fechaInput = document.getElementById('ausencia-fecha');
               const tipoSelect = document.getElementById('ausencia-tipo');
 
               const nuevaAusencia = {
-                  id: Date.now(), // Generar un ID simple basado en el tiempo
+                  id: Date.now(),
                   nombreEmpleado: nombreInput ? nombreInput.value.trim() : '',
                   fecha: fechaInput ? fechaInput.value : '',
                   tipo: tipoSelect ? tipoSelect.value : '',
@@ -556,47 +581,42 @@ document.addEventListener('DOMContentLoaded', function() {
               ausencias.push(nuevaAusencia);
               localStorage.setItem('ausencias', JSON.stringify(ausencias));
               mostrarAlerta('Ausencia registrada correctamente', 'success');
-              newAusenciaForm.reset(); // Limpiar formulario
-              renderAusencias(); // Actualizar lista de ausencias
+              ausenciaFormElement.reset();
+              renderAusencias();
           });
      }
 
 
     // --- Funciones de Autenticación ---
     function handleLogin(e) {
-        e.preventDefault(); // Previene el envío del formulario
+        e.preventDefault();
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
 
-        const email = emailInput ? emailInput.value.trim() : ''; // Limpiar email
-        const password = passwordInput ? passwordInput.value : ''; // No limpiar password
-
+        const email = emailInput ? emailInput.value.trim() : '';
+        const password = passwordInput ? passwordInput.value : '';
 
         const usuario = usuariosPermitidos.find(u => u.email === email && u.password === password);
 
         if (usuario) {
             isAuthenticated = true;
             usuarioActual = usuario;
-             // localStorage.setItem('usuarioActual', JSON.stringify(usuarioActual)); // Opcional: guardar sesión (menos seguro en localStorage)
-            mostrarElementosAutenticados(); // Muestra botones de navegación
-            showDashboard(); // Va al dashboard
-             notificarCumpleanos(); // Muestra notificaciones
+            mostrarElementsAutenticados();
+            showDashboard();
         } else {
             mostrarAlerta('Credenciales incorrectas', 'danger');
         }
     }
 
      function limpiarLogin() {
-          if (loginForm) loginForm.reset(); // Limpia el formulario de login
+          if (loginFormElement) loginFormElement.reset();
      }
 
     function handleLogout() {
         isAuthenticated = false;
         usuarioActual = null;
-        // Opcional: Limpiar localStorage si implementaste guardar sesión
-        // localStorage.removeItem('usuarioActual');
-        ocultarElementosAutenticados(); // Oculta botones de navegación
-        showLoginForm(); // Vuelve al login
+        ocultarElementsAutenticados();
+        showLoginForm();
         mostrarAlerta('Sesión cerrada correctamente', 'success');
     }
 
@@ -604,679 +624,202 @@ document.addEventListener('DOMContentLoaded', function() {
          elements.forEach(el => { if(el) el.classList.remove('d-none'); });
     }
 
-     function ocultarElements(elements) {
+    function ocultarElements(elements) {
          elements.forEach(el => { if(el) el.classList.add('d-none'); });
      }
 
 
-    function mostrarElementosAutenticados() {
-        // Mostrar botones de navegación principales si existen
+    function mostrarElementsAutenticados() {
          mostrarElements([btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias]);
 
-        // Mostrar botones específicos del dashboard o lista de empleados (depende de la sección)
-         if (dashboardSection && !dashboardSection.classList.contains('d-none')) { // Si el dashboard está visible
-              // No hay botones extra específicos del dashboard por ahora
-         } else if (empleadosListSection && !empleadosListSection.classList.contains('d-none')) { // Si la lista de empleados está visible
-              mostrarElements([btnNuevoEmpleado, btnNuevoEmpleadoLista, btnExportarCSV]); // Muestra botones de añadir y exportar
-         } else if (empleadoFormSection && !empleadoFormSection.classList.contains('d-none')) { // Si el formulario de empleado está visible
-             mostrarElements([btnCancelar]); // Muestra el botón cancelar
-         } else if (empleadoDetalleSection && !empleadoDetalleSection.classList.contains('d-none')) { // Si el detalle de empleado está visible
-              mostrarElements([document.getElementById('btn-editar-desde-detalle'), document.getElementById('btn-volver-desde-detalle')]); // Muestra botones editar/volver del detalle
-         }
-
-
-         // Ocultar botones de autenticación si existen
-         ocultarElements([btnLogin, btnRegistro]);
-
-         // Control de visibilidad de elementos solo para Admin si aplica
-         if (usuarioActual && usuarioActual.rol !== 'admin') {
-             // Ejemplo: Ocultar sección de usuarios en dashboard si existe
-             const dashboardUsuariosCard = document.getElementById('dashboard-usuarios-card');
-             if (dashboardUsuariosCard) dashboardUsuariosCard.classList.add('d-none');
-             // Ocultar botón de registro en el navbar si existe
-             if (btnRegistro) btnRegistro.classList.add('d-none');
-             // Ocultar columna de salario en detalle de empleado (ya manejado en render)
-             // Ocultar botones de eliminar empleado/ausencia si el rol no es admin
-             // Esto se maneja mejor en el renderizado o en los event listeners si es necesario
-         } else {
-              // Si es admin, asegurarse de que estén visibles si existen
-              const dashboardUsuariosCard = document.getElementById('dashboard-usuarios-card');
-              if (dashboardUsuariosCard) dashboardUsuariosCard.classList.remove('d-none');
-              if (btnRegistro) btnRegistro.classList.remove('d-none'); // Admin podría registrar nuevos usuarios admin (en una versión real)
-         }
-
-         // Ocultar el breadcrumb principal al autenticar para que solo aparezca en secciones internas
-          const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
-          if (breadcrumbNav) breadcrumbNav.classList.add('d-none'); // Se mostrará de nuevo en las funciones show... adecuadas
-
-     }
-
-
-    function ocultarElementosAutenticados() {
-        // Ocultar todos los botones de navegación principales si existen
-        ocultarElements([btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias, btnNuevoEmpleado, btnNuevoEmpleadoLista, btnVerEmpleados, btnCancelar, btnExportarCSV]);
-
-         // Ocultar botones específicos del detalle si existen
+         ocultarElements([btnNuevoEmpleado, btnNuevoEmpleadoLista, btnVerEmpleados, btnCancelar, btnExportarCSV]);
          ocultarElements([document.getElementById('btn-editar-desde-detalle'), document.getElementById('btn-volver-desde-detalle')]);
 
-        // Mostrar botones de autenticación si existen
-        mostrarElements([btnLogin, btnRegistro]);
 
-         // Ocultar el breadcrumb principal
-          const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
-          if (breadcrumbNav) breadcrumbNav.classList.add('d-none');
-
-          // Asegurarse de que la tarjeta de usuarios en el dashboard se oculte si no es admin al desloguear
-           const dashboardUsuariosCard = document.getElementById('dashboard-usuarios-card');
-           if (dashboardUsuariosCard) dashboardUsuariosCard.classList.add('d-none');
-    }
-
-
-    // --- Funciones de Empleados (CRUD) ---
-    function generarId() {
-        // Genera un ID único basado en la marca de tiempo actual
-        return Date.now();
-    }
-
-    function guardarEmpleadosLocal() {
-        localStorage.setItem('empleados', JSON.stringify(empleados));
-        // Si DataTables está inicializado, actualiza sus datos
-        if (empleadosTable) {
-             empleadosTable.clear().rows.add(empleados).draw();
-             // Re-aplicar filtros después de actualizar los datos
-             if (busquedaEmpleadosInput) empleadosTable.search(busquedaEmpleadosInput.value).draw();
-             if (filtroDepartamentoSelect) {
-                  const searchValue = filtroDepartamentoSelect.value;
-                  empleadosTable.column(6).search(searchValue ? '^'+searchValue+'$' : '', true, false).draw();
-             }
-             if (filtroAntiguedadSelect) empleadosTable.draw(); // Trigger custom filter redraw
-        }
-         actualizarFiltroDepartamentos(); // Actualiza el dropdown de departamentos
-         notificarCumpleanos(); // Revisa y actualiza las notificaciones de cumpleaños
-         showDashboard(); // Actualiza estadísticas del dashboard
-    }
-
-     function cargarEmpleadosLocal() {
-          // Esta función ahora solo asegura que la variable 'empleados' esté cargada al inicio
-          // DataTables se encarga de mostrar los datos al llamar a showEmpleadosList
-          // Ya se carga al inicio del script: let empleados = JSON.parse(localStorage.getItem('empleados')) || [];
-     }
-
-
-    function handleEmpleadoFormSubmit(e) {
-        e.preventDefault();
-        const form = document.getElementById('empleadoForm');
-        if (!form) return;
-
-        const id = form.getAttribute('data-edit-id'); // Obtiene el ID si es edición
-        const nombresInput = document.getElementById('nombres');
-        const apellidosInput = document.getElementById('apellidos');
-        const cedulaInput = document.getElementById('cedula');
-        const telefonoInput = document.getElementById('telefono');
-        const emailInput = document.getElementById('email-empleado'); // Cambiado para no confundir con email de login
-        const cargoInput = document.getElementById('cargo');
-        const departamentoInput = document.getElementById('departamento');
-        const tipoContratoInput = document.getElementById('tipoContrato');
-        const fechaNacimientoInput = document.getElementById('fechaNacimiento');
-        const fechaIngresoInput = document.getElementById('fechaIngreso');
-        const salarioInput = document.getElementById('salario');
-        const notasInput = document.getElementById('notas');
-        const contactoEmergenciaNombreInput = document.getElementById('contactoEmergenciaNombre');
-        const contactoEmergenciaTelefonoInput = document.getElementById('contactoEmergenciaTelefono');
-        const contactoEmergenciaParentescoInput = document.getElementById('contactoEmergenciaParentesco');
-
-        const nuevoEmpleado = {
-            id: id ? parseInt(id) : generarId(), // Usa el ID existente o genera uno nuevo
-            nombres: nombresInput ? nombresInput.value.trim() : '',
-            apellidos: apellidosInput ? apellidosInput.value.trim() : '',
-            cedula: cedulaInput ? cedulaInput.value.trim() : '',
-            telefono: telefonoInput ? telefonoInput.value.trim() : '',
-            email: emailInput ? emailInput.value.trim() : '',
-            cargo: cargoInput ? cargoInput.value.trim() : '',
-            departamento: departamentoInput ? departamentoInput.value.trim() : '',
-            tipoContrato: tipoContratoInput ? tipoContratoInput.value : '',
-            fechaNacimiento: fechaNacimientoInput ? fechaNacimientoInput.value : '',
-            fechaIngreso: fechaIngresoInput ? fechaIngresoInput.value : '',
-            salario: salarioInput ? parseFloat(salarioInput.value) : 0, // Convertir a número
-            notas: notasInput ? notasInput.value.trim() : '',
-            contactoEmergenciaNombre: contactoEmergenciaNombreInput ? contactoEmergenciaNombreInput.value.trim() : '',
-            contactoEmergenciaTelefono: contactoEmergenciaTelefonoInput ? contactoEmergenciaTelefonoInput.value.trim() : '',
-            contactoEmergenciaParentesco: contactoEmergenciaParentescoInput ? contactoEmergenciaParentescoInput.value.trim() : '',
-        };
-
-         // Validaciones básicas
-         if (!nuevoEmpleado.nombres || !nuevoEmpleado.apellidos || !nuevoEmpleado.cedula || !nuevoEmpleado.fechaIngreso || !nuevoEmpleado.departamento) {
-              mostrarAlerta('Por favor, complete los campos obligatorios (Nombres, Apellidos, Cédula, Fecha de Ingreso, Departamento).', 'warning');
-              return;
+         if (dashboardSection && !dashboardSection.classList.contains('d-none')) {
+               mostrarElements([btnNuevoEmpleado, btnVerEmpleados, btnExportarCSV]);
+         } else if (empleadosListSection && !empleadosListSection.classList.contains('d-none')) {
+              mostrarElements([btnNuevoEmpleadoLista]);
+         } else if (empleadoFormSection && !empleadoFormSection.classList.contains('d-none')) {
+             mostrarElements([btnCancelar]);
          }
 
-         // Validación de Cédula duplicada (solo para nuevos empleados o si la cédula ha cambiado en edición)
-         const cedulaExiste = empleados.some(emp => emp.cedula === nuevoEmpleado.cedula && emp.id !== nuevoEmpleado.id);
-         if (cedulaExiste) {
-              mostrarAlerta('La cédula ingresada ya existe para otro empleado.', 'warning');
-              return;
+         ocultarElements([btnLogin, btnRegistro]);
+
+         const dashboardUsuariosCard = document.getElementById('dashboard-usuarios-card');
+         if (usuarioActual && usuarioActual.rol !== 'admin') {
+             if (dashboardUsuariosCard) dashboardUsuariosCard.classList.add('d-none');
+             if (btnRegistro) btnRegistro.classList.add('d-none');
+             if (ausenciaFormElement) ausenciaFormElement.classList.add('d-none');
+             if (btnExportarCSV) btnExportarCSV.classList.add('d-none');
+
+         } else {
+              if (dashboardUsuariosCard) dashboardUsuariosCard.classList.remove('d-none');
+              if (ausenciaFormElement) ausenciaFormElement.classList.remove('d-none');
+              if (btnExportarCSV) btnExportarCSV.classList.remove('d-none');
          }
 
-
-        if (id) {
-            // Editar empleado existente
-            empleados = empleados.map(emp => emp.id == id ? nuevoEmpleado : emp);
-            mostrarAlerta('Empleado actualizado correctamente', 'success');
-        } else {
-            // Agregar nuevo empleado
-            empleados.push(nuevoEmpleado);
-            mostrarAlerta('Empleado agregado correctamente', 'success');
-        }
-
-        guardarEmpleadosLocal(); // Guarda en localStorage y actualiza DataTables
-        showEmpleadosList(); // Regresa a la lista de empleados
-    }
-
-    function cargarDatosEmpleado(id) {
-        const empleado = empleados.find(emp => emp.id == id);
-        const form = document.getElementById('empleadoForm');
-        if (empleado && form) {
-            document.getElementById('nombres').value = empleado.nombres || '';
-            document.getElementById('apellidos').value = empleado.apellidos || '';
-            document.getElementById('cedula').value = empleado.cedula || '';
-            document.getElementById('telefono').value = empleado.telefono || '';
-            document.getElementById('email-empleado').value = empleado.email || ''; // Usar el ID correcto
-            document.getElementById('cargo').value = empleado.cargo || '';
-            document.getElementById('departamento').value = empleado.departamento || '';
-            document.getElementById('tipoContrato').value = empleado.tipoContrato || '';
-            document.getElementById('fechaNacimiento').value = empleado.fechaNacimiento || '';
-            document.getElementById('fechaIngreso').value = empleado.fechaIngreso || '';
-            document.getElementById('salario').value = empleado.salario || ''; // Mostrar como número
-            document.getElementById('notas').value = empleado.notas || '';
-             document.getElementById('contactoEmergenciaNombre').value = empleado.contactoEmergenciaNombre || '';
-             document.getElementById('contactoEmergenciaTelefono').value = empleado.contactoEmergenciaTelefono || '';
-             document.getElementById('contactoEmergenciaParentesco').value = empleado.contactoEmergenciaParentesco || '';
-        }
-    }
-
-     function editarEmpleado(id) {
-         showEmpleadoForm(id); // Muestra el formulario y carga los datos
-     }
-
-    function eliminarEmpleado(id) {
-        // Pide confirmación antes de eliminar
-        if (confirm('¿Está seguro de que desea eliminar este empleado? Esta acción es irreversible.')) {
-            empleados = empleados.filter(emp => emp.id != id); // Filtra y elimina el empleado
-            guardarEmpleadosLocal(); // Guarda los cambios en localStorage y actualiza DataTables
-            mostrarAlerta('Empleado eliminado correctamente', 'success');
-            showEmpleadosList(); // Asegura que estamos en la vista de lista
-        }
-    }
-
-
-    // --- Funciones de Utilidad ---
-
-    // Función para formatear fechas (por ejemplo, de YYYY-MM-DD a DD/MM/YYYY)
-    function formatearFecha(fechaStr) {
-        if (!fechaStr) return '';
-        const [year, month, day] = fechaStr.split('-');
-        return `${day}/${month}/${year}`;
-    }
-
-    // Función para calcular antigüedad en años (puede ser flotante)
-     function calcularAntiguedad(fechaIngresoStr) {
-         if (!fechaIngresoStr) return 0;
-         const fechaIngreso = new Date(fechaIngresoStr);
-         const hoy = new Date();
-         let años = hoy.getFullYear() - fechaIngreso.getFullYear();
-         const mesDiff = hoy.getMonth() - fechaIngreso.getMonth();
-         const diaDiff = hoy.getDate() - fechaIngreso.getDate();
-
-         // Ajustar años si el mes de hoy es menor o si es el mismo mes pero el día de hoy es menor
-         if (mesDiff < 0 || (mesDiff === 0 && diaDiff < 0)) {
-             años--;
-         }
-
-         // Cálculo más preciso (puede ser flotante)
-         const diffMs = hoy.getTime() - fechaIngreso.getTime();
-         const añosExactos = diffMs / (1000 * 60 * 60 * 24 * 365.25); // Dividir por el número de milisegundos en un año promedio
-         return añosExactos > 0 ? añosExactos : 0; // Asegura que no sea negativo si la fecha es en el futuro (error)
-     }
-
-
-     // Función para calcular antigüedad y formatearla como texto (años, meses, días)
-     function calcularAntiguedadTexto(fechaIngresoStr) {
-         if (!fechaIngresoStr) return 'Fecha no válida';
-
-         const fechaIngreso = new Date(fechaIngresoStr);
-         const hoy = new Date();
-
-         // Validar que la fecha de ingreso no sea en el futuro
-         if (fechaIngreso > hoy) {
-             return 'Fecha futura';
-         }
-
-         let años = hoy.getFullYear() - fechaIngreso.getFullYear();
-         let meses = hoy.getMonth() - fechaIngreso.getMonth();
-         let dias = hoy.getDate() - fechaIngreso.getDate();
-
-         // Ajustar si los días son negativos
-         if (dias < 0) {
-             meses--;
-             const ultimoDiaMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth(), 0).getDate();
-             dias = ultimoDiaMesAnterior + dias; // días + (días negativos)
-         }
-
-         // Ajustar si los meses son negativos
-         if (meses < 0) {
-             años--;
-             meses = 12 + meses; // meses + (meses negativos)
-         }
-
-         // Construir la cadena de texto
-         const partes = [];
-         if (años > 0) partes.push(`${años} año${años > 1 ? 's' : ''}`);
-         if (meses > 0) partes.push(`${meses} mes${meses > 1 ? 'es' : ''}`);
-         if (dias > 0) partes.push(`${dias} día${dias > 1 ? 's' : ''}`);
-
-         if (partes.length === 0) {
-              // Si la fecha es hoy, la antigüedad es 0 días
-              // O si es un empleado con antigüedad de menos de un día (aunque improbable con este formato)
-              // Podríamos decir "Menos de un mes" o "Menos de un año" si años/meses son 0 pero hay días.
-              // Simplificamos: si no hay años, meses ni días positivos calculados así, asumimos es muy reciente o el mismo día.
-              // La lógica de DataTables que usa `calcularAntiguedad` (flotante) es más precisa para ordenar/filtrar rangos.
-              // Para el texto, podemos redondear un poco o usar una frase genérica si es < 1 mes.
-              // Si años, meses, días calculados > 0 (después de ajustes), mostramos el texto.
-              // Si todo es 0, significa que la diferencia es menos de un día, o exactamente 0 si fechaIngreso == hoy.
-              // Si la fecha de ingreso es exactamente hoy:
-              const fechaIngresoSinHora = new Date(fechaIngreso.getFullYear(), fechaIngreso.getMonth(), fechaIngreso.getDate());
-              const hoySinHora = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-              if (fechaIngresoSinHora.getTime() === hoySinHora.getTime()) {
-                   return 'Menos de 1 día'; // Contratado hoy
+         const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
+         if (breadcrumbNav) {
+              if (loginFormSection.classList.contains('d-none') && registroFormSection.classList.contains('d-none')) {
+                  breadcrumbNav.classList.add('d-none'); // Ocultar breadcrumb si estamos en login/registro
               } else {
-                   // Esto cubre casos donde la diferencia es muy pequeña o hubo algún error lógico,
-                   // pero según el cálculo paso a paso, debería dar días > 0 si la fecha es anterior a hoy.
-                   // Si llegamos aquí, podría ser un caso de antigüedad < 1 mes pero > 0 días.
-                   // Para simplicidad, si no hay años ni meses, mostramos los días si > 0.
-                   // Esta parte ya está cubierta por el `if (dias > 0) partes.push(...)`.
-                   // Si partes está vacío, significa años, meses y días son 0.
-                   return 'Recién ingresado'; // Si no calculó años, meses ni días significativos.
+                  breadcrumbNav.classList.remove('d-none'); // Mostrarlo en secciones autenticadas
               }
          }
-
-
-         return partes.join(', ');
-     }
-
-
-    // Función para formatear números grandes con separadores de miles
-    function formatearMiles(numero) {
-        if (numero === null || numero === undefined) return '';
-         // Convertir a string y usar toLocaleString para formato de miles del idioma local (es-ES)
-        return numero.toLocaleString('es-ES');
     }
 
 
-     // Función para mostrar alertas de Bootstrap
-     function mostrarAlerta(mensaje, tipo) {
-         const alertaContainer = document.getElementById('alerta-container');
-         if (!alertaContainer) return;
+   function ocultarElementsAutenticados() {
+       ocultarElements([btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias]);
+       ocultarElements([btnNuevoEmpleado, btnNuevoEmpleadoLista, btnVerEmpleados, btnCancelar, btnExportarCSV]);
+        ocultarElements([document.getElementById('btn-editar-desde-detalle'), document.getElementById('btn-volver-desde-detalle')]);
 
-         // Crear el elemento de alerta
-         const alerta = document.createElement('div');
-         alerta.classList.add('alert', `alert-${tipo}`, 'alert-dismissible', 'fade', 'show', 'mt-3'); // Añade mt-3 para espacio
-         alerta.setAttribute('role', 'alert');
-         alerta.innerHTML = `
-             ${mensaje}
-             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-         `;
+       if (ausenciaFormElement) ausenciaFormElement.classList.add('d-none');
+        const dashboardUsuariosCard = document.getElementById('dashboard-usuarios-card');
+        if (dashboardUsuariosCard) dashboardUsuariosCard.classList.add('d-none');
 
-         // Añadir la alerta al contenedor
-         alertaContainer.appendChild(alerta);
+       mostrarElements([btnLogin, btnRegistro]);
 
-         // Opcional: auto-cerrar la alerta después de unos segundos
-         setTimeout(() => {
-             if (alerta) { // Comprobar si el elemento aún existe
-                 const bsAlert = new bootstrap.Alert(alerta);
-                 bsAlert.close();
-             }
-         }, 5000); // 5 segundos
-     }
+         const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
+         if (breadcrumbNav) breadcrumbNav.classList.add('d-none'); // Ocultar breadcrumb si no está autenticado
+   }
 
 
-     // Función para actualizar el dropdown de departamentos con los departamentos existentes en los empleados
-     function actualizarFiltroDepartamentos() {
-         if (!filtroDepartamentoSelect) return;
+   // --- Event Listeners ---
+   if (loginFormElement) loginFormElement.addEventListener('submit', handleLogin);
+   if (btnLogout) btnLogout.addEventListener('click', handleLogout);
 
-         // Obtener departamentos únicos de los empleados
-         const departamentosUnicos = [...new Set(empleados.map(emp => emp.departamento).filter(dep => dep))].sort(); // Obtener únicos, filtrar vacíos y ordenar
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showResetPasswordModal();
+        });
+    }
 
-         // Guardar el valor seleccionado actualmente para no perderlo al actualizar
-         const valorSeleccionadoActual = filtroDepartamentoSelect.value;
-
-         // Limpiar opciones actuales (mantener la opción por defecto "Todos")
-         filtroDepartamentoSelect.innerHTML = '<option value="">Todos los Departamentos</option>';
-
-         // Añadir las nuevas opciones
-         departamentosUnicos.forEach(departamento => {
-             const option = document.createElement('option');
-             option.value = departamento;
-             option.textContent = departamento;
-             filtroDepartamentoSelect.appendChild(option);
-         });
-
-         // Restaurar el valor seleccionado si todavía existe en las nuevas opciones
-         if ([...filtroDepartamentoSelect.options].some(option => option.value === valorSeleccionadoActual)) {
-             filtroDepartamentoSelect.value = valorSeleccionadoActual;
-         } else {
-             // Si el valor anterior no existe, asegurarse de que se aplique el filtro "Todos"
-             filtroDepartamentoSelect.value = "";
-             // Opcional: Si DataTables ya existe, aplicar el filtro "Todos" inmediatamente
-             // if (empleadosTable) empleadosTable.column(6).search('', true, false).draw();
-         }
-     }
-
-     // Función para calcular cuántos días faltan para el cumpleaños (considerando el próximo cumpleaños)
-     function calcularDiasParaCumpleanos(fechaNacimientoStr) {
-         if (!fechaNacimientoStr) return -1; // Retorna -1 si la fecha no es válida
-
-         const fechaNacimiento = new Date(fechaNacimientoStr);
-         const hoy = new Date();
-         hoy.setHours(0, 0, 0, 0); // Poner la hora a 0 para comparación solo de fecha
-
-         const cumpleanosEsteAño = new Date(hoy.getFullYear(), fechaNacimiento.getMonth(), fechaNacimiento.getDate());
-         cumpleanosEsteAño.setHours(0, 0, 0, 0);
-
-         const unDia = 24 * 60 * 60 * 1000; // Milisegundos en un día
-
-         // Si el cumpleaños de este año ya pasó o es hoy
-         if (cumpleanosEsteAño < hoy) {
-             // Calcular el cumpleaños del próximo año
-             const cumpleanosProximoAño = new Date(hoy.getFullYear() + 1, fechaNacimiento.getMonth(), fechaNacimiento.getDate());
-             cumpleanosProximoAño.setHours(0, 0, 0, 0);
-             const diffMs = cumpleanosProximoAño.getTime() - hoy.getTime();
-             return Math.round(diffMs / unDia); // Días restantes para el próximo
-         } else {
-             // Si el cumpleaños de este año aún no ha pasado o es hoy
-             const diffMs = cumpleanosEsteAño.getTime() - hoy.getTime();
-             return Math.round(diffMs / unDia); // Días restantes para este año
-         }
-     }
-
-
-     // Función para mostrar notificaciones de cumpleaños en el dashboard o en una alerta
-     function notificarCumpleanos() {
-          if (!isAuthenticated || !usuarioActual) return; // Solo para usuarios autenticados
-
-          const proximosCumpleanos = empleados
-              .filter(emp => emp.fechaNacimiento) // Solo empleados con fecha de nacimiento válida
-              .map(emp => {
-                  const dias = calcularDiasParaCumpleanos(emp.fechaNacimiento);
-                  // Incluir cumpleaños hoy o en los próximos 7 días
-                  if (dias >= 0 && dias <= 7) {
-                      return { ...emp, diasRestantes: dias };
-                  }
-                  return null;
-              })
-              .filter(emp => emp !== null)
-              .sort((a, b) => a.diasRestantes - b.diasRestantes); // Ordenar por los días restantes
-
-          const notificacionesDiv = document.getElementById('cumpleanos-notificaciones'); // Un div en el dashboard para esto
-          if (!notificacionesDiv) return; // Salir si no existe el div
-
-          notificacionesDiv.innerHTML = ''; // Limpiar notificaciones anteriores
-
-          if (proximosCumpleanos.length > 0) {
-              let notificacionHtml = '<h6 class="card-subtitle mb-2 text-muted">Próximos Cumpleaños (7 días)</h6><ul>';
-              proximosCumpleanos.forEach(emp => {
-                  notificacionHtml += `<li>${emp.nombres || ''} ${emp.apellidos || ''} - ${emp.diasRestantes === 0 ? 'Hoy' : `en ${emp.diasRestantes} días`} (${formatearFecha(emp.fechaNacimiento)})</li>`;
-              });
-              notificacionHtml += '</ul>';
-              notificacionesDiv.innerHTML = notificacionHtml;
-               // Opcional: Mostrar una alerta si hay cumpleaños hoy
-               if (proximosCumpleanos.some(emp => emp.diasRestantes === 0)) {
-                   mostrarAlerta('¡Hay cumpleaños hoy! Revisa el Dashboard.', 'info');
-               }
-          } else {
-              notificacionesDiv.innerHTML = '<p class="card-text text-muted">No hay próximos cumpleaños en los siguientes 7 días.</p>';
-          }
-     }
-
-
-     // --- Funciones de Restablecimiento de Contraseña (Solo demo) ---
-     function showResetPasswordModal() {
-         if (resetPasswordModal) {
-              if (resetPasswordFields) resetPasswordFields.classList.add('d-none'); // Oculta campos de nueva contraseña inicialmente
-              const resetEmailInput = document.getElementById('reset-email');
-              if (resetEmailInput) resetEmailInput.value = ''; // Limpia el campo de email
-              resetPasswordModal.show();
-         }
-     }
-
-     function handleResetPasswordRequest(e) {
-         e.preventDefault();
-         const resetEmailInput = document.getElementById('reset-email');
-         const email = resetEmailInput ? resetEmailInput.value.trim() : '';
-
-         const usuario = usuariosPermitidos.find(u => u.email === email);
-
-         if (usuario) {
-             emailToReset = email; // Guarda el email para el segundo paso
-             if (resetPasswordFields) resetPasswordFields.classList.remove('d-none'); // Muestra campos de nueva contraseña
-             const resetMessage = document.getElementById('reset-message');
-             if (resetMessage) resetMessage.textContent = 'Correo encontrado. Ingresa tu nueva contraseña:';
-             const resetRequestBtn = document.getElementById('reset-request-btn');
-             const resetConfirmBtn = document.getElementById('reset-confirm-btn');
-             if (resetRequestBtn) resetRequestBtn.classList.add('d-none'); // Oculta botón de solicitud
-             if (resetConfirmBtn) resetConfirmBtn.classList.remove('d-none'); // Muestra botón de confirmación
-
-         } else {
-             mostrarAlerta('Correo no encontrado.', 'danger');
-         }
-     }
-
-     function handleResetPasswordConfirm(e) {
-          e.preventDefault();
-          const newPasswordInput = document.getElementById('new-password');
-          const confirmPasswordInput = document.getElementById('confirm-password');
-
-          const newPassword = newPasswordInput ? newPasswordInput.value : '';
-          const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
-
-          if (newPassword !== confirmPassword) {
-              mostrarAlerta('Las contraseñas no coinciden.', 'warning');
-              return;
-          }
-
-          if (newPassword.length < 6) { // Validación básica de longitud
-               mostrarAlerta('La contraseña debe tener al menos 6 caracteres.', 'warning');
-               return;
-          }
-
-          // En una aplicación real, aquí se enviaría la nueva contraseña (hasheada) al backend.
-          // Para esta demo, simplemente actualizamos en localStorage (INSEGURO EN PRODUCCIÓN).
-          usuariosPermitidos = usuariosPermitidos.map(u => {
-              if (u.email === emailToReset) {
-                  // NOTA: En producción NUNCA guardar texto plano. Usar hashing (bcrypt, etc.)
-                  return { ...u, password: newPassword };
-              }
-              return u;
-          });
-          localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos));
-
-          mostrarAlerta('Contraseña restablecida con éxito. Ahora puedes iniciar sesión con tu nueva contraseña.', 'success');
-          if (resetPasswordModal) resetPasswordModal.hide(); // Cierra el modal
-          emailToReset = ''; // Limpiar email guardado
-          // Volver al estado inicial del modal si se vuelve a abrir
-           const resetMessage = document.getElementById('reset-message');
-           if (resetMessage) resetMessage.textContent = 'Ingresa tu correo electrónico registrado para restablecer tu contraseña:';
-           const resetRequestBtn = document.getElementById('reset-request-btn');
-           const resetConfirmBtn = document.getElementById('reset-confirm-btn');
-           if (resetRequestBtn) resetRequestBtn.classList.remove('d-none');
-           if (resetConfirmBtn) resetConfirmBtn.classList.add('d-none');
-           if (resetPasswordFields) resetPasswordFields.classList.add('d-none'); // Oculta campos de nueva contraseña
-           if (document.getElementById('reset-email')) document.getElementById('reset-email').value = '';
-           if (newPasswordInput) newPasswordInput.value = '';
-           if (confirmPasswordInput) confirmPasswordInput.value = '';
-
-      }
-
-
-      // --- Funciones de Exportación ---
-      function exportarEmpleadosCSV() {
-          if (!empleados || empleados.length === 0) {
-              mostrarAlerta('No hay datos de empleados para exportar.', 'info');
-              return;
-          }
-
-          // Define las cabeceras del CSV (ajusta según tus campos)
-          const headers = ["ID", "Nombres", "Apellidos", "Cédula", "Teléfono", "Email", "Cargo", "Departamento", "Tipo Contrato", "Fecha Nacimiento", "Fecha Ingreso", "Salario", "Notas", "Contacto Emergencia Nombre", "Contacto Emergencia Teléfono", "Contacto Emergencia Parentesco"];
-
-          // Mapea los datos de los empleados a filas de CSV
-          const rows = empleados.map(emp => [
-              emp.id,
-              `"${(emp.nombres || '').replace(/"/g, '""')}"`, // Encerrar en comillas y escapar comillas dobles
-              `"${(emp.apellidos || '').replace(/"/g, '""')}"`,
-              `"${(emp.cedula || '').replace(/"/g, '""')}"`,
-              `"${(emp.telefono || '').replace(/"/g, '""')}"`,
-              `"${(emp.email || '').replace(/"/g, '""')}"`,
-              `"${(emp.cargo || '').replace(/"/g, '""')}"`,
-              `"${(emp.departamento || '').replace(/"/g, '""')}"`,
-              `"${(emp.tipoContrato || '').replace(/"/g, '""')}"`,
-              `"${formatearFecha(emp.fechaNacimiento).replace(/"/g, '""')}"`, // Formatear fecha
-              `"${formatearFecha(emp.fechaIngreso).replace(/"/g, '""')}"`,   // Formatear fecha
-               usuarioActual && usuarioActual.rol === 'admin' ? emp.salario : '****', // Exportar salario solo para admin
-              `"${(emp.notas || '').replace(/"/g, '""')}"`,
-              `"${(emp.contactoEmergenciaNombre || '').replace(/"/g, '""')}"`,
-              `"${(emp.contactoEmergenciaTelefono || '').replace(/"/g, '""')}"`,
-              `"${(emp.contactoEmergenciaParentesco || '').replace(/"/g, '""')}"`,
-          ]);
-
-          // Unir cabeceras y filas con comas y saltos de línea
-          const csvContent = [
-              headers.join(","),
-              ...rows.map(row => row.join(","))
-          ].join("\n");
-
-          // Crear un Blob con el contenido CSV
-          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-
-          // Crear un enlace de descarga
-          const link = document.createElement("a");
-          const url = URL.createObjectURL(blob);
-          link.setAttribute("href", url);
-          link.setAttribute("download", "empleados_ashe.csv"); // Nombre del archivo
-
-          // Simular un clic en el enlace para iniciar la descarga
-          link.style.visibility = 'hidden'; // Ocultar el enlace
-          document.body.appendChild(link);
-          link.click();
-
-          // Limpiar URL y remover el enlace
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-
-          mostrarAlerta('Datos de empleados exportados a CSV.', 'success');
-      }
-
-
-    // --- Event Listeners ---
-    if (loginForm) loginForm.addEventListener('submit', handleLogin);
-    if (btnLogout) btnLogout.addEventListener('click', handleLogout);
-
-    if (btnRegistro) btnRegistro.addEventListener('click', showRegistroForm); // Navbar "Registrarse"
-    const registroFormElement = document.getElementById('registroForm'); // Referencia al formulario de registro
-     if (registroFormElement) {
-         // Event Listener para el formulario de registro (enviar)
-         registroFormElement.addEventListener('submit', function(e) {
+    if (resetPasswordForm) {
+         resetPasswordForm.addEventListener('submit', function(e) {
              e.preventDefault();
-             const newEmailInput = document.getElementById('new-email');
-             const newPasswordInput = document.getElementById('new-password-reg'); // Cambiado ID para no confundir
-             const confirmPasswordInput = document.getElementById('confirm-password-reg'); // Cambiado ID
-             const newEmail = newEmailInput ? newEmailInput.value.trim() : '';
-             const newPassword = newPasswordInput ? newPasswordInput.value : '';
-             const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
-
-             // Validaciones básicas de registro
-             if (!newEmail || !newPassword || !confirmPassword) {
-                  mostrarAlerta('Por favor, complete todos los campos del formulario de registro.', 'warning');
-                  return;
-             }
-              if (newPassword !== confirmPassword) {
-                  mostrarAlerta('Las contraseñas no coinciden.', 'warning');
-                  return;
-              }
-              if (newPassword.length < 6) {
-                   mostrarAlerta('La contraseña debe tener al menos 6 caracteres.', 'warning');
-                   return;
-              }
-             const emailExiste = usuariosPermitidos.some(u => u.email === newEmail);
-             if (emailExiste) {
-                  mostrarAlerta('El correo electrónico ya está registrado.', 'warning');
-                  return;
-             }
-
-             // Agregar nuevo usuario (con rol 'empleado' por defecto en esta demo simple)
-             usuariosPermitidos.push({ email: newEmail, password: newPassword, rol: 'empleado' });
-             localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos));
-
-             mostrarAlerta('Usuario registrado con éxito. Ahora puedes iniciar sesión.', 'success');
-             hideRegistroForm(); // Vuelve al formulario de login
-         });
-     }
-
-     if (btnCancelarRegistro) btnCancelarRegistro.addEventListener('click', hideRegistroForm); // Botón Cancelar del formulario registro
-
-    // Listeners de Navegación del Navbar (asegurarse de que existan los botones)
-     if (btnDashboard) btnDashboard.addEventListener('click', showDashboard);
-     if (btnEmpleados) btnEmpleados.addEventListener('click', showEmpleadosList);
-     if (btnCumpleanos) btnCumpleanos.addEventListener('click', showCumpleanosList);
-     if (btnAusencias) btnAusencias.addEventListener('click', showAusenciasList);
-
-
-    // Listeners de botones de la sección Empleados
-    if (btnNuevoEmpleado) btnNuevoEmpleado.addEventListener('click', () => showEmpleadoForm()); // Botón "Agregar Nuevo Empleado" arriba de la tabla
-    if (btnNuevoEmpleadoLista) btnNuevoEmpleadoLista.addEventListener('click', () => showEmpleadoForm()); // Botón flotante "+"
-     if (btnExportarCSV) btnExportarCSV.addEventListener('click', exportarEmpleadosCSV); // Botón Exportar
-
-    // Listener del formulario de Empleado (Guardar/Actualizar)
-    const empleadoFormElement = document.getElementById('empleadoForm');
-    if (empleadoFormElement) empleadoFormElement.addEventListener('submit', handleEmpleadoFormSubmit);
-
-    // Listener del botón Cancelar en el formulario de empleado
-    if (btnCancelar) btnCancelar.addEventListener('click', showEmpleadosList); // Vuelve a la lista
-
-
-    // Listener para el enlace "¿Olvidaste tu contraseña?"
-     if (forgotPasswordLink) forgotPasswordLink.addEventListener('click', function(e) {
-         e.preventDefault();
-         showResetPasswordModal();
-     });
-
-     // Listeners para el formulario dentro del modal de restablecer contraseña
-     if (resetPasswordForm) {
-         const resetRequestBtn = document.getElementById('reset-request-btn');
-         const resetConfirmBtn = document.getElementById('reset-confirm-btn');
-         if (resetRequestBtn) resetRequestBtn.addEventListener('click', handleResetPasswordRequest);
-         if (resetConfirmBtn) resetConfirmBtn.addEventListener('click', handleResetPasswordConfirm);
-     }
-
-
-    // Listener para el enlace "Inicio" en el breadcrumb
-     if (breadcrumbHomeLink) {
-         // Quitamos listeners viejos y ponemos uno nuevo para evitar duplicados
-          const newBreadcrumbHomeLink = breadcrumbHomeLink.cloneNode(true);
-          breadcrumbHomeLink.parentNode.replaceChild(newBreadcrumbHomeLink, breadcrumbHomeLink);
-          newBreadcrumbHomeLink.addEventListener('click', function(e) {
-             e.preventDefault(); // Prevenir navegación por defecto
-              if (isAuthenticated) {
-                 showDashboard(); // Ir al dashboard si está autenticado
+             const resetConfirmBtnElement = resetPasswordForm.querySelector('.modal-footer button.btn-primary');
+              if (resetConfirmBtnElement && !resetConfirmBtnElement.classList.contains('d-none')) {
+                 handleResetPasswordConfirm(e);
              } else {
-                 showLoginForm(); // Ir al login si no está autenticado
+                 handleResetPasswordRequest(e);
              }
          });
-     }
+
+         const resetRequestBtnElement = resetPasswordForm.querySelector('button[type="submit"]');
+         const resetConfirmBtnElement = resetPasswordForm.querySelector('.modal-footer button.btn-primary');
+
+         if (resetRequestBtnElement) {
+               resetRequestBtnElement.addEventListener('click', handleResetPasswordRequest);
+         }
+
+         if (resetConfirmBtnElement) {
+              resetConfirmBtnElement.addEventListener('click', handleResetPasswordConfirm);
+         }
 
 
-    // --- Inicialización ---
-    // Cargar datos iniciales (empleados, ausencias)
-    // cargarEmpleadosLocal(); // Ya se cargan al inicio del script
+    }
 
-    // Redirigir a la página de login al cargar la aplicación
-    showLoginForm();
+   if (btnRegistro) btnRegistro.addEventListener('click', showRegistroForm);
+
+    if (registroFormElement) {
+        $(registroFormElement).off('submit').on('submit', function(e) {
+            e.preventDefault();
+            const newEmailInput = document.getElementById('new-email');
+            const newPasswordInput = document.getElementById('new-password-reg');
+            const confirmPasswordInput = document.getElementById('confirm-password-reg');
+            const newEmail = newEmailInput ? newEmailInput.value.trim() : '';
+            const newPassword = newPasswordInput ? newPasswordInput.value : '';
+            const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
+
+            if (!newEmail || !newPassword || !confirmPassword) {
+                 mostrarAlerta('Por favor, complete todos los campos del formulario de registro.', 'warning');
+                 return;
+            }
+             if (newPassword !== confirmPassword) {
+                 mostrarAlerta('Las contraseñas no coinciden.', 'warning');
+                 return;
+             }
+             if (newPassword.length < 6) {
+                  mostrarAlerta('La contraseña debe tener al menos 6 caracteres.', 'warning');
+                  return;
+             }
+            const emailExiste = usuariosPermitidos.some(u => u.email === newEmail);
+            if (emailExiste) {
+                 mostrarAlerta('El correo electrónico ya está registrado.', 'warning');
+                 return;
+            }
+
+            usuariosPermitidos.push({ email: newEmail, password: newPassword, rol: 'empleado' });
+            localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos));
+
+            mostrarAlerta('Usuario registrado con éxito. Ahora puedes iniciar sesión.', 'success');
+            hideRegistroForm();
+        });
+    }
+
+
+    if (btnCancelarRegistro) btnCancelarRegistro.addEventListener('click', hideRegistroForm);
+
+    if (btnDashboard) btnDashboard.addEventListener('click', showDashboard);
+    if (btnEmpleados) btnEmpleados.addEventListener('click', showEmpleadosList);
+    if (btnCumpleanos) btnCumpleanos.addEventListener('click', showCumpleanosList);
+    if (btnAusencias) btnAusencias.addEventListener('click', showAusenciasList);
+
+
+   if (btnNuevoEmpleado) btnNuevoEmpleado.addEventListener('click', () => showEmpleadoForm());
+   if (btnNuevoEmpleadoLista) btnNuevoEmpleadoLista.addEventListener('click', () => showEmpleadoForm());
+    if (btnVerEmpleados) btnVerEmpleados.addEventListener('click', showEmpleadosList);
+    if (btnExportarCSV) btnExportarCSV.addEventListener('click', exportarEmpleadosCSV);
+
+   if (empleadoFormElement) {
+        $(empleadoFormElement).off('submit').on('submit', handleEmpleadoFormSubmit);
+   }
+
+
+   if (btnCancelar) btnCancelar.addEventListener('click', showEmpleadosList);
+
+    if (breadcrumbHomeLink) {
+         breadcrumbHomeLink.addEventListener('click', function(e) {
+            e.preventDefault();
+             if (isAuthenticated) {
+                showDashboard();
+            } else {
+                showLoginForm();
+            }
+        });
+    }
+
+
+    // --- Funcionalidad para mostrar/ocultar contraseña ---
+    const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+
+    togglePasswordButtons.forEach(button => {
+        if (button && button.parentNode) {
+            button.addEventListener('click', function() {
+                const targetId = this.dataset.target;
+                const passwordInput = document.getElementById(targetId);
+
+                if (passwordInput) {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+
+                    const icon = this.querySelector('i');
+                    if (icon) {
+                        icon.classList.toggle('bi-eye');
+                        icon.classList.toggle('bi-eye-slash');
+                    }
+                }
+            });
+        } else {
+            console.warn("Botón toggle password encontrado sin parentNode al adjuntar listener:", button);
+        }
+    });
+    // --- Fin Funcionalidad mostrar/ocultar contraseña ---
+
+
+   // --- Inicialización ---
+   showLoginForm();
 }); // Fin del DOMContentLoaded
