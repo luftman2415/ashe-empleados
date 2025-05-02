@@ -659,167 +659,167 @@ document.addEventListener('DOMContentLoaded', function() {
               if (btnExportarCSV) btnExportarCSV.classList.remove('d-none');
          }
 
-          const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
-          if (breadcrumbNav) {
-               if (loginFormSection.classList.contains('d-none') && registroFormSection.classList.contains('d-none')) {
-                   breadcrumbNav.classList.add('d-none'); // Ocultar breadcrumb si estamos en login/registro
-               } else {
-                   breadcrumbNav.classList.remove('d-none'); // Mostrarlo en secciones autenticadas
-               }
-          }
-     }
-
-
-    function ocultarElementosAutenticados() {
-        ocultarElements([btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias]);
-        ocultarElements([btnNuevoEmpleado, btnNuevoEmpleadoLista, btnVerEmpleados, btnCancelar, btnExportarCSV]);
-         ocultarElements([document.getElementById('btn-editar-desde-detalle'), document.getElementById('btn-volver-desde-detalle')]);
-
-        if (ausenciaFormElement) ausenciaFormElement.classList.add('d-none');
-         const dashboardUsuariosCard = document.getElementById('dashboard-usuarios-card');
-         if (dashboardUsuariosCard) dashboardUsuariosCard.classList.add('d-none');
-
-        mostrarElements([btnLogin, btnRegistro]);
-
-          const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
-          if (breadcrumbNav) breadcrumbNav.classList.add('d-none'); // Ocultar breadcrumb si no está autenticado
-    }
-
-
-    // --- Event Listeners ---
-    if (loginFormElement) loginFormElement.addEventListener('submit', handleLogin);
-    if (btnLogout) btnLogout.addEventListener('click', handleLogout);
-
-     if (forgotPasswordLink) {
-         forgotPasswordLink.addEventListener('click', function(e) {
-             e.preventDefault();
-             showResetPasswordModal();
-         });
-     }
-
-     if (resetPasswordForm) {
-          resetPasswordForm.addEventListener('submit', function(e) {
-              e.preventDefault();
-              const resetConfirmBtnElement = resetPasswordForm.querySelector('.modal-footer button.btn-primary');
-               if (resetConfirmBtnElement && !resetConfirmBtnElement.classList.contains('d-none')) {
-                  handleResetPasswordConfirm(e);
+         const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
+         if (breadcrumbNav) {
+              if (loginFormSection.classList.contains('d-none') && registroFormSection.classList.contains('d-none')) {
+                  breadcrumbNav.classList.add('d-none'); // Ocultar breadcrumb si estamos en login/registro
               } else {
-                  handleResetPasswordRequest(e);
+                  breadcrumbNav.classList.remove('d-none'); // Mostrarlo en secciones autenticadas
               }
-          });
-
-          const resetRequestBtnElement = resetPasswordForm.querySelector('button[type="submit"]');
-          const resetConfirmBtnElement = resetPasswordForm.querySelector('.modal-footer button.btn-primary');
-
-          if (resetRequestBtnElement) {
-                resetRequestBtnElement.addEventListener('click', handleResetPasswordRequest);
-          }
-
-          if (resetConfirmBtnElement) {
-               resetConfirmBtnElement.addEventListener('click', handleResetPasswordConfirm);
-          }
-
-
-     }
-
-    if (btnRegistro) btnRegistro.addEventListener('click', showRegistroForm);
-
-     if (registroFormElement) {
-         $(registroFormElement).off('submit').on('submit', function(e) {
-             e.preventDefault();
-             const newEmailInput = document.getElementById('new-email');
-             const newPasswordInput = document.getElementById('new-password-reg');
-             const confirmPasswordInput = document.getElementById('confirm-password-reg');
-             const newEmail = newEmailInput ? newEmailInput.value.trim() : '';
-             const newPassword = newPasswordInput ? newPasswordInput.value : '';
-             const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
-
-             if (!newEmail || !newPassword || !confirmPassword) {
-                  mostrarAlerta('Por favor, complete todos los campos del formulario de registro.', 'warning');
-                  return;
-             }
-              if (newPassword !== confirmPassword) {
-                  mostrarAlerta('Las contraseñas no coinciden.', 'warning');
-                  return;
-              }
-              if (newPassword.length < 6) {
-                   mostrarAlerta('La contraseña debe tener al menos 6 caracteres.', 'warning');
-                   return;
-              }
-             const emailExiste = usuariosPermitidos.some(u => u.email === newEmail);
-             if (emailExiste) {
-                  mostrarAlerta('El correo electrónico ya está registrado.', 'warning');
-                  return;
-             }
-
-             usuariosPermitidos.push({ email: newEmail, password: newPassword, rol: 'empleado' });
-             localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos));
-
-             mostrarAlerta('Usuario registrado con éxito. Ahora puedes iniciar sesión.', 'success');
-             hideRegistroForm();
-         });
-     }
-
-
-     if (btnCancelarRegistro) btnCancelarRegistro.addEventListener('click', hideRegistroForm);
-
-     if (btnDashboard) btnDashboard.addEventListener('click', showDashboard);
-     if (btnEmpleados) btnEmpleados.addEventListener('click', showEmpleadosList);
-     if (btnCumpleanos) btnCumpleanos.addEventListener('click', showCumpleanosList);
-     if (btnAusencias) btnAusencias.addEventListener('click', showAusenciasList);
-
-
-    if (btnNuevoEmpleado) btnNuevoEmpleado.addEventListener('click', () => showEmpleadoForm());
-    if (btnNuevoEmpleadoLista) btnNuevoEmpleadoLista.addEventListener('click', () => showEmpleadoForm());
-     if (btnVerEmpleados) btnVerEmpleados.addEventListener('click', showEmpleadosList);
-     if (btnExportarCSV) btnExportarCSV.addEventListener('click', exportarEmpleadosCSV);
-
-    if (empleadoFormElement) {
-         $(empleadoFormElement).off('submit').on('submit', handleEmpleadoFormSubmit);
+         }
     }
 
 
-    if (btnCancelar) btnCancelar.addEventListener('click', showEmpleadosList);
+   function ocultarElementosAutenticados() {
+       ocultarElements([btnLogout, btnDashboard, btnEmpleados, btnCumpleanos, btnAusencias]);
+       ocultarElements([btnNuevoEmpleado, btnNuevoEmpleadoLista, btnVerEmpleados, btnCancelar, btnExportarCSV]);
+        ocultarElements([document.getElementById('btn-editar-desde-detalle'), document.getElementById('btn-volver-desde-detalle')]);
 
-     if (breadcrumbHomeLink) {
-          breadcrumbHomeLink.addEventListener('click', function(e) {
+       if (ausenciaFormElement) ausenciaFormElement.classList.add('d-none');
+        const dashboardUsuariosCard = document.getElementById('dashboard-usuarios-card');
+        if (dashboardUsuariosCard) dashboardUsuariosCard.classList.add('d-none');
+
+       mostrarElements([btnLogin, btnRegistro]);
+
+         const breadcrumbNav = document.querySelector('nav[aria-label="breadcrumb"]');
+         if (breadcrumbNav) breadcrumbNav.classList.add('d-none'); // Ocultar breadcrumb si no está autenticado
+   }
+
+
+   // --- Event Listeners ---
+   if (loginFormElement) loginFormElement.addEventListener('submit', handleLogin);
+   if (btnLogout) btnLogout.addEventListener('click', handleLogout);
+
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showResetPasswordModal();
+        });
+    }
+
+    if (resetPasswordForm) {
+         resetPasswordForm.addEventListener('submit', function(e) {
              e.preventDefault();
-              if (isAuthenticated) {
-                 showDashboard();
+             const resetConfirmBtnElement = resetPasswordForm.querySelector('.modal-footer button.btn-primary');
+              if (resetConfirmBtnElement && !resetConfirmBtnElement.classList.contains('d-none')) {
+                 handleResetPasswordConfirm(e);
              } else {
-                 showLoginForm();
+                 handleResetPasswordRequest(e);
              }
          });
-     }
 
+         const resetRequestBtnElement = resetPasswordForm.querySelector('button[type="submit"]');
+         const resetConfirmBtnElement = resetPasswordForm.querySelector('.modal-footer button.btn-primary');
 
-     // --- Funcionalidad para mostrar/ocultar contraseña ---
-     const togglePasswordButtons = document.querySelectorAll('.toggle-password');
-
-     togglePasswordButtons.forEach(button => {
-         if (button && button.parentNode) {
-             button.addEventListener('click', function() {
-                 const targetId = this.dataset.target;
-                 const passwordInput = document.getElementById(targetId);
-
-                 if (passwordInput) {
-                     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                     passwordInput.setAttribute('type', type);
-
-                     const icon = this.querySelector('i');
-                     if (icon) {
-                         icon.classList.toggle('bi-eye');
-                         icon.classList.toggle('bi-eye-slash');
-                     }
-                 }
-             });
-         } else {
-             console.warn("Botón toggle password encontrado sin parentNode al adjuntar listener:", button);
+         if (resetRequestBtnElement) {
+               resetRequestBtnElement.addEventListener('click', handleResetPasswordRequest);
          }
-     });
-     // --- Fin Funcionalidad mostrar/ocultar contraseña ---
+
+         if (resetConfirmBtnElement) {
+              resetConfirmBtnElement.addEventListener('click', handleResetPasswordConfirm);
+         }
 
 
-    // --- Inicialización ---
-    showLoginForm();
+    }
+
+   if (btnRegistro) btnRegistro.addEventListener('click', showRegistroForm);
+
+    if (registroFormElement) {
+        $(registroFormElement).off('submit').on('submit', function(e) {
+            e.preventDefault();
+            const newEmailInput = document.getElementById('new-email');
+            const newPasswordInput = document.getElementById('new-password-reg');
+            const confirmPasswordInput = document.getElementById('confirm-password-reg');
+            const newEmail = newEmailInput ? newEmailInput.value.trim() : '';
+            const newPassword = newPasswordInput ? newPasswordInput.value : '';
+            const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
+
+            if (!newEmail || !newPassword || !confirmPassword) {
+                 mostrarAlerta('Por favor, complete todos los campos del formulario de registro.', 'warning');
+                 return;
+            }
+             if (newPassword !== confirmPassword) {
+                 mostrarAlerta('Las contraseñas no coinciden.', 'warning');
+                 return;
+             }
+             if (newPassword.length < 6) {
+                  mostrarAlerta('La contraseña debe tener al menos 6 caracteres.', 'warning');
+                  return;
+             }
+            const emailExiste = usuariosPermitidos.some(u => u.email === newEmail);
+            if (emailExiste) {
+                 mostrarAlerta('El correo electrónico ya está registrado.', 'warning');
+                 return;
+            }
+
+            usuariosPermitidos.push({ email: newEmail, password: newPassword, rol: 'empleado' });
+            localStorage.setItem('usuarios', JSON.stringify(usuariosPermitidos));
+
+            mostrarAlerta('Usuario registrado con éxito. Ahora puedes iniciar sesión.', 'success');
+            hideRegistroForm();
+        });
+    }
+
+
+    if (btnCancelarRegistro) btnCancelarRegistro.addEventListener('click', hideRegistroForm);
+
+    if (btnDashboard) btnDashboard.addEventListener('click', showDashboard);
+    if (btnEmpleados) btnEmpleados.addEventListener('click', showEmpleadosList);
+    if (btnCumpleanos) btnCumpleanos.addEventListener('click', showCumpleanosList);
+    if (btnAusencias) btnAusencias.addEventListener('click', showAusenciasList);
+
+
+   if (btnNuevoEmpleado) btnNuevoEmpleado.addEventListener('click', () => showEmpleadoForm());
+   if (btnNuevoEmpleadoLista) btnNuevoEmpleadoLista.addEventListener('click', () => showEmpleadoForm());
+    if (btnVerEmpleados) btnVerEmpleados.addEventListener('click', showEmpleadosList);
+    if (btnExportarCSV) btnExportarCSV.addEventListener('click', exportarEmpleadosCSV);
+
+   if (empleadoFormElement) {
+        $(empleadoFormElement).off('submit').on('submit', handleEmpleadoFormSubmit);
+   }
+
+
+   if (btnCancelar) btnCancelar.addEventListener('click', showEmpleadosList);
+
+    if (breadcrumbHomeLink) {
+         breadcrumbHomeLink.addEventListener('click', function(e) {
+            e.preventDefault();
+             if (isAuthenticated) {
+                showDashboard();
+            } else {
+                showLoginForm();
+            }
+        });
+    }
+
+
+    // --- Funcionalidad para mostrar/ocultar contraseña ---
+    const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+
+    togglePasswordButtons.forEach(button => {
+        if (button && button.parentNode) {
+            button.addEventListener('click', function() {
+                const targetId = this.dataset.target;
+                const passwordInput = document.getElementById(targetId);
+
+                if (passwordInput) {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+
+                    const icon = this.querySelector('i');
+                    if (icon) {
+                        icon.classList.toggle('bi-eye');
+                        icon.classList.toggle('bi-eye-slash');
+                    }
+                }
+            });
+        } else {
+            console.warn("Botón toggle password encontrado sin parentNode al adjuntar listener:", button);
+        }
+    });
+    // --- Fin Funcionalidad mostrar/ocultar contraseña ---
+
+
+   // --- Inicialización ---
+   showLoginForm();
 }); // Fin del DOMContentLoaded
