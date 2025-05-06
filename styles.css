@@ -1,208 +1,340 @@
-/* styles.css */
-
-/* Fuentes de Google Fonts */
-body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f8f9fa; /* Color de fondo claro */
-    color: #333; /* Color de texto principal oscuro */
+.spa-section {
+    display: none;
 }
-
-/* Estilo del Navbar */
-.navbar {
-    background-color: #e9ecef; /* Fondo ligeramente gris */
-    border-bottom: 1px solid #dee2e6; /* Línea sutil en la parte inferior */
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+.spa-section.active {
+    display: block;
 }
-
-.navbar-brand {
-    font-weight: 700; /* Negrita */
-    color: #0056b3; /* Azul oscuro */
-    display: flex; /* Permite alinear el logo y el texto si el logo está antes */
+#alert-container {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 300px;
+}
+#add-empleado-fab {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+    display: flex;
     align-items: center;
+    justify-content: center;
 }
-
-.navbar-brand img {
-    height: 30px; /* Ajusta según el tamaño de tu logo */
-    margin-right: 8px; /* Espacio entre el logo y el texto */
+.toggle-password {
+    cursor: pointer;
 }
-
-
-/* Estilo del logo en círculo */
-.logo-container {
-    display: flex;
-    align-items: center; /* Centra verticalmente si el contenedor es más alto */
-    margin-right: 15px; /* Espacio a la derecha del logo */
+#cumpleanos-contador {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #d35400;
 }
-
-.logo-circle-wrapper {
-    width: 40px; /* Tamaño del círculo */
-    height: 40px;
-    border-radius: 50%; /* Forma circular */
-    overflow: hidden; /* Oculta las partes de la imagen que se salgan del círculo */
-    display: flex;
-    justify-content: center; /* Centra horizontalmente la imagen dentro del círculo */
-    align-items: center; /* Centra verticalmente la imagen dentro del círculo */
-    background-color: #fff; /* Fondo blanco para el círculo */
-    box-shadow: 0 0 5px rgba(0,0,0,0.2); /* Sombra sutil */
+input[type="file"]::-webkit-file-upload-button {
+    visibility: hidden;
 }
-
-.logo-circle-wrapper img {
-    display: block; /* Asegura que la imagen se comporta como bloque */
-    width: 100%; /* La imagen ocupa el ancho del círculo */
-    height: 100%; /* La imagen ocupa el alto del círculo */
-    object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse */
-}
-
-
-/* Estilo de los enlaces del Navbar (pueden ser botones con estilo link) */
-.navbar .nav-link,
-.navbar .btn-link {
-    color: #0056b3; /* Azul oscuro */
-    font-weight: 500;
-    margin-left: 10px; /* Espacio entre los botones */
-    text-decoration: none; /* Quitar subrayado por defecto de los enlaces */
-}
-
-.navbar .nav-link:hover,
-.navbar .btn-link:hover {
-    color: #007bff; /* Un azul más brillante al pasar el mouse */
-    text-decoration: underline; /* Subrayar al pasar el mouse */
-}
-
-/* Estilo del botón Cerrar Sesión */
-.btn-logout {
-     color: #dc3545; /* Rojo de peligro de Bootstrap */
-     font-weight: 500;
-     margin-left: 10px;
-     text-decoration: none;
-     background-color: transparent; /* Fondo transparente */
-     border: none; /* Sin borde */
-}
-
-.btn-logout:hover {
-    color: #c82333; /* Rojo más oscuro al pasar el mouse */
-    text-decoration: underline;
-}
-
-
-/* Estilo del Footer */
-.footer {
-    background-color: #e9ecef; /* Fondo similar al navbar */
-    border-top: 1px solid #dee2e6; /* Línea sutil en la parte superior */
-    color: #6c757d; /* Texto gris oscuro */
-    font-size: 0.9rem;
-    margin-top: 3rem; /* Espacio superior */
-}
-
-/* Estilo para las secciones principales */
-section {
-    background-color: #fff; /* Fondo blanco para las tarjetas/secciones */
-    padding: 20px; /* Espacio interno */
-    border-radius: 8px; /* Bordes redondeados */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra sutil */
-    margin-bottom: 20px; /* Espacio entre secciones */
-}
-
-
-/* Estilo específico para el banner */
-#portal-banner {
-    background-color: #007bff; /* Fondo azul primario */
-    color: white; /* Texto blanco */
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
-
-/* Estilo para los encabezados de las tarjetas (card-header) */
-.card-header {
-    background-color: #f8f9fa; /* Fondo claro por defecto si no tiene bg-primary */
-    border-bottom: 1px solid rgba(0,0,0,.125);
-    padding: 0.75rem 1.25rem; /* Espaciado estándar de Bootstrap */
-    margin-bottom: 0; /* Elimina margen inferior por defecto */
-}
-
-/* Asegura que los títulos en cualquier card-header (no solo los azules) tengan un color legible */
-/* Esta regla asegura que los títulos en encabezados con fondo blanco se vean */
-.card-header h3,
-.card-header h5,
-.card-header .card-title { /* Incluye .card-title por si se usa */
-    color: #333; /* Un color oscuro legible */
-}
-
-/* Regla específica para los encabezados azules (bg-primary) */
-/* Esta regla asegura que los títulos en encabezados con fondo azul sean blancos */
-.card-header.bg-primary h3,
-.card-header.bg-primary h5,
-.card-header.bg-primary .card-title {
-     color: white; /* Texto blanco para encabezados azules */
-}
-
-
-/* Estilo para el cuerpo de las tarjetas (card-body) */
-.card-body {
-    padding: 1.25rem; /* Espaciado estándar de Bootstrap */
-}
-
-
-/* Estilo para los iconos dentro de títulos */
-.card-header .bi,
-.card-title .bi {
-    margin-right: 8px;
-}
-
-/* Estilo para el contenedor de alertas flotante */
-#alerta-container {
-    z-index: 1050; /* Asegura que esté por encima de otros elementos de Bootstrap como modales */
-}
-
-
-/* Estilo para los dashboard cards */
-.dashboard-card {
-    border: none; /* Sin borde */
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease; /* Animación suave al pasar el mouse */
-}
-
-.dashboard-card:hover {
-    transform: translateY(-5px); /* Levanta la tarjeta ligeramente al pasar el mouse */
-}
-
-.dashboard-card .card-icon {
-    font-size: 3rem; /* Tamaño grande para los iconos */
-    margin-bottom: 10px;
-    color: #007bff; /* Color del icono */
-}
-
-.dashboard-card .card-title {
-    font-size: 1.8rem; /* Tamaño del número/título principal */
-    font-weight: 700;
-    color: #333; /* Color del número */
-}
-
-.dashboard-card .card-text {
-    color: #6c757d; /* Color del texto descriptivo */
+input[type="file"]::before {
+    content: 'Adjuntar archivo';
+    display: inline-block;
+    background: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 12px;
+    outline: none;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    cursor: pointer;
     font-size: 1rem;
 }
+input[type="file"]:hover::before {
+    background: #0b5ed7;
+}
+fieldset {
+    border: 1px solid #dee2e6 !important;
+    margin-bottom: 1rem;
+    background: #f8f9fa;
+}
+legend {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #0d6efd;
+}
+#hijos-tabla table th, #hijos-tabla table td {
+    vertical-align: middle;
+    text-align: center;
+}
 
-/* Estilo para el botón flotante de "Nuevo Empleado" en la lista */
-/* Este botón ahora está dentro de la fila de filtros, no es flotante fixed */
-/* Le dimos W-100 y W-md-auto en el HTML para que se ajuste */
+/* Estilos generales */
+:root {
+    --transition-speed: 0.3s;
+}
 
+body {
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
 
-/* Estilo para el input de salario con icono */
-/* Si usas input-group, Bootstrap ya maneja esto */
+/* Estilos para el tema oscuro */
+[data-bs-theme="dark"] {
+    --bs-body-bg: #212529;
+    --bs-body-color: #f8f9fa;
+}
 
-/* Oculta visualmente las etiquetas que no se necesitan si se usa placeholder o input-group-text */
-.visually-hidden {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0,0,0,0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
+[data-bs-theme="dark"] .card {
+    background-color: #2c3034;
+    border-color: #373b3e;
+}
+
+[data-bs-theme="dark"] .table {
+    color: #f8f9fa;
+}
+
+/* Mejoras de diseño */
+.card {
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn {
+    transition: all var(--transition-speed);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Mejoras en tablas */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: var(--bs-primary);
+    color: white;
+    border: none;
+}
+
+/* Mejoras en formularios */
+.form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13,110,253,0.25);
+}
+
+/* Animaciones */
+.fade-in {
+    animation: fadeIn var(--transition-speed);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Mejoras en el dashboard */
+.dashboard-card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.dashboard-card .card-body {
+    padding: 1.5rem;
+}
+
+/* Mejoras en la navegación */
+.breadcrumb {
+    background-color: transparent;
+    padding: 0.5rem 0;
+}
+
+/* Mejoras en alertas */
+.alert {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Mejoras en botones de acción */
+.action-buttons .btn {
+    margin: 0 0.25rem;
+}
+
+/* Mejoras en la lista de empleados */
+#tabla-empleados {
+    margin-top: 1rem;
+}
+
+/* Mejoras en el formulario de empleado */
+.empleado-form {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Mejoras en la vista de detalle */
+.detalle-empleado {
+    background-color: var(--bs-body-bg);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+/* Mejoras en la lista de cumpleaños */
+#lista-cumpleanos-dashboard li {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+#lista-cumpleanos-dashboard li:last-child {
+    border-bottom: none;
+}
+
+/* Mejoras en la lista de licencias */
+#lista-licencias-dashboard li {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+#lista-licencias-dashboard li:last-child {
+    border-bottom: none;
+}
+
+/* Estilos para gráficos */
+.card canvas {
+    max-height: 300px;
+}
+
+/* Mejoras en responsividad */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .table-responsive {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-card {
+        margin-bottom: 1rem;
+    }
+    
+    #alert-container {
+        width: 100%;
+        right: 0;
+        left: 0;
+        padding: 0 1rem;
+    }
+}
+
+/* Mejoras en la visualización de gráficos */
+.chart-container {
+    position: relative;
+    margin: auto;
+    height: 300px;
+    width: 100%;
+}
+
+/* Mejoras en la navegación móvil */
+@media (max-width: 576px) {
+    .breadcrumb {
+        font-size: 0.9rem;
+    }
+    
+    .card-header {
+        font-size: 1.1rem;
+    }
+    
+    .btn {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Mejoras en formularios móviles */
+@media (max-width: 768px) {
+    .form-label {
+        font-size: 0.9rem;
+    }
+    
+    .form-control {
+        font-size: 0.9rem;
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .input-group > * {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Mejoras en tablas móviles */
+@media (max-width: 768px) {
+    .table th,
+    .table td {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+    
+    .action-buttons .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Mejoras en notificaciones */
+.toastify {
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+}
+
+/* Mejoras en el tema oscuro para gráficos */
+[data-bs-theme="dark"] .card canvas {
+    background-color: #2c3034;
+}
+
+[data-bs-theme="dark"] .chart-container {
+    background-color: #2c3034;
+}
+
+/* Animaciones suaves para gráficos */
+.chart-container {
+    transition: all var(--transition-speed);
+}
+
+/* Mejoras en la visualización de datos */
+.data-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--bs-primary);
+}
+
+[data-bs-theme="dark"] .data-value {
+    color: #6ea8fe;
+}
+
+/* Mejoras en la accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
