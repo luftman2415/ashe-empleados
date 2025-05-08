@@ -35,11 +35,51 @@ body {
 /* Estilos del Sidebar */
 #sidebar-wrapper {
     min-height: 100vh;
-    margin-left: -15rem; /* Ancho del sidebar */
-    transition: all 0.3s ease;
-    width: 15rem; /* Ancho fijo */
-    background-color: var(--primary-color) !important; /* Fondo principal de Ashe */
+    margin-left: 0; /* Cambiado de -15rem a 0 para que sea visible por defecto */
+    transition: margin 0.3s ease-in-out;
+    width: 15rem;
+    background-color: var(--primary-color) !important;
     border-right: 1px solid var(--border-color);
+    position: fixed; /* Añadido para asegurar posición fija */
+    z-index: 1000; /* Asegurar que esté por encima del contenido */
+}
+
+/* Ajuste del contenido principal */
+#page-content-wrapper {
+    margin-left: 15rem; /* Añadir margen igual al ancho del sidebar */
+    width: calc(100% - 15rem);
+    transition: margin 0.3s ease-in-out;
+}
+
+/* Estado cuando el sidebar está oculto */
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: -15rem;
+}
+
+#wrapper.toggled #page-content-wrapper {
+    margin-left: 0;
+    width: 100%;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: -15rem;
+    }
+    
+    #page-content-wrapper {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: 0;
+    }
+    
+    #wrapper.toggled #page-content-wrapper {
+        margin-left: 15rem;
+        width: calc(100% - 15rem);
+    }
 }
 
 /* Estilos del Encabezado del Sidebar (Punto 1) */
