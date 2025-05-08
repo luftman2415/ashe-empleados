@@ -1,340 +1,389 @@
-.spa-section {
-    display: none;
-}
-.spa-section.active {
-    display: block;
-}
-#alert-container {
-    position: fixed;
-    top: 70px;
-    right: 20px;
-    z-index: 9999;
-    min-width: 300px;
-}
-#add-empleado-fab {
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.toggle-password {
-    cursor: pointer;
-}
-#cumpleanos-contador {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #d35400;
-}
-input[type="file"]::-webkit-file-upload-button {
-    visibility: hidden;
-}
-input[type="file"]::before {
-    content: 'Adjuntar archivo';
-    display: inline-block;
-    background: #0d6efd;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 12px;
-    outline: none;
-    white-space: nowrap;
-    -webkit-user-select: none;
-    cursor: pointer;
-    font-size: 1rem;
-}
-input[type="file"]:hover::before {
-    background: #0b5ed7;
-}
-fieldset {
-    border: 1px solid #dee2e6 !important;
-    margin-bottom: 1rem;
-    background: #f8f9fa;
-}
-legend {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #0d6efd;
-}
-#hijos-tabla table th, #hijos-tabla table td {
-    vertical-align: middle;
-    text-align: center;
-}
-
-/* Estilos generales */
 :root {
-    --transition-speed: 0.3s;
+    --primary-color: #0a3d62; /* Azul oscuro de Ashe */
+    --secondary-color: #3c6382; /* Azul intermedio */
+    --accent-color: #2ed573; /* Verde de acento */
+    --text-color: #333; /* Color de texto general oscuro */
+    --second-text-color: #555; /* Texto secundario */
+    --border-color: #ddd; /* Color de borde general */
+     --white: #fff;
+     --light: #f8f9fa; /* Color de fondo claro de Bootstrap */
 }
 
+/* Estilos generales para el body */
 body {
-    transition: background-color var(--transition-speed), color var(--transition-speed);
+    overflow-x: hidden;
+    color: var(--text-color);
+    background-color: var(--light);
 }
 
-/* Estilos para el tema oscuro */
-[data-bs-theme="dark"] {
-    --bs-body-bg: #212529;
-    --bs-body-color: #f8f9fa;
+/* Estilos del Wrapper (Contenedor principal) */
+#wrapper {
+    display: flex;
+    /* Transición para el toggle del sidebar */
+    transition: all 0.3s ease;
 }
 
-[data-bs-theme="dark"] .card {
-    background-color: #2c3034;
-    border-color: #373b3e;
+/* Clase toggled para cuando el sidebar está colapsado */
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
 }
 
-[data-bs-theme="dark"] .table {
-    color: #f8f9fa;
+#wrapper.toggled #page-content-wrapper {
+    margin-left: 0;
 }
 
-/* Mejoras de diseño */
-.card {
-    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+/* Estilos del Sidebar */
+#sidebar-wrapper {
+    min-height: 100vh;
+    margin-left: -15rem; /* Ancho del sidebar */
+    transition: all 0.3s ease;
+    width: 15rem; /* Ancho fijo */
+    background-color: var(--primary-color) !important; /* Fondo principal de Ashe */
+    border-right: 1px solid var(--border-color);
 }
 
-.card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+/* Estilos del Encabezado del Sidebar (Punto 1) */
+.sidebar-heading {
+    padding: 0.875rem 1.25rem;
+    font-size: 1.2rem;
+    font-weight: bold; /* Keep fw-bold */
+    text-align: center; /* Keep text-center */
+    /* Background and text color adjusted for logo visibility */
+    background-color: var(--white); /* White background in light mode */
+    color: var(--primary-color); /* Dark text color */
+    border-bottom: 1px solid var(--border-color); /* Standard border */
 }
 
-.btn {
-    transition: all var(--transition-speed);
+/* Dark theme adjustment for the sidebar heading background and text */
+html[data-bs-theme="dark"] .sidebar-heading {
+     background-color: #1f1f1f !important; /* Darker background in dark mode */
+     color: #eee; /* Lighter text color in dark mode */
+     border-bottom-color: #333;
 }
 
-.btn:hover {
-    transform: translateY(-1px);
+
+.sidebar-heading img.logo-sm {
+    height: 2rem; /* Tamaño pequeño del logo */
+    vertical-align: middle;
 }
 
-/* Mejoras en tablas */
-.table {
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.table thead th {
-    background-color: var(--bs-primary);
-    color: white;
-    border: none;
-}
-
-/* Mejoras en formularios */
-.form-control:focus {
-    box-shadow: 0 0 0 0.25rem rgba(13,110,253,0.25);
-}
-
-/* Animaciones */
-.fade-in {
-    animation: fadeIn var(--transition-speed);
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* Mejoras en el dashboard */
-.dashboard-card {
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.dashboard-card .card-body {
-    padding: 1.5rem;
-}
-
-/* Mejoras en la navegación */
-.breadcrumb {
-    background-color: transparent;
-    padding: 0.5rem 0;
-}
-
-/* Mejoras en alertas */
-.alert {
-    border-radius: 8px;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Mejoras en botones de acción */
-.action-buttons .btn {
-    margin: 0 0.25rem;
-}
-
-/* Mejoras en la lista de empleados */
-#tabla-empleados {
-    margin-top: 1rem;
-}
-
-/* Mejoras en el formulario de empleado */
-.empleado-form {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-/* Mejoras en la vista de detalle */
-.detalle-empleado {
-    background-color: var(--bs-body-bg);
-    border-radius: 12px;
-    padding: 2rem;
-    margin-top: 2rem;
-}
-
-/* Mejoras en la lista de cumpleaños */
-#lista-cumpleanos-dashboard li {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--bs-border-color);
-}
-
-#lista-cumpleanos-dashboard li:last-child {
-    border-bottom: none;
-}
-
-/* Mejoras en la lista de licencias */
-#lista-licencias-dashboard li {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--bs-border-color);
-}
-
-#lista-licencias-dashboard li:last-child {
-    border-bottom: none;
-}
-
-/* Estilos para gráficos */
-.card canvas {
-    max-height: 300px;
-}
-
-/* Mejoras en responsividad */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-    
-    .card {
-        margin-bottom: 1rem;
-    }
-    
-    .table-responsive {
-        margin-bottom: 1rem;
-    }
-    
-    .btn-group {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .btn-group .btn {
-        margin-bottom: 0.5rem;
-    }
-    
-    .dashboard-card {
-        margin-bottom: 1rem;
-    }
-    
-    #alert-container {
-        width: 100%;
-        right: 0;
-        left: 0;
-        padding: 0 1rem;
-    }
-}
-
-/* Mejoras en la visualización de gráficos */
-.chart-container {
-    position: relative;
-    margin: auto;
-    height: 300px;
+.list-group {
     width: 100%;
 }
 
-/* Mejoras en la navegación móvil */
-@media (max-width: 576px) {
-    .breadcrumb {
-        font-size: 0.9rem;
-    }
-    
-    .card-header {
-        font-size: 1.1rem;
-    }
-    
-    .btn {
-        padding: 0.375rem 0.75rem;
-        font-size: 0.9rem;
-    }
+.list-group-item {
+    border: none; /* Quitamos bordes por defecto de list-group-item */
+    padding: 1.25rem 1.5rem;
+    background-color: transparent !important; /* Fondo transparente */
+    color: var(--white); /* Texto de los enlaces blanco */
+    transition: all 0.3s ease;
 }
 
-/* Mejoras en formularios móviles */
-@media (max-width: 768px) {
-    .form-label {
-        font-size: 0.9rem;
+.list-group-item i {
+     color: var(--accent-color); /* Iconos con color de acento */
+}
+
+
+.list-group-item.active {
+    background-color: rgba(255, 255, 255, 0.1) !important; /* Fondo sutil para activo */
+    border-left: 4px solid var(--accent-color); /* Barra de color de acento a la izquierda */
+    color: var(--white); /* Texto blanco */
+}
+
+.list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important; /* Fondo sutil al pasar el mouse */
+    color: var(--white);
+}
+
+/* Estilos del Contenido Principal */
+#page-content-wrapper {
+    min-width: 100vw;
+    flex-grow: 1; /* Permite que el contenido crezca */
+    /* No necesita margin-left aquí, flexbox lo maneja */
+}
+
+.navbar {
+    padding: 1rem 1.5rem; /* Ajustar padding de la navbar */
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar .nav-link {
+    color: var(--text-color); /* Color de los enlaces de la navbar */
+}
+
+.navbar .nav-link#logout-btn {
+     color: var(--danger) !important; /* Color rojo para cerrar sesión */
+}
+
+
+.primary-text {
+    color: var(--primary-color); /* Clase para usar el color primario */
+}
+
+.second-text {
+    color: var(--second-text-color); /* Clase para usar el color secundario */
+}
+
+/* Estilos para tarjetas de resumen en el dashboard */
+.dashboard-card .p-3 {
+     color: var(--white); /* Texto blanco en tarjetas de color */
+}
+.dashboard-card .p-3 i {
+     color: rgba(255, 255, 255, 0.8); /* Iconos ligeramente transparentes en tarjetas de color */
+}
+
+/* Clases de fondo de Bootstrap sobreescritas para reflejar paleta */
+.bg-primary { background-color: var(--primary-color) !important; }
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.btn-primary:hover {
+    background-color: #08314e; /* Un poco más oscuro */
+    border-color: #08314e;
+}
+
+.bg-success { background-color: var(--accent-color) !important; } /* Verde de acento */
+.btn-success {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--text-color); /* Texto oscuro en botón verde */
+}
+.btn-success:hover {
+    background-color: #23bf65; /* Verde un poco más oscuro */
+    border-color: #23bf65;
+}
+
+.bg-warning { background-color: #ffc107 !important; } /* Amarillo de Bootstrap por defecto */
+.bg-danger { background-color: #dc3545 !important; } /* Rojo de Bootstrap por defecto */
+.btn-danger { /* Puedes mantener el rojo de Bootstrap o ajustarlo */
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+/* Estilos para formularios y modales */
+.card-header {
+    background-color: var(--light); /* Fondo claro para encabezados de tarjeta */
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* --- Estilo para el Logo en la página de Login --- */
+.login-logo {
+    display: block; /* Hacer que la imagen sea un bloque */
+    margin: 0 auto; /* Centrar la imagen horizontalmente */
+    max-width: 150px; /* Establecer un ancho máximo */
+    height: auto; /* Mantener la relación de aspecto */
+    margin-bottom: 1.5rem; /* Espacio debajo del logo */
+}
+/* --- Fin Estilo Logo --- */
+
+
+/* --- Estilo para el Toggle de Contraseña dentro de form-floating --- */
+/* Ajusta la posición y el tamaño del botón para que esté alineado verticalmente */
+.form-floating .toggle-password {
+    position: absolute;
+    right: 0.75rem; /* Ajusta la posición desde la derecha */
+    top: 50%; /* Alinea el borde superior del botón al centro del contenedor */
+    transform: translateY(-50%); /* Mueve el botón hacia arriba la mitad de su altura para centrarlo */
+    z-index: 2; /* Asegura que el botón esté sobre el input */
+    height: calc(var(--bs-form-control-height) + 0.67em); /* Ajusta la altura para que coincida con la del form-floating */
+    line-height: calc(var(--bs-form-control-height) + 0.67em); /* Centra verticalmente el contenido del botón */
+    padding-top: 0; /* Elimina padding extra */
+    padding-bottom: 0; /* Elimina padding extra */
+    display: flex; /* Usa flexbox para centrar el icono */
+    align-items: center; /* Centra verticalmente el icono */
+    justify-content: center; /* Centra horizontalmente el icono */
+    color: var(--second-text-color); /* Color del icono */
+}
+
+/* Asegurar que el input tenga suficiente padding a la derecha para el icono */
+.form-floating input[type="password"].form-control,
+.form-floating input[type="text"].form-control { /* Aplica también cuando es text para mantener consistencia */
+    padding-right: 3rem !important; /* Aumenta el padding derecho para evitar que el texto quede debajo del icono */
+}
+/* --- Fin Estilo Toggle Contraseña --- */
+
+
+/* Estilos para el tema oscuro (Bootstrap data-bs-theme="dark") */
+html[data-bs-theme="dark"] body {
+    background-color: #121212; /* Fondo muy oscuro */
+    color: #eee; /* Texto claro */
+}
+
+html[data-bs-theme="dark"] #sidebar-wrapper {
+    background-color: #1f1f1f !important; /* Sidebar oscuro */
+    border-right-color: #333;
+}
+/* Dark theme adjustment for the sidebar heading background and text */
+html[data-bs-theme="dark"] .sidebar-heading {
+     background-color: #1f1f1f !important; /* Keep dark background in dark mode */
+     color: #eee; /* Lighter text color */
+     border-bottom-color: #333;
+}
+
+
+html[data-bs-theme="dark"] .list-group-item {
+     color: #eee; /* Texto claro en sidebar oscuro */
+}
+html[data-bs-theme="dark"] .list-group-item i {
+     color: var(--accent-color); /* Iconos de acento se mantienen */
+}
+
+html[data-bs-theme="dark"] .list-group-item.active {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-left-color: var(--accent-color);
+    color: #eee;
+}
+
+html[data-bs-theme="dark"] .list-group-item:hover {
+     background-color: rgba(255, 255, 255, 0.03) !important;
+     color: #eee;
+}
+
+
+html[data-bs-theme="dark"] .navbar {
+    background-color: #1f1f1f !important; /* Navbar oscuro */
+    border-bottom-color: #333;
+}
+
+html[data-bs-theme="dark"] .navbar .nav-link {
+    color: #eee; /* Enlaces de navbar claros */
+}
+
+html[data-bs-theme="dark"] .card {
+     background-color: #1f1f1f; /* Fondo oscuro para tarjetas */
+     border-color: #333;
+     color: #eee; /* Texto claro en tarjetas */
+}
+
+html[data-bs-theme="dark"] .card-header {
+    background-color: #282828; /* Encabezado de tarjeta un poco más claro que el fondo */
+    border-bottom-color: #333;
+}
+
+html[data-bs-theme="dark"] .modal-content {
+     background-color: #1f1f1f; /* Fondo oscuro para modales */
+     color: #eee; /* Texto claro en modales */
+}
+html[data-bs-theme="dark"] .modal-header {
+    border-bottom-color: #333;
+}
+html[data-bs-theme="dark"] .modal-footer {
+     border-top-color: #333;
+}
+
+
+html[data-bs-theme="dark"] .table {
+    color: #eee; /* Texto claro en tablas */
+}
+html[data-bs-theme="dark"] .table th {
+    color: #ccc; /* Encabezados de tabla un poco más oscuros */
+    border-bottom-color: #555;
+}
+html[data-bs-theme="dark"] .table td {
+     border-bottom-color: #555;
+}
+html[data-bs-theme="dark"] .table-hover tbody tr:hover {
+    background-color: #282828; /* Fondo al pasar el mouse en tablas oscuras */
+}
+
+
+html[data-bs-theme="dark"] .form-control,
+html[data-bs-theme="dark"] .form-select {
+    background-color: #282828;
+    color: #eee;
+    border-color: #555;
+}
+html[data-bs-theme="dark"] .form-control::placeholder {
+     color: #bbb;
+}
+html[data-bs-theme="dark"] .form-control:focus,
+html[data-bs-theme="dark"] .form-select:focus {
+    border-color: var(--accent-color); /* Borde de foco con color de acento */
+    box-shadow: 0 0 0 0.25rem rgba(46, 213, 115, 0.25); /* Sombra de foco con color de acento */
+}
+
+html[data-bs-theme="dark"] fieldset {
+     border-color: #555 !important;
+}
+html[data-bs-theme="dark"] legend {
+     color: #eee;
+}
+
+
+/* Estilos responsivos para ocultar sidebar en móviles */
+@media (max-width: 767px) {
+    #sidebar-wrapper {
+        margin-left: -15rem;
+        position: fixed;
+        z-index: 1000;
+        height: 100vh;
     }
-    
-    .form-control {
-        font-size: 0.9rem;
+
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: 0;
     }
-    
-    .input-group {
-        flex-direction: column;
-    }
-    
-    .input-group > * {
-        margin-bottom: 0.5rem;
+
+    #page-content-wrapper {
+        min-width: 100vw;
     }
 }
-
-/* Mejoras en tablas móviles */
-@media (max-width: 768px) {
-    .table th,
-    .table td {
-        font-size: 0.9rem;
-        padding: 0.5rem;
+@media (min-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: 0; /* Visible por defecto en desktop */
     }
-    
-    .action-buttons .btn {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.8rem;
+
+    #page-content-wrapper {
+        min-width: 0; /* Permite que el contenido ocupe el espacio restante */
+        width: 100%; /* Ajuste para que ocupe el ancho */
     }
-}
 
-/* Mejoras en notificaciones */
-.toastify {
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16);
-}
-
-/* Mejoras en el tema oscuro para gráficos */
-[data-bs-theme="dark"] .card canvas {
-    background-color: #2c3034;
-}
-
-[data-bs-theme="dark"] .chart-container {
-    background-color: #2c3034;
-}
-
-/* Animaciones suaves para gráficos */
-.chart-container {
-    transition: all var(--transition-speed);
-}
-
-/* Mejoras en la visualización de datos */
-.data-value {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--bs-primary);
-}
-
-[data-bs-theme="dark"] .data-value {
-    color: #6ea8fe;
-}
-
-/* Mejoras en la accesibilidad */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: -15rem; /* Se oculta al toggled en desktop */
     }
+
+     #wrapper.toggled #page-content-wrapper {
+         min-width: 100vw; /* Ocupa todo el ancho cuando sidebar está oculto */
+     }
+
+     /* Ocultar el botón de toggle del sidebar en desktop si siempre está visible */
+     /* #menu-toggle { display: none; } */
+}
+
+/* Estilos para el icono de Font Awesome en el sidebar */
+.sidebar-heading .fas {
+    color: var(--accent-color); /* Color de acento para iconos del encabezado */
+}
+
+
+/* Estilos para el botón de toggle de contraseña */
+.toggle-password {
+    background: none;
+    border: none;
+    padding: 0;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.toggle-password:hover {
+    color: var(--accent-color);
+}
+
+.form-floating .toggle-password {
+    margin-top: -0.5rem;
+}
+
+/* Ajuste para el input de contraseña dentro de form-floating */
+.form-floating input[type="password"],
+.form-floating input[type="text"] {
+    padding-right: 45px !important;
 }

@@ -1,3 +1,8 @@
+// Configuración inicial de Firebase
+const firebaseConfig = {
+    // Aquí deberás colocar tu configuración de Firebase/GitHub
+};
+
 console.log("app.js cargado correctamente");
 
 // --- Constantes de Local Storage ---
@@ -5,7 +10,8 @@ const LS_KEYS = {
     USUARIOS: 'ashe_usuarios',
     EMPLEADOS: 'ashe_empleados',
     AUSENCIAS: 'ashe_ausencias', // Assuming 'Ausencias' is for vacation/leave requests based on HTML/JS
-    SESSION: 'ashe_session'
+    SESSION: 'ashe_session',
+    THEME: 'theme' // Added theme key
 };
 
 // --- Utilidades de Local Storage ---
@@ -150,7 +156,19 @@ function initDatos() {
              },
              {
                  id: 2, nombres: 'María', apellidos: 'García', cedula: '987654321', telefono: '555-2222', email: 'maria.garcia@empresa.com', cargo: 'Generalista de RRHH', departamento: 'Recursos Humanos', contrato: 'Indefinido', salario: '1800000', nacimiento: '1985-08-20', ingreso: '2021-01-10', direccion: 'Avenida Siempreviva 742', ciudad: 'Medellín', barrio: 'El Poblado', notas: 'Experta en nómina', emergencia_nombre: 'Pedro García', emergencia_telefono: '555-2223', emergencia_parentesco: 'Hermano', hijos: 'No', cuantos_hijos: 0, detalle_hijos: '[]', con_quien_vive: 'Solo', esposo_nombre: 'Carlos Rodríguez', esposo_edad: 40, esposo_telefono: '555-2224', estado_civil: 'Casado', eps: 'Sura', fondo_pensiones: 'Porvenir', tipo_sangre: 'A-', licencia: 'No', licencia_categoria: '', licencia_vencimiento: '', hoja_vida_nombre: '', hoja_vida_url: ''
-             }
+             },
+             {
+                 id: 3, nombres: 'Pedro', apellidos: 'Rodríguez', cedula: '112233445', telefono: '555-3333', email: 'pedro.r@empresa.com', cargo: 'Ingeniero de Software', departamento: 'Tecnologia', contrato: 'Indefinido', salario: '2500000', nacimiento: '1992-11-30', ingreso: '2020-07-01', direccion: 'Calle Inventada 456', ciudad: 'Cali', barrio: 'Granada', notas: '', emergencia_nombre: 'Laura Rodríguez', emergencia_telefono: '555-3334', emergencia_parentesco: 'Madre', hijos: 'Sí', cuantos_hijos: 1, detalle_hijos: JSON.stringify([{sexo: 'Masculino', edad: 2}]), con_quien_vive: 'Solo', esposo_nombre: '', esposo_edad: '', esposo_telefono: '', estado_civil: 'Soltero', eps: 'Coomeva', fondo_pensiones: 'Colfondos', tipo_sangre: 'B+', licencia: 'Sí', licencia_categoria: 'A2', licencia_vencimiento: '2026-05-20', hoja_vida_nombre: '', hoja_vida_url: ''
+             },
+             {
+                 id: 4, nombres: 'Ana', apellidos: 'López', cedula: '667788990', telefono: '555-4444', email: 'ana.lopez@empresa.com', cargo: 'Diseñadora Gráfica', departamento: 'Mercadeo', contrato: 'Fijo', salario: '1600000', nacimiento: '1995-02-10', ingreso: '2023-09-01', direccion: 'Carrera Ficticia 789', ciudad: 'Barranquilla', barrio: 'Altos', notas: '', emergencia_nombre: 'Carlos López', emergencia_telefono: '555-4445', emergencia_parentesco: 'Padre', hijos: 'No', cuantos_hijos: 0, detalle_hijos: '[]', con_quien_vive: 'Familia', esposo_nombre: '', esposo_edad: '', esposo_telefono: '', estado_civil: 'Soltero', eps: 'Nueva EPS', fondo_pensiones: 'Protección', tipo_sangre: 'A+', licencia: 'No', licencia_categoria: '', licencia_vencimiento: '', hoja_vida_nombre: '', hoja_vida_url: ''
+             },
+              {
+                 id: 5, nombres: 'Carlos', apellidos: 'Martinez', cedula: '100100100', telefono: '555-5555', email: 'carlos.m@empresa.com', cargo: 'Jefe de Produccion', departamento: 'Produccion', contrato: 'Indefinido', salario: '2200000', nacimiento: '1980-04-01', ingreso: '2015-01-20', direccion: 'Calle Imaginaria 101', ciudad: 'Medellín', barrio: 'Industrial', notas: '', emergencia_nombre: 'Maria Martinez', emergencia_telefono: '555-5556', emergencia_parentesco: 'Esposa', hijos: 'Sí', cuantos_hijos: 3, detalle_hijos: JSON.stringify([{sexo: 'Femenino', edad: 10}, {sexo: 'Masculino', edad: 7}, {sexo: 'Femenino', edad: 4}]), con_quien_vive: 'Familia', esposo_nombre: 'Maria Fernanda', esposo_edad: 40, esposo_telefono: '555-5557', estado_civil: 'Casado', eps: 'Sura', fondo_pensiones: 'Porvenir', tipo_sangre: 'O-', licencia: 'Sí', licencia_categoria: 'C2', licencia_vencimiento: '2027-08-15', hoja_vida_nombre: '', hoja_vida_url: ''
+              },
+              {
+                 id: 6, nombres: 'Laura', apellidos: 'Sanchez', cedula: '200200200', telefono: '555-6666', email: 'laura.s@empresa.com', cargo: 'Analista Financiero', departamento: 'Finanzas', contrato: 'Indefinido', salario: '2000000', nacimiento: '1993-07-25', ingreso: '2018-03-10', direccion: 'Avenida Ficticia 202', ciudad: 'Bogotá', barrio: 'Financiero', notas: '', emergencia_nombre: 'Fernando Sanchez', emergencia_telefono: '555-6667', emergencia_parentesco: 'Padre', hijos: 'No', cuantos_hijos: 0, detalle_hijos: '[]', con_quien_vive: 'Solo', esposo_nombre: '', esposo_edad: '', esposo_telefono: '', estado_civil: 'Soltero', eps: 'Salud Total', fondo_pensiones: 'Protección', tipo_sangre: 'AB+', licencia: 'No', licencia_categoria: '', licencia_vencimiento: '', hoja_vida_nombre: '', hoja_vida_url: ''
+              }
          ]);
     }
     if (!localStorage.getItem(LS_KEYS.AUSENCIAS)) {
@@ -163,11 +181,15 @@ function initDatos() {
 /* --- SPA: Mostrar/Ocultar Secciones --- */
 // Modificada para manejar solo secciones SPA
 function mostrarSeccion(id) {
-    console.log("Mostrando sección:", id); // Log which section is being shown
+    console.log(">>> Llamando a mostrarSeccion con ID:", id);
     // Oculta todas las secciones SPA
     $('.spa-section').addClass('d-none');
+
     // Muestra la sección solicitada
-    $('#' + id).removeClass('d-none');
+    const targetElement = $('#' + id); // <-- Obtén el elemento target con jQuery
+    console.log(">>> Elemento target encontrado:", targetElement.length > 0, "Selector:", '#' + id);
+    targetElement.removeClass('d-none'); // <-- Intenta remover la clase d-none
+
 
     // Actualiza el título de la sección
     const sectionTitleElement = document.getElementById('section-title');
@@ -180,28 +202,35 @@ function mostrarSeccion(id) {
         } else {
              // Fallback: Use the text from the corresponding navigation link
              const navLink = document.querySelector(`.list-group-item.spa-link[href="#${id}"]`);
+             const userDropdownLink = document.querySelector(`.dropdown-item.spa-link[href="#${id}"]`); // Check user dropdown links too
              if(navLink) sectionTitleElement.innerText = navLink.innerText;
+             else if(userDropdownLink) sectionTitleElement.innerText = userDropdownLink.innerText;
              else sectionTitleElement.innerText = 'Sistema de Gestión de RRHH'; // Default title if no matching link
         }
     }
 
+
     // Actualiza la clase 'active' en el sidebar
-    $('.spa-link').removeClass('active');
-    $(`.spa-link[href="#${id}"]`).addClass('active');
+    $('.list-group-item.spa-link').removeClass('active'); // Only remove active from sidebar links
+    $(`.list-group-item.spa-link[href="#${id}"]`).addClass('active');
 
 
-    // Controla la visibilidad del botón de logout (asumiendo que solo se oculta en login/registro)
-    // Ensure sidebar is hidden on login/registro pages and shown otherwise
-    if (id === 'login' || id === 'registro') { // Use IDs consistent with HTML structure
+    // Controla la visibilidad de elementos basados en la sección (login/registro vs otras)
+    if (id === 'login' || id === 'registro') {
         $('#logout-btn').addClass('d-none');
         $('#sidebar-wrapper').addClass('d-none'); // Hide sidebar on login/registro
-        $('#sidebarToggle').addClass('d-none'); // Hide toggle button
+        $('#menu-toggle').addClass('d-none'); // Hide toggle button
+        console.log(">>> Intento ocultar #menu-toggle. Clases actuales:", $('#menu-toggle').attr('class'));
         $('#page-content-wrapper').removeClass('toggled'); // Ensure content area takes full width
+        $('.navbar .dropdown-toggle').addClass('d-none'); // Hide user dropdown in navbar
     } else {
         $('#logout-btn').removeClass('d-none');
         $('#sidebar-wrapper').removeClass('d-none'); // Show sidebar on other pages
-        $('#sidebarToggle').removeClass('d-none'); // Show toggle button
+        $('#menu-toggle').removeClass('d-none'); // Show toggle button (it's always in navbar now)
+        console.log(">>> Intento mostrar #menu-toggle. Clases actuales:", $('#menu-toggle').attr('class'));
+        $('.navbar .dropdown-toggle').removeClass('d-none'); // Show user dropdown
          // Keep content area adjusted for sidebar (toggled class is handled by the button)
+         // The 'toggled' class on #wrapper is handled by the #menu-toggle click listener
     }
 
      // Oculta el sidebar en móviles después de la navegación si está abierto
@@ -231,7 +260,10 @@ function mostrarSeccion(id) {
 //          'nomina': 'Gestión de Nómina', // Use section ID
 //          'vacaciones': 'Gestión de Vacaciones', // Use section ID
 //          'horarios': 'Gestión de Horarios', // Use section ID
-//          'incidencias': 'Gestión de Incidencias' // Use section ID
+//          'incidencias': 'Gestión de Incidencias', // Use section ID
+//          'perfil': 'Mi Perfil', // Added
+//          'configuracion': 'Configuración', // Added
+//          'forgot-password': 'Restablecer Contraseña' // Added
 //      };
 //      // Assuming '#breadcrumb-container' exists somewhere in the HTML, maybe in the navbar
 //      $('#breadcrumb-container').html(`<nav aria-label="breadcrumb"><ol class="breadcrumb mb-0"><li class="breadcrumb-item active">${map[id] || 'Página'}</li></ol></nav>`);
@@ -252,17 +284,39 @@ function mostrarAlerta(msg, tipo = 'success', tiempo = 3000) {
 }
 
 /* --- Mostrar/Ocultar contraseña --- */
-$(document).on('click', '.toggle-password', function() {
-    const targetId = $(this).data('target'); // Get target input ID from data-target attribute
-    const input = $('#' + targetId);
-    const icon = $(this).find('i');
-    if (input.attr('type') === 'password') {
-        input.attr('type', 'text');
-        icon.removeClass('bi-eye').addClass('bi-eye-slash');
-    } else {
-        input.attr('type', 'password');
-        icon.removeClass('bi-eye-slash').addClass('bi-eye');
-    }
+function createPasswordToggle(inputElement) {
+    if (!inputElement) return;
+    
+    const toggleButton = document.createElement('button');
+    toggleButton.type = 'button';
+    toggleButton.className = 'btn btn-outline-secondary toggle-password';
+    toggleButton.innerHTML = '<i class="bi bi-eye"></i>';
+    
+    inputElement.parentElement.style.position = 'relative';
+    toggleButton.style.position = 'absolute';
+    toggleButton.style.right = '10px';
+    toggleButton.style.top = '50%';
+    toggleButton.style.transform = 'translateY(-50%)';
+    toggleButton.style.zIndex = '10';
+    
+    inputElement.parentElement.appendChild(toggleButton);
+    
+    toggleButton.addEventListener('click', function() {
+        const type = inputElement.getAttribute('type') === 'password' ? 'text' : 'password';
+        inputElement.setAttribute('type', type);
+        toggleButton.innerHTML = `<i class="bi bi-eye${type === 'password' ? '' : '-slash'}"></i>`;
+    });
+}
+
+// Initialize password toggles
+document.addEventListener('DOMContentLoaded', function() {
+    const loginPassword = document.getElementById('login-password');
+    const registerPassword = document.getElementById('register-password');
+    const registerPassword2 = document.getElementById('register-password2');
+
+    createPasswordToggle(loginPassword);
+    createPasswordToggle(registerPassword);
+    createPasswordToggle(registerPassword2);
 });
 
 /* --- Formateo de moneda y validación de salario --- */
@@ -422,24 +476,9 @@ $('#registro-form').on('submit', function(e) { // Use the form ID 'registro-form
     mostrarSeccion('login'); // Go back to login section after registration
 });
 
-/* --- Olvidaste tu contraseña (simulado) --- */
-$('#forgot-password-link').on('click', function(e) {
-    e.preventDefault();
-    let email = prompt('Introduce tu correo electrónico para restablecer la contraseña:');
-    if (!email) return;
-    let usuarios = getUsuarios();
-    let user = usuarios.find(u => u.email === email);
-    if (!user) {
-        mostrarAlerta('Correo no encontrado', 'danger');
-        return;
-    }
-    // WARNING: This is not secure. In a real app, send a reset link via email.
-    let nueva = prompt('Introduce la nueva contraseña (NO ES SEGURO EN UNA APP REAL):');
-    if (!nueva) return;
-    user.password = nueva; // In a real app, hash the password
-    setUsuarios(usuarios);
-    mostrarAlerta('Contraseña restablecida. Ahora puedes iniciar sesión.', 'success');
-});
+/* --- Olvidaste tu contraseña (simulado con SPA) --- */
+// Eliminamos el viejo listener con prompt. La navegación será manejada por el .spa-link handler.
+// $('#forgot-password-link').on('click', function(e) { ... }); // REMOVIDO
 
 /* --- Renderizar dashboard y contadores --- */
 function renderDashboard(rol) {
@@ -707,7 +746,7 @@ $('#exportar-csv-btn').on('click', function() {
 /* --- Botones para ver cumpleaños y licencias (Listeners added) --- */
 // Assuming these buttons exist in your Dashboard HTML and use SPA navigation via href
 // Listeners are handled by the general .spa-link listener.
-// If these buttons *only* render the tables within the dashboard view, adjust the logic.
+// If these buttons *only' render the tables within the dashboard view, adjust the logic.
 // Based on HTML, they are SPA links.
 console.log("Listeners for #ver-cumpleanos-btn and #ver-licencias-btn are handled by .spa-link listener");
 
@@ -734,8 +773,12 @@ function exportarEmpleadosCSV() {
           if (emp.detalle_hijos) {
               try {
                   const hijos = JSON.parse(emp.detalle_hijos);
-                   if (hijos.length > 0) {
-                       Object.keys(hijos[0]).forEach(key => allKeys.add(`hijo_${key}`)); // Example naming
+                   if (Array.isArray(hijos)) { // Ensure it's an array before iterating
+                       hijos.forEach(hijo => {
+                            if (hijo && typeof hijo === 'object') { // Ensure hijo is an object
+                                Object.keys(hijo).forEach(key => allKeys.add(`hijo_${key}`)); // Example naming
+                            }
+                       });
                    }
               } catch(e) { console.error("Error parsing hijos for CSV keys:", e); }
           }
@@ -744,10 +787,10 @@ function exportarEmpleadosCSV() {
     // Example ordering: Put common fields first
      const orderedKeys = ['id', 'nombres', 'apellidos', 'cedula', 'email', 'cargo', 'departamento', 'ingreso', 'salario', 'nacimiento', 'telefono', 'direccion', 'ciudad', 'barrio', 'estado_civil', 'con_quien_vive', 'esposo_nombre', 'esposo_edad', 'esposo_telefono', 'hijos', 'cuantos_hijos', 'detalle_hijos', 'eps', 'fondo_pensiones', 'tipo_sangre', 'licencia', 'licencia_categoria', 'licencia_vencimiento', 'hoja_vida_nombre', 'hoja_vida_url', 'emergencia_nombre', 'emergencia_telefono', 'emergencia_parentesco', 'notas'];
      const finalHeader = orderedKeys.filter(key => allKeys.has(key)).concat(Array.from(allKeys).filter(key => !orderedKeys.includes(key) && !key.startsWith('hijo_'))); // Add any other keys not in ordered list
-     // Add child columns if needed
-     // if (allKeys.has('hijo_sexo')) finalHeader.push('hijo_sexo');
-     // if (allKeys.has('hijo_edad')) finalHeader.push('hijo_edad');
-     // This needs more complex logic if multiple children or varying fields
+     // Add child columns if needed - this part needs to match the data structure
+     const hijoKeysInOrder = Array.from(allKeys).filter(key => key.startsWith('hijo_')).sort(); // Get and sort hijo keys
+     finalHeader.push(...hijoKeysInOrder);
+
 
     let csv = [finalHeader.join(',')]; // Use final ordered header
 
@@ -756,18 +799,45 @@ function exportarEmpleadosCSV() {
             let value = e[k] === undefined || e[k] === null ? '' : e[k];
 
             // Handle potential stringified JSON fields (like detalle_hijos)
-            if (k === 'detalle_hijos' && typeof value === 'string') {
-                try {
-                    const hijosArray = JSON.parse(value);
-                     // Represent children as a string for CSV
-                     value = hijosArray.map(h => `Sexo:${h.sexo || '-'} Edad:${h.edad || '-'}`).join(';'); // Example format
-                } catch(err) {
-                    console.error("Error parsing detalle_hijos for CSV:", err);
-                    value = 'Error al parsear hijos'; // Indicate error in CSV
-                }
-            } else if (typeof value === 'string' && (value.startsWith('[') || value.startsWith('{'))) {
-                 // Handle other potential JSON strings generically
-                 try { value = JSON.parse(value); } catch(err) { console.error("Error parsing generic JSON for CSV:", err); }
+            if (k === 'detalle_hijos') {
+                 // This column will contain the raw JSON string or a representation
+                 if (typeof value === 'string') {
+                      try {
+                          const hijosArray = JSON.parse(value);
+                          // Represent children as a string for CSV
+                          value = hijosArray.map(h => {
+                              let parts = [];
+                              if (h.sexo) parts.push(`Sexo:${h.sexo}`);
+                              if (h.edad > 0) parts.push(`Edad:${h.edad} años`);
+                              return parts.join(' '); // Join parts of one child's detail
+                           }).join('; '); // Join details of multiple children with a semicolon
+                      } catch(err) {
+                          console.error("Error parsing detalle_hijos for CSV:", err);
+                          value = 'Error al parsear hijos'; // Indicate error in CSV
+                      }
+                 } else {
+                     value = String(value); // Ensure it's a string
+                 }
+            } else if (k.startsWith('hijo_')) {
+                // Extract data for individual child columns if needed
+                // This is complex as it depends on the structure of detalle_hijos array
+                // For simplicity, we'll rely on the combined 'detalle_hijos' column for now
+                value = ''; // Leave individual child columns empty if using the combined column
+            }
+             else if (typeof value === 'string' && (value.startsWith('[') || value.startsWith('{'))) {
+                 // Handle other potential JSON strings generically - maybe just show the string
+                 // Or try to parse and represent simply
+                 try {
+                     const parsed = JSON.parse(value);
+                     if (typeof parsed === 'object') {
+                          value = JSON.stringify(parsed).replace(/[{}"']/g, '').replace(/[:,]/g, '; '); // Simple object representation
+                     } else {
+                          value = String(parsed);
+                     }
+                 } catch(err) {
+                    // console.error("Error parsing generic JSON for CSV:", err); // Too noisy
+                     value = String(value); // Keep as original string if parsing fails
+                 }
             }
 
              // Simple string conversion for CSV, handle quotes and newlines
@@ -803,11 +873,32 @@ function renderFiltrosEmpleados(empleados) {
             .filter(Boolean) // Remove empty strings
             .map(d => d.charAt(0).toUpperCase() + d.slice(1).toLowerCase()) // Normalize capitalization
     )].sort(); // Sort departments alphabetically
+
+    // Add logging for generated filter options
+    console.log("Generated department filter options:", departamentos);
+
     // Prepend the "Todos" option and populate the select
-    $('#filtro-departamento').html('<option value="">Todos</option>' + departamentos.map(d => `<option value="${d}">${d}</option>`).join(''));
+    const $filtroDeptoSelect = $('#filtro-departamento');
+    // Captura el valor seleccionado ANTES de limpiar el HTML
+    const selectedDepto = $filtroDeptoSelect.val();
+    $filtroDeptoSelect.html('<option value="">Todos</option>' + departamentos.map(d => `<option value="${d}">${d}</option>`).join(''));
+     // Restaura el valor seleccionado si existía
+     if (selectedDepto) {
+         $filtroDeptoSelect.val(selectedDepto);
+     }
+    console.log("Populated #filtro-departamento with options.");
 
     // Antiguedad filter options are static in HTML, no need to render dynamically unless based on data ranges
+    const $filtroAntigSelect = $('#filtro-antiguedad');
+    // Captura el valor seleccionado ANTES
+    const selectedAntig = $filtroAntigSelect.val();
+    // Repopular si fuera dinámico, aquí solo restauramos el valor
+    if (selectedAntig) {
+         $filtroAntigSelect.val(selectedAntig);
+     }
+     console.log("Finished rendering employee filters.");
 }
+
 
 /* --- Renderizar tabla de empleados --- */
 let tablaEmpleados; // Declare DataTable variable outside the function
@@ -815,11 +906,18 @@ let tablaEmpleados; // Declare DataTable variable outside the function
 function renderTablaEmpleados(rol) {
     console.log("Rendering Employee Table for role:", rol);
     let empleados = getEmpleados();
-    renderFiltrosEmpleados(empleados); // Update filters based on current employees
 
+    // Ya NO llamamos a renderFiltrosEmpleados aquí CADA VEZ. Se llama al navegar a la sección.
+    // renderFiltrosEmpleados(empleados); // REMOVER esta llamada de aquí.
+
+    // AHORA, leemos los valores actuales de los filtros del DOM
     let filtroDepto = $('#filtro-departamento').val();
     let filtroAntig = $('#filtro-antiguedad').val();
-     let searchTerm = $('#buscar-empleado-input').val().toLowerCase(); // Get search term
+     let searchTerm = $('#buscar-empleado-input').val().toLowerCase();
+
+     // Log the active filters - ESTOS DEBERÍAN SER LOS VALORES CORRECTOS AHORA
+     console.log(`Active Filters (after reading from DOM): Departamento="${filtroDepto}", Antigüedad="${filtroAntig}", SearchTerm="${searchTerm}"`);
+
 
     let dataForTable = empleados.map(e => {
          // Prepare data in a format suitable for DataTables 'data' option
@@ -851,46 +949,58 @@ function renderTablaEmpleados(rol) {
      });
 
 
-     // Apply filters (DataTables can do filtering, but manual filtering here gives more control before init)
+    // Apply filters (manual filtering on the data array before passing to DataTables)
+     console.log(`Applying filters to ${dataForTable.length} employees.`);
      dataForTable = dataForTable.filter(e => {
+         // Log the comparison for each employee *inside* the filter callback
+         const empDepartamentoNormalized = (e.departamento || '').trim().charAt(0).toUpperCase() + (e.departamento || '').trim().slice(1).toLowerCase();
+         const ant = e.antiguedad; // Use the already calculated value from the mapped object
+         console.log(`[Filter Check] Emp: ${e.nombres}, Depto: "${e.departamento || ''}" (Normalized: "${empDepartamentoNormalized}"), Filter Depto: "${filtroDepto}", Antig: "${ant}", Filter Antig: "${filtroAntig}"`);
+
+
          let ok = true;
          // Filter by Department
-         let depEmp = (e.departamento || '').trim();
-         depEmp = depEmp.charAt(0).toUpperCase() + depEmp.slice(1).toLowerCase(); // Normalize capitalization
-         if (filtroDepto && filtroDepto !== "" && depEmp !== filtroDepto) ok = false;
-
-         // Filter by Antiguedad (based on the calculated value)
-         if (ok && filtroAntig && filtroAntig !== "") {
-             let ant = e.antiguedad; // Use the already calculated value
-              if (ant === 'Fecha inválida' || ant === 'Fecha futura') {
-                  ok = false; // Filter out invalid/future dates based on filter selection
-              } else if (ant === 'Menos de 1 año' && filtroAntig !== '0-1') {
-                  ok = false;
-              } else if (typeof ant === 'number') { // Numeric years
-                 if (filtroAntig === '0-1' && !(ant >= 0 && ant <= 1)) ok = false;
-                 else if (filtroAntig === '2-5' && !(ant >= 2 && ant <= 5)) ok = false;
-                 else if (filtroAntig === '6-10' && !(ant >= 6 && ant <= 10)) ok = false;
-                 else if (filtroAntig === '11+' && !(ant >= 11)) ok = false;
-             } else if (typeof ant === 'string' && ant.includes(' meses')) { // Handle months case
-                 if (filtroAntig !== '0-1') ok = false; // Months fall under 0-1 year category
-             } else { // If antiguedad is not one of the handled formats, assume it doesn't match filter
-                  if(filtroAntig !== '') ok = false; // If a filter is selected, exclude these
-             }
+         if (filtroDepto && filtroDepto !== "" && empDepartamentoNormalized !== filtroDepto) {
+             console.log(`[Filter Result] ${e.nombres} excluded by Department filter.`);
+             ok = false;
          }
 
-          // Apply search term filter - DataTables has built-in search, but applying here filters the initial data set
-          // This manual search might not be needed if DataTables built-in search is sufficient
-         // if (ok && searchTerm) {
-         //     const searchFields = [e.nombres, e.apellidos, e.cedula, e.telefono, e.email, e.cargo, e.departamento, e.antiguedad]; // Fields to search within
-         //     const match = searchFields.some(field =>
-         //         String(field).toLowerCase().includes(searchTerm)
-         //     );
-         //     if (!match) ok = false;
-         // }
+         // Filter by Antiguedad (only if not already excluded by department filter)
+         if (ok && filtroAntig && filtroAntig !== "") {
 
-         return ok;
+              if (ant === 'Fecha inválida' || ant === 'Fecha futura') {
+                   console.log(`[Filter Result] ${e.nombres} excluded by Antigüedad filter (Invalid/Future Date).`);
+                  ok = false; // Filter out invalid/future dates based on filter selection
+              } else if (ant === 'Menos de 1 año' && filtroAntig !== '0-1') {
+                  console.log(`[Filter Result] ${e.nombres} excluded by Antigüedad filter (Menos de 1 año).`);
+                  ok = false;
+              } else if (typeof ant === 'number') { // Numeric years
+                 if (filtroAntig === '0-1' && !(ant >= 0 && ant <= 1)) { console.log(`[Filter Result] ${e.nombres} excluded by Antigüedad filter (0-1 Range).`); ok = false;}
+                 else if (filtroAntig === '2-5' && !(ant >= 2 && ant <= 5)) { console.log(`[Filter Result] ${e.nombres} excluded by Antigüedad filter (2-5 Range).`); ok = false;}
+                 else if (filtroAntig === '6-10' && !(ant >= 6 && ant <= 10)) { console.log(`[Filter Result] ${e.nombres} excluded by Antigüedad filter (6-10 Range).`); ok = false;}
+                 else if (filtroAntig === '11+' && !(ant >= 11)) { console.log(`[Filter Result] ${e.nombres} excluded by Antigüedad filter (11+ Range).`); ok = false;}
+                 // If it's a number but doesn't match any range, it's still ok unless a filter is selected. This logic is implicitly handled by the checks above.
+              } else if (typeof ant === 'string' && ant.includes(' meses')) { // Handle months case
+                 if (filtroAntig !== '0-1') {
+                      console.log(`[Filter Result] ${e.nombres} excluded by Antigüedad filter (Months).`);
+                     ok = false; // Months fall under 0-1 year category
+                 }
+              } else { // If antiguedad is not one of the handled formats, assume it doesn't match filter
+                  if(filtroAntig !== '') {
+                       console.log(`[Filter Result] ${e.nombres} excluded by Antigüedad filter (Unhandle format).`);
+                       ok = false; // If a filter is selected, exclude these
+                  }
+              }
+         }
+
+         // The search term filter is handled by DataTables' built-in search, so we don't need to apply it manually here.
+         // If you were applying manual search, the logic would go here.
+         // The linking of external search input to DataTables internal search is in initComplete.
+
+         return ok; // Return the filter result for this employee
      });
 
+     console.log(`Filtered data count: ${dataForTable.length}`);
 
     // Destroy previous DataTable instance if it exists
     if (tablaEmpleados) {
@@ -939,16 +1049,16 @@ function renderTablaEmpleados(rol) {
               }
           }
      });
-
-     // If you were using manual search input, remove the manual filtering and rely on DataTables built-in search
-     // The manual search input is already linked above in initComplete
 }
 
 /* --- Filtros de empleados (Listeners) --- */
 // Re-render table on filter change
-$('#filtro-departamento, #filtro-antiguedad').on('change', function() {
+// Usando delegación de eventos para asegurar que el listener funcione incluso si el select se regenera
+$(document).on('change', '#filtro-departamento, #filtro-antiguedad', function() {
+    console.log("Filter change detected."); // Log filter change event
+    // Ahora renderTablaEmpleados leerá directamente el valor actualizado
     let session = getSession();
-    renderTablaEmpleados(session ? session.rol : 'empleado'); // Pass role, default if session is null
+    renderTablaEmpleados(session ? session.rol : 'empleado'); // Re-render table, pass role
 });
 
 // Listener for external search input is handled in renderTablaEmpleados initComplete
@@ -1053,21 +1163,22 @@ function populateTablaHijos(detalleHijosJson) {
 // Mostrar/ocultar campos de hijos (Listeners)
 // Assuming #empleado-hijos and #empleado-cuantos-hijos are in the form HTML
 $('#empleado-hijos').on('change', function() {
-    if ($(this).val() === 'Sí') {
-        $('#cuantos-hijos-div').show(); // Assuming this div exists
-        // renderTablaHijos will be called by the input listener on cuantos-hijos
-        if (parseInt($('#empleado-cuantos-hijos').val()) > 0) {
-             $('#hijos-tabla-row').show();
-        } else {
-             $('#hijos-tabla-row').hide();
-        }
+     const tieneHijos = $(this).val() === 'Sí';
+     if (tieneHijos) {
+         $('#cuantos-hijos-div').show(); // Assuming this div exists
+         // renderTablaHijos will be called by the input listener on cuantos-hijos
+         if (parseInt($('#empleado-cuantos-hijos').val()) > 0) {
+              renderTablaHijos(); // Render table initially if count is > 0 on load/edit
+         } else {
+              $('#hijos-tabla-row').hide(); // Hide table if count is 0 or empty
+         }
 
-    } else {
-        $('#cuantos-hijos-div').hide();
-        $('#hijos-tabla-row').hide();
-        $('#empleado-cuantos-hijos').val('');
-        $('#hijos-tabla tbody').empty(); // Clear table body when hiding
-    }
+     } else {
+         $('#cuantos-hijos-div').hide();
+         $('#hijos-tabla-row').hide();
+         $('#empleado-cuantos-hijos').val('');
+         $('#hijos-tabla tbody').empty(); // Clear table body when hiding
+     }
 });
 // Listener for the number input to re-render the hijos table structure
 $('#empleado-cuantos-hijos').on('input', renderTablaHijos);
@@ -1110,10 +1221,10 @@ function getDetalleHijosFromTabla() {
         const sexo = $(this).find('.hijos-sexo').val();
         const edad = $(this).find('.hijos-edad').val();
         // Only add if at least one field is filled
-        if (sexo || edad) {
+        if ((sexo && sexo !== "") || (edad !== "" && !isNaN(parseInt(edad)))) {
             hijos.push({
-                sexo: sexo,
-                edad: edad > 0 ? parseInt(edad) : '' // Store age as number or empty string
+                sexo: sexo || '', // Store as string or empty string
+                edad: edad !== "" && !isNaN(parseInt(edad)) ? parseInt(edad) : '' // Store age as number or empty string
             });
         }
     });
@@ -1390,7 +1501,7 @@ function renderDetalleEmpleado(id, rol) {
         }
     }
 
-    let hojaVidaLink = (e.hoja_vida_url && e.hoja_vida_nombre) ? `<a href="${e.hoja_vida_url}" target="_blank">${e.hoja_vida_nombre}</a>` : '<i>(No disponible)</i>';
+    let hojaVidaLink = (e.hoja_vida_url && e.hoja_vida_nombre) ? `<a href="${e.hoja_vida_url}" target="_blank">${e.hoja_vida_nombre}</a>` : '<i>(No disponible)</i>'; // Corrected link display
 
     let esposoDetalle = '<i>(No aplica)</i>';
     if (e.estado_civil === 'Casado' || e.estado_civil === 'Divorciado' || e.estado_civil === 'Union Libre') { // Use values consistent with HTML form options
@@ -1562,24 +1673,53 @@ function toggleTheme() {
     const currentTheme = html.getAttribute('data-bs-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-bs-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
+    localStorage.setItem(LS_KEYS.THEME, newTheme); // Use LS_KEYS constant
 
     // Actualizar icono
-    const icon = $('#toggle-theme i'); // Assuming button has ID toggle-theme and contains an <i>
-    if (icon.length) { // Check if the icon element exists
-        if (newTheme === 'dark') {
-            icon.removeClass('bi-moon-stars').addClass('bi-sun');
-        } else {
-            icon.removeClass('bi-sun').addClass('bi-moon-stars');
-        }
+    const icon = document.querySelector('#toggle-theme i');
+    if (icon) {
+        icon.className = `bi bi-${newTheme === 'dark' ? 'sun' : 'moon-stars'}`;
     }
 
     // Note: You might need to re-render charts or other elements that use theme-dependent colors
     // renderGraficos(); // Example - Pass data if needed
 }
 
-// Listener for theme toggle button (assuming button has ID toggle-theme)
-$('#toggle-theme').on('click', toggleTheme);
+// Listener for theme toggle button
+document.getElementById('toggle-theme')?.addEventListener('click', toggleTheme);
+
+
+/* --- Placeholder functions for new sections --- */
+// Función para renderizar la sección de Perfil
+function renderPerfilSection() {
+    console.log("Rendering Perfil Section");
+    // Obtener datos del usuario de la sesión
+    const session = getSession();
+    if (session) {
+        console.log("User session:", session.email, session.rol);
+        // Mostrar el correo y rol en los elementos HTML correspondientes
+        $('#perfil-email').text(session.email || 'No especificado');
+        $('#perfil-rol').text(session.rol || 'No especificado');
+        // Aquí podrías añadir lógica para buscar más detalles del empleado
+        // si el usuario de sesión está vinculado a un empleado (por email o ID)
+        // y mostrar esa información también.
+    } else {
+        $('#perfil-email').text('No hay sesión activa');
+        $('#perfil-rol').text('N/A');
+    }
+}
+
+// Función placeholder para la sección de Configuración
+function renderConfiguracionSection() {
+    console.log("Rendering Configuración Section (Placeholder)");
+    // Aquí irá la lógica para poblar la sección de configuración
+}
+
+// Función placeholder para la sección de Olvidaste Contraseña
+function renderForgotPasswordSection() {
+    console.log("Rendering Forgot Password Section (Placeholder)");
+    // Aquí irá la lógica para mostrar el formulario o instrucciones de restablecimiento
+}
 
 
 /* --- Listeners for SPA Navigation Links --- */
@@ -1590,8 +1730,8 @@ $(document).on('click', '.spa-link', function(e) {
     console.log("SPA link clicked. Target ID:", targetId);
 
     // Check if the target is a known SPA section ID
-    // Add all your section IDs here
-    const spaSections = ['dashboard', 'empleados', 'documentacion', 'encuestas', 'objetivos', 'beneficios', 'capacitaciones', 'evaluaciones', 'nomina', 'vacaciones', 'horarios', 'incidencias', 'cumpleanos-list', 'licencias-list', 'login', 'registro']; // Include login/registro if they are part of SPA flow
+    // AÑADIMOS 'perfil', 'configuracion' y 'forgot-password' a la lista de secciones SPA
+    const spaSections = ['dashboard', 'empleados', 'documentacion', 'encuestas', 'objetivos', 'beneficios', 'capacitaciones', 'evaluaciones', 'nomina', 'vacaciones', 'horarios', 'incidencias', 'cumpleanos-list', 'licencias-list', 'login', 'registro', 'perfil', 'configuracion', 'forgot-password']; // Include new section IDs
 
     if (spaSections.includes(targetId)) {
          // Before showing a new section, perform necessary cleanup or data loading
@@ -1599,6 +1739,8 @@ $(document).on('click', '.spa-link', function(e) {
 
          // Logic to handle specific sections on navigation
          if (targetId === 'empleados') {
+             // Al navegar a empleados, renderizamos los filtros una vez y luego la tabla
+             renderFiltrosEmpleados(getEmpleados()); // Render filters initially (or re-render if needed with data)
              renderTablaEmpleados(session ? session.rol : 'empleado'); // Render the employee table
          } else if (targetId === 'cumpleanos-list') {
              renderTablaCumpleanos(); // Render the birthdays table
@@ -1606,6 +1748,12 @@ $(document).on('click', '.spa-link', function(e) {
              renderTablaLicencias(); // Render the licenses table
          } else if (targetId === 'dashboard') { // Ensure dashboard renders when navigated via link
              if(session) renderDashboard(session.rol);
+         } else if (targetId === 'perfil') { // Call placeholder function for Perfil
+             renderPerfilSection();
+         } else if (targetId === 'configuracion') { // Call placeholder function for Configuración
+             renderConfiguracionSection();
+         } else if (targetId === 'forgot-password') { // Call placeholder function for Forgot Password
+              renderForgotPasswordSection();
          }
           // Add similar checks for other sections that need initial data loading/rendering
           // Example: if (targetId === 'vacaciones') { renderTablaVacaciones(); }
@@ -1620,6 +1768,26 @@ $(document).on('click', '.spa-link', function(e) {
         // Optionally handle links that might point elsewhere or open modals differently
     }
 });
+
+
+// Listeners for the "Perfil" and "Configuración" dropdown menu items
+// ASUMIENDO que has añadido IDs 'perfil-link' y 'configuracion-link' a los <a> en tu HTML
+// Estos listeners ya no son estrictamente necesarios si usas la clase spa-link y href="#section-id"
+// en el HTML, ya que el manejador genérico de .spa-link los capturará.
+// Los mantengo comentados por si prefieres lógica específica aquí.
+/*
+$(document).on('click', '#perfil-link', function(e) {
+    e.preventDefault();
+    console.log("Perfil link clicked.");
+    mostrarSeccion('perfil'); // Navigate to the perfil section
+});
+
+$(document).on('click', '#configuracion-link', function(e) {
+    e.preventDefault();
+    console.log("Configuración link clicked.");
+    mostrarSeccion('configuracion'); // Navigate to the configuracion section
+});
+*/
 
 
 // Note: Modals should be triggered via data-bs-toggle="modal" and data-bs-target="#modal-id"
@@ -1697,14 +1865,14 @@ $('#detalle-incidencia-modal').on('show.bs.modal', function(event) {
 
 // --- Main Document Ready Block ---
 $(document).ready(function() {
-    console.log("Document is ready. Starting app initialization.");
+    console.log(">>> Document is ready. Iniciando aplicación.");
 
     // Load saved theme on document ready
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedTheme = localStorage.getItem(LS_KEYS.THEME) || 'light'; // Use LS_KEYS constant
     document.documentElement.setAttribute('data-bs-theme', savedTheme);
     // Ensure the icon is set correctly on load based on saved theme
     const icon = $('#toggle-theme i');
-    if (icon.length) {
+    if (icon.length) { // Check if the icon element exists
         if (savedTheme === 'dark') {
             icon.removeClass('bi-moon-stars').addClass('bi-sun');
         } else {
@@ -1716,19 +1884,20 @@ $(document).ready(function() {
     initDatos();
 
     // Check session and show the appropriate section
+    console.log(">>> Verificando estado de sesión...");
     let session = getSession();
     if (session) {
-        console.log("Session found. Showing dashboard.");
+        console.log(">>> Sesión encontrada. Se mostrará: dashboard.");
         mostrarSeccion('dashboard'); // Go to dashboard if session exists
         renderDashboard(session.rol); // Render dashboard content
     } else {
-        console.log("No session found. Showing login.");
-        mostrarSeccion('login'); // Go to login if no session
+        console.log(">>> No hay sesión. Se mostrará: login.");
+        mostrarSeccion('login');
     }
 
     /* --- Configuración GLOBAL de DataTables en español --- */
     // --->> ESTE BLOQUE DEBE ESTAR DENTRO DE $(document).ready <<---
-    console.log("Configuring DataTables defaults.");
+    console.log(">>> Configurando DataTables defaults.");
     if ($.fn.dataTable) { // Check if DataTables is loaded
          $.extend(true, $.fn.dataTable.defaults, {
              language: {
@@ -1736,9 +1905,9 @@ $(document).ready(function() {
                  url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
              }
          });
-         console.log("DataTables defaults configured.");
+         console.log(">>> DataTables defaults configurados.");
     } else {
-         console.error("DataTables is not loaded. Cannot configure defaults.");
+         console.error(">>> Error: DataTables no cargado. Las tablas no funcionarán.");
          mostrarAlerta('Error: DataTables no cargado. Las tablas no funcionarán.', 'danger');
     }
     // --->> FIN DEL BLOQUE DE CONFIGURACIÓN DE DATATABLES <<---
@@ -1772,10 +1941,11 @@ $(document).ready(function() {
 
 // Listener for sidebar toggle button (assuming button has ID sidebarToggle)
 // This should ideally toggle the 'toggled' class on #wrapper
-$('#sidebarToggle').on('click', function(e) {
+$('#menu-toggle').on('click', function(e) { // Corrected ID based on HTML #menu-toggle
     e.preventDefault();
     $('#wrapper').toggleClass('toggled');
-     console.log("Sidebar toggled");
+     console.log(">>> Sidebar toggled");
 });
 
 // --- End of app.js ---
+console.log("End of app.js script reached");
